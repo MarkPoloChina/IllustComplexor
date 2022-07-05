@@ -16,6 +16,9 @@
   "dependencies": {
     "core-js": "^3.8.3",
     "element-plus": "^2.2.8",
+    "fs-extra": "^9.1.0",
+    "lowdb": "^3.0.0",
+    "node-sass": "^7.0.1",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"
@@ -55,5 +58,6 @@
     "last 2 versions",
     "not dead",
     "not ie 11"
-  ]
+  ],
+  "packageManager": "yarn@3.2.1"
 }
