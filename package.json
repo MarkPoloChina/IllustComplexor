@@ -19,6 +19,7 @@
     "fs-extra": "^9.1.0",
     "lowdb": "^3.0.0",
     "node-sass": "^7.0.1",
+    "sass-resources-loader": "^2.2.5",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"
