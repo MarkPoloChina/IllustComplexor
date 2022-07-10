@@ -1,46 +1,63 @@
 <template>
-  <div>
-    This the index of ICXOR.
-    <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="true">
-      <el-sub-menu index="1">
-        <template #title>
-          <el-icon><Location /></el-icon>
-          <span>Navigator One</span>
-        </template>
-        <el-menu-item-group>
-          <template #title><span>Group One</span></template>
-          <el-menu-item index="1-1">item one</el-menu-item>
-          <el-menu-item index="1-2">item two</el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="Group Two">
-          <el-menu-item index="1-3">item three</el-menu-item>
-        </el-menu-item-group>
-        <el-sub-menu index="1-4">
-          <template #title><span>item four</span></template>
-          <el-menu-item index="1-4-1">item one</el-menu-item>
-        </el-sub-menu>
-      </el-sub-menu>
-      <el-menu-item index="2">
-        <el-icon><icon-menu /></el-icon>
-        <template #title>Navigator Two</template>
-      </el-menu-item>
-      <el-menu-item index="3" disabled>
-        <el-icon><Document /></el-icon>
-        <template #title>Navigator Three</template>
-      </el-menu-item>
-      <el-menu-item index="4">
-        <el-icon><Setting /></el-icon>
-        <template #title>Navigator Four</template>
-      </el-menu-item>
-    </el-menu>
+  <div class="index-container">
+    <div class="index-menu-container">
+      <el-menu default-active="home" class="index-menu" collapse router>
+        <el-menu-item index="home">
+          <el-icon><House /></el-icon>
+          <template #title>主页</template>
+        </el-menu-item>
+        <el-menu-item index="view">
+          <el-icon><PictureRounded /></el-icon>
+          <template #title>视图</template>
+        </el-menu-item>
+        <el-menu-item index="importer">
+          <el-icon><Upload /></el-icon>
+          <template #title>导入</template>
+        </el-menu-item>
+      </el-menu>
+      <el-menu default-active="" class="index-menu" collapse router>
+        <el-menu-item index="setting">
+          <el-icon><Setting /></el-icon>
+          <template #title>设置</template>
+        </el-menu-item>
+      </el-menu>
+    </div>
+    <div class="index-main">
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 <script setup>
 import {
-  Document,
-  Menu as IconMenu,
-  Location,
+  House,
+  PictureRounded,
+  Upload,
   Setting,
 } from "@element-plus/icons-vue";
 </script>
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.index-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  .index-menu-container {
+    @include Flex-C-SB;
+    height: 100%;
+    background-color: $color-stdblue-1;
+    .index-menu {
+      border-right: none;
+      --el-menu-bg-color: transparent;
+      --el-menu-active-color: #2c3c49;
+      --el-menu-text-color: white;
+      --el-menu-hover-bg-color: #a2a2a285;
+      .el-menu-item [class^="el-icon"] {
+        font-size: 30px;
+      }
+    }
+  }
+  .index-main {
+    width: 100%;
+  }
+}
+</style>
