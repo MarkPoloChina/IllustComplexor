@@ -17,7 +17,7 @@
 <script setup>
 import { LoadBase } from "@/js/importer/LoadBase";
 const test = () => {
-  LoadBase.test();
+  LoadBase.test()
 };
 </script>
 <style lang="scss" scoped>

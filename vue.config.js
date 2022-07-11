@@ -3,7 +3,7 @@ module.exports = defineConfig({
   transpileDependencies: true,
   chainWebpack: config => {
     config.plugin('html').tap(args => {
-      args[0].title = 'ImageComplexor'
+      args[0].title = 'IllustComplexor'
       return args
     })
     config.module.rule('scss').oneOfs.store.forEach(item => {
