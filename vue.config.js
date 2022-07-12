@@ -15,5 +15,19 @@ module.exports = defineConfig({
         })
         .end()
     });
+  },
+  pluginOptions:{
+    electronBuilder: {
+      nodeIntegration: true,
+      builderOptions: {
+          productName: "ICXOR",
+          nsis: {
+              oneClick: false,
+              allowToChangeInstallationDirectory: true,
+              createDesktopShortcut: true,
+              createStartMenuShortcut: true
+          }
+      }
+  }
   }
 })

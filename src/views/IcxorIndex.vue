@@ -34,6 +34,11 @@ import {
   Upload,
   Setting,
 } from "@element-plus/icons-vue";
+import { ConfigDB } from "@/js/manager/DBService";
+import { onMounted } from "vue";
+onMounted(()=>{
+  ConfigDB.initDB()
+})
 </script>
 <style lang="scss" scoped>
 .index-container {

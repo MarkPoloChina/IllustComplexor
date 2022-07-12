@@ -14,16 +14,12 @@
   },
   "main": "background.js",
   "dependencies": {
-    "constants": "^0.0.2",
     "core-js": "^3.8.3",
     "element-plus": "^2.2.8",
-    "fs": "^0.0.1-security",
     "fs-extra": "^10.1.0",
-    "lowdb": "^3.0.0",
+    "lowdb": "1.0.0",
     "node-sass": "^7.0.1",
-    "path": "^0.12.7",
     "sass-resources-loader": "^2.2.5",
-    "stream": "^0.0.2",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
     "vuex": "^4.0.0"
@@ -41,7 +37,7 @@
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "sass": "^1.32.7",
-    "sass-loader": "10",
+    "sass-loader": "13.0.2",
     "vue-cli-plugin-electron-builder": "~2.1.1"
   },
   "eslintConfig": {
