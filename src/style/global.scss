@@ -20,3 +20,8 @@ $color-greengray-4: #b2c5cb;
   flex-direction: column;
   justify-content: flex-start;
 }
+@mixin Flex-C-AC {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}

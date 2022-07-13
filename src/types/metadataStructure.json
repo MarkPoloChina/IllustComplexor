@@ -1,0 +1,28 @@
+{
+  "id": "",
+  "source": "",
+  "sid": "",
+  "link": "",
+  "basePath": "",
+  "baseType": "null||std||dep",
+  "copy": [
+    {
+      "copyType": "picolt||lnr||author",
+      "copyPath": "",
+      "copyLevel": "picolt-1||picolt-2",
+      "copyNo": "1||2||2022s1||202105",
+      "waifu2x": "null||ncnn||real",
+      "copyTimestamp": "yyyy.MM.dd"
+    }
+  ],
+  "author": "",
+  "object": [
+    "",
+    ""
+  ],
+  "limit": "R-15||R-18||null",
+  "star": "1||2||3||4||5",
+  "page": 0,
+  "title": "",
+  "timestamp": "yyyy.MM.dd"
+}

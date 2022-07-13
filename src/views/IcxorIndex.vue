@@ -1,22 +1,22 @@
 <template>
   <div class="index-container">
     <div class="index-menu-container">
-      <el-menu default-active="home" class="index-menu" collapse router>
-        <el-menu-item index="home">
+      <el-menu :default-active="$route.path" class="index-menu" collapse router>
+        <el-menu-item index="/home">
           <el-icon><House /></el-icon>
           <template #title>主页</template>
         </el-menu-item>
-        <el-menu-item index="view">
+        <el-menu-item index="/view">
           <el-icon><PictureRounded /></el-icon>
           <template #title>视图</template>
         </el-menu-item>
-        <el-menu-item index="importer">
+        <el-menu-item index="/importer">
           <el-icon><Upload /></el-icon>
           <template #title>导入</template>
         </el-menu-item>
       </el-menu>
       <el-menu default-active="" class="index-menu" collapse router>
-        <el-menu-item index="setting">
+        <el-menu-item index="/setting">
           <el-icon><Setting /></el-icon>
           <template #title>设置</template>
         </el-menu-item>
@@ -34,11 +34,12 @@ import {
   Upload,
   Setting,
 } from "@element-plus/icons-vue";
-import { ConfigDB } from "@/js/manager/DBService";
+import { ConfigDB, MetaDB } from "@/js/manager/DBService";
 import { onMounted } from "vue";
-onMounted(()=>{
-  ConfigDB.initDB()
-})
+onMounted(() => {
+  ConfigDB.initDB();
+  MetaDB.initMeta();
+});
 </script>
 <style lang="scss" scoped>
 .index-container {
