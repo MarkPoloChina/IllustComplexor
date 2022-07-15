@@ -46,7 +46,15 @@ export class MetaDB {
     return dbMeta.get('meta').filter(condition).size().value()
   }
 
-  static getMeta = () => {
+  static getAllMeta = () => {
     return dbMeta.get('meta').value()
+  }
+
+  static getMeta = (condition) => {
+    return dbMeta.get('meta').filter(condition).value()
+  }
+
+  static pushMeta = (obj) => {
+    dbMeta.get('meta').push(obj).write()
   }
 }
