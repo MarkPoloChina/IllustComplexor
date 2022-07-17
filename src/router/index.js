@@ -10,6 +10,7 @@ const routes = [
   {
     path: '/',
     name: 'index',
+    redirect: 'home',
     component: () => import('../views/IcxorIndex.vue'),
     children: [
       {
@@ -21,6 +22,11 @@ const routes = [
         path: 'importer',
         name: 'importer',
         component: () => import('../views/basic/IcxorImporter.vue')
+      },
+      {
+        path: 'view',
+        name: 'viewer',
+        component: () => import('../views/basic/IcxorViewer.vue')
       }
     ]
   },

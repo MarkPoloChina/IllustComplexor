@@ -1,15 +1,21 @@
 <template>
   <div class="home-container">
-    <div>主页</div>
+    <div class="title">主页</div>
   </div>
 </template>
-<script setup>
-
-</script>
+<script setup></script>
 <style lang="scss" scoped>
-.home-container
-{
-  width: 100%;
-  height: 100%;
+.home-container {
+  width: calc(100% - 20px);
+  height: calc(100% - 10px);
+  padding: 10px 10px 0 10px;
+  overflow: hidden;
+  @include Flex-C-CT;
+  .title {
+    padding: 10px;
+    font-size: 24px;
+    font-weight: bold;
+    color: $color-greengray-1;
+  }
 }
 </style>

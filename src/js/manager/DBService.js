@@ -25,6 +25,7 @@ export class MetaDB {
   }
 
   static mergeMeta = (list) => {
+    if (list.length == 0) return
     let _list = dbMeta.get('meta').value() //取出原先的输出
     _list.push(...list) //合并新数据,使用的是一次IO策略
     dbMeta.set('meta', _list).write()
@@ -56,5 +57,17 @@ export class MetaDB {
 
   static pushMeta = (obj) => {
     dbMeta.get('meta').push(obj).write()
+  }
+
+  static pushCopy = (condition, obj) => {
+    if (!dbMeta.get('meta').find(condition).get('copy').value())
+      dbMeta.get('meta').find(condition).set('copy', []).write()
+    dbMeta.get('meta').find(condition).get('copy').push(obj).write()
+  }
+
+  static existCopy = (conditionOfMeta, conditionOfCopy) => {
+    if (!dbMeta.get('meta').find(conditionOfMeta).get('copy').value())
+      return false
+    return dbMeta.get('meta').find(conditionOfMeta).get('copy').filter(conditionOfCopy).size().value() != 0
   }
 }
