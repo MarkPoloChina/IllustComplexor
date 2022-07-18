@@ -53,7 +53,14 @@
             </el-select>
           </el-form-item>
           <el-form-item label="元数据值">
-            <el-input v-model="importOption.metaValue" />
+            <el-date-picker
+              v-if="importOption.metaKey == 'timestamp'"
+              v-model="importOption.metaValue"
+              value-format="YYYYMMDD"
+              type="date"
+              placeholder="Pick a day"
+            />
+            <el-input v-model="importOption.metaValue" v-else />
           </el-form-item>
         </el-form>
       </div>

@@ -9,11 +9,7 @@
   </div>
 </template>
 <script setup>
-import { ref } from "vue";
-
-const url = ref(
-  "D:\\CodeWorkplace\\VSCW\\IllustComplexor\\icxor\\src\\assets\\猫猫vue_PoweredbyRock.png"
-);
+import url from '@/assets/avatar.jpg'
 </script>
 <style lang="scss" scoped>
 .home-container {
