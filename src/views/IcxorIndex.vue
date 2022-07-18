@@ -54,9 +54,12 @@ onMounted(() => {
     .index-menu {
       border-right: none;
       --el-menu-bg-color: transparent;
-      --el-menu-active-color: #2c3c49;
+      --el-menu-active-color: white;
       --el-menu-text-color: white;
-      --el-menu-hover-bg-color: #a2a2a285;
+      --el-menu-hover-bg-color: #5dabdc;
+      .el-menu-item.is-active {
+        background-color: var(--el-menu-hover-bg-color);
+      }
       .el-menu-item [class^="el-icon"] {
         font-size: 30px;
       }

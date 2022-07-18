@@ -1,32 +1,31 @@
 <template>
   <div class="viewer-container">
     <div class="title">视图</div>
-    <el-scrollbar class="viewer-imgs">
-      <el-image
-        :src="item"
-        v-for="(item, index) in url.value"
-        :key="index"
-        lazy
-      />
-    </el-scrollbar>
+    <el-tabs class="tabs" v-model="currentTab">
+      <el-tab-pane label="时间线" name="timeline" lazy>
+        <timeline-viewer></timeline-viewer>
+      </el-tab-pane>
+      <el-tab-pane label="PICOLT聚合" name="picolt" lazy>
+        <picolt-viewer></picolt-viewer>
+      </el-tab-pane>
+      <el-tab-pane label="LNR聚合" name="lnr" lazy> </el-tab-pane>
+      <el-tab-pane label="作者专题聚合" name="author" lazy>Role</el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 <script setup>
-import { FilesFilter } from "@/js/viewer/FileFilter";
-import { onMounted, reactive } from "vue";
+import { ref } from "vue";
+import TimelineViewer from "@/components/icxorViewer/timelineViewer.vue";
+import PicoltViewer from "@/components/icxorViewer/picoltViewer.vue";
 
-const url = reactive({ value: [] });
-onMounted(() => {
-  FilesFilter.test().forEach((item) => {
-    url.value.push(item);
-  });
-});
+const currentTab = ref("timeline");
 </script>
 <style lang="scss" scoped>
 .viewer-container {
   width: calc(100% - 20px);
   height: calc(100% - 10px);
   padding: 10px 10px 0 10px;
+  overflow: hidden;
   @include Flex-C-CT;
   .title {
     padding: 10px;
@@ -34,12 +33,24 @@ onMounted(() => {
     font-weight: bold;
     color: $color-greengray-1;
   }
-  .viewer-imgs {
+  .tabs {
+    padding: 0 10px 0 10px;
     height: 100%;
-    .el-image {
-      display: block;
-      min-height: 200px;
-      margin-bottom: 10px;
+    position: relative;
+    :deep(.el-tab-pane) {
+      height: 100%;
+    }
+    :deep(.el-tabs__content) {
+      height: calc(100% - 50px);
+    }
+    :deep(.el-tabs__item.is-active) {
+      color: $color-stdblue-1;
+    }
+    :deep(.el-tabs__item:hover) {
+      color: $color-stdblue-1;
+    }
+    :deep(.el-tabs__active-bar) {
+      background-color: $color-stdblue-1;
     }
   }
 }

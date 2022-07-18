@@ -20,6 +20,7 @@ async function createWindow() {
   const win = new BrowserWindow({
     width: 1200,
     height: 800,
+    minWidth: 1000,
     webPreferences: {
       enableRemoteModule: true,
       webSecurity: false,

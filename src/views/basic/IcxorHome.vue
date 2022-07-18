@@ -1,9 +1,16 @@
 <template>
   <div class="home-container">
     <div class="title">主页</div>
+    <div>
+      <el-image :src="url"></el-image>
+    </div>
   </div>
 </template>
-<script setup></script>
+<script setup>
+import { ref } from 'vue';
+
+const url = ref('src\\assets\\猫猫vue_PoweredbyRock.png')
+</script>
 <style lang="scss" scoped>
 .home-container {
   width: calc(100% - 20px);

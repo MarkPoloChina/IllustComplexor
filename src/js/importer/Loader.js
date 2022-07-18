@@ -31,12 +31,11 @@ export class LoadBase {
           let pid = FilenameComparator.getMatchedPixivId(item)
           let page = FilenameComparator.getMatchedPixivPage(item)
           let title = FilenameComparator.getPxderPixivTitle(item)
-          if (!pid || !page) return
-          if (!MetaDB.existMeta({ sid: pid, source: 'pixiv', page: page })) {
+          if (pid && page && FilenameComparator.isLikeImage(item) && !MetaDB.existMeta({ sid: pid, source: 'pixiv', page: page })) {
             if (title)
-              list.push({ sid: pid, source: 'pixiv', page: page, title: title, basePath: path, baseType: type })
+              list.push({ sid: pid, source: 'pixiv', page: page, title: title, basePath: path, baseType: type, filename: item })
             else
-              list.push({ sid: pid, source: 'pixiv', page: page, basePath: path, baseType: type })
+              list.push({ sid: pid, source: 'pixiv', page: page, basePath: path, baseType: type, filename: item })
           }
           index++
           progress.value = Math.round(index / files.length * 1000) / 10
@@ -62,12 +61,12 @@ export class LoadBase {
           let pid = FilenameComparator.getMatchedPixivId(item)
           let page = FilenameComparator.getMatchedPixivPage(item)
           let title = FilenameComparator.getPxderPixivTitle(item)
-          if (pid && page && !MetaDB.existMeta({ sid: pid, source: 'pixiv', page: page })) {
+          if (pid && page && FilenameComparator.isLikeImage(item) && !MetaDB.existMeta({ sid: pid, source: 'pixiv', page: page })) {
             successCnt++
             if (title)
-              MetaDB.pushMeta({ sid: pid, source: 'pixiv', page: page, title: title, basePath: path.parse(_path).dir, baseType: type })
+              MetaDB.pushMeta({ sid: pid, source: 'pixiv', page: page, title: title, basePath: path.parse(_path).dir, baseType: type, filename: item })
             else
-              MetaDB.pushMeta({ sid: pid, source: 'pixiv', page: page, basePath: path.parse(_path).dir, baseType: type })
+              MetaDB.pushMeta({ sid: pid, source: 'pixiv', page: page, basePath: path.parse(_path).dir, baseType: type, filename: item })
           }
           progress.value = Math.round((index + 1) / paths.length * 1000) / 10
           await sleep()
@@ -104,7 +103,7 @@ export class AddCopy {
         for (let item of files) {
           let pid = FilenameComparator.getMatchedPixivId(item)
           let page = FilenameComparator.getMatchedPixivPage(item)
-          if (!pid || !page)
+          if (!pid || !page || !FilenameComparator.isLikeImage(item))
             ignoredList.push({ reason: 'unknownName', filename: item, status: 'ignore' })
           else if (!MetaDB.existMeta({ sid: pid, source: 'pixiv', page: page }))
             ignoredList.push({ reason: 'notfound', filename: item, status: 'ignore' })
@@ -112,7 +111,7 @@ export class AddCopy {
             ignoredList.push({ reason: 'exist', filename: item, status: 'ignore' })
           } else {
             successCnt++
-            MetaDB.pushCopy({ sid: pid, source: 'pixiv', page: page }, copyMeta)
+            MetaDB.pushCopy({ sid: pid, source: 'pixiv', page: page }, { ...copyMeta, filename: item })
           }
           index++
           progress.value = Math.round(index / files.length * 1000) / 10

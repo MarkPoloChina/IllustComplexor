@@ -3,7 +3,7 @@
     <div class="title">导入</div>
     <el-tabs class="tabs" v-model="currentTab">
       <el-tab-pane label="母本/初始化" name="base">
-        <base-importer v-if="currentTab == 'base'"></base-importer>
+        <base-importer></base-importer>
       </el-tab-pane>
       <el-tab-pane label="副本" name="copy"
         >Config
@@ -11,7 +11,7 @@
       </el-tab-pane>
       <el-tab-pane label="元数据" name="meta">Role</el-tab-pane>
       <el-tab-pane label="PICOLT卷" name="picolt">
-        <picolt-importer v-if="currentTab == 'picolt'"></picolt-importer>
+        <picolt-importer></picolt-importer>
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -42,8 +42,14 @@ const test = () => {
   }
   .tabs {
     padding: 0 10px 0 10px;
-    .el-tabs__item.is-active {
+    :deep(.el-tabs__item.is-active) {
       color: $color-stdblue-1;
+    }
+    :deep(.el-tabs__item:hover) {
+      color: $color-stdblue-1;
+    }
+    :deep(.el-tabs__active-bar) {
+      background-color: $color-stdblue-1;
     }
   }
 }

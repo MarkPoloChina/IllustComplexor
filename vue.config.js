@@ -16,18 +16,32 @@ module.exports = defineConfig({
         .end()
     });
   },
-  pluginOptions:{
+  pluginOptions: {
     electronBuilder: {
       nodeIntegration: true,
       builderOptions: {
-          productName: "ICXOR",
-          nsis: {
-              oneClick: false,
-              allowToChangeInstallationDirectory: true,
-              createDesktopShortcut: true,
-              createStartMenuShortcut: true
-          }
+        appId: "com.mpsto.icxor",
+        productName: "IllustComplexor",
+        copyright: "Copyright © 2022 MPSTO",
+        directories: {
+          "buildResources": "build",
+          "output": "dist"
+        },
+        win: {
+          target: [
+            "msi",
+            "nsis"
+          ],
+          icon: "build/icons/icon.ico"
+        },
+        nsis: {
+          oneClick: false,
+          language: "2052",
+          allowToChangeInstallationDirectory: true,
+          createDesktopShortcut: true,
+          createStartMenuShortcut: true
+        }
       }
-  }
+    }
   }
 })

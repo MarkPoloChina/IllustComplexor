@@ -30,3 +30,16 @@ $color-greengray-4: #b2c5cb;
   flex-direction: row;
   justify-content: center;
 }
+@mixin Flex-R-CT {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+@mixin Flex-R-CTR {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}

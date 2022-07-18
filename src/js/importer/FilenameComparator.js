@@ -85,6 +85,14 @@ export class FilenameComparator {
     } else return null;
   };
 
+  /**
+   * @summary 通过扩展名判断文件是否可能是图片
+   * @param {String} [filename] 文件名
+   */
+  static isLikeImage = (filename) => {
+    return this.getExtFilename(filename).toLowerCase() == 'jpg' || this.getExtFilename(filename).toLowerCase() == 'png' || this.getExtFilename(filename).toLowerCase() == 'jpeg' || this.getExtFilename(filename).toLowerCase() == 'gif'
+  }
+
   static test = () => {
     console.log(this.getPxderPixivTitle("(39339193) .jpg"));
   };

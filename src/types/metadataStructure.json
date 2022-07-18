@@ -4,11 +4,13 @@
   "sid": "",
   "link": "",
   "basePath": "",
+  "filename": "",
   "baseType": "null||std||dep",
   "copy": [
     {
       "copyType": "picolt||lnr||author",
       "copyPath": "",
+      "filename": "",
       "copyLevel": "picolt-1||picolt-2",
       "copyNo": "1||2||2022s1||202105",
       "waifu2x": "null||ncnn||real",
