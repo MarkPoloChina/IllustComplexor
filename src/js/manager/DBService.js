@@ -73,6 +73,9 @@ export class MetaDB {
 
   static getMetaCopyFilter = (key, value) => {
     return dbMeta.get('meta').filter((_value) => { return _value.copy ? _value.copy.find((__value) => { return __value[key] == value }) : false }).value()
+  }
 
+  static updateMeta = (condition, key, value) => {
+    dbMeta.get('meta').find(condition).set(key, value).write()
   }
 }

@@ -9,7 +9,6 @@ $color-greengray-2: #2c3c49;
 $color-greengray-3: #607b84;
 $color-greengray-4: #b2c5cb;
 
-
 @mixin Flex-C-SB {
   display: flex;
   flex-direction: column;
@@ -41,5 +40,12 @@ $color-greengray-4: #b2c5cb;
   display: flex;
   flex-direction: row;
   justify-content: flex-end;
+  align-items: center;
+}
+
+@mixin Flex-CT {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
 }

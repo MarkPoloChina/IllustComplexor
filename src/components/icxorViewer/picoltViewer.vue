@@ -9,7 +9,7 @@
       <div class="viewer-main">
         <el-scrollbar style="border-radius: 5px">
           <div
-            v-for="(url, index) in item.list"
+            v-for="(url, index) in item.list.slice(0, 9)"
             :key="index"
             class="viewer-img-container"
           >
@@ -21,7 +21,12 @@
               lazy
             />
             <div class="viewer-img-info">
-              <el-button type="info" :icon="Document" circle style="margin-right: 10px;"/>
+              <el-button
+                type="info"
+                :icon="Document"
+                circle
+                style="margin-right: 10px"
+              />
             </div>
           </div>
         </el-scrollbar>
