@@ -1,8 +1,8 @@
 <template>
-  <el-tabs tab-position="left" class="viewer-imgs" v-if="picolt_1.length != 0">
+  <el-tabs tab-position="left" class="viewer-imgs" v-if="lnr.length != 0">
     <el-tab-pane
-      :label="`Picolt-1-${item.name}`"
-      v-for="(item, index) in picolt_1"
+      :label="item.obj"
+      v-for="(item, index) in lnr"
       :key="index"
       lazy
     >
@@ -53,10 +53,10 @@ import { Document } from "@element-plus/icons-vue";
 import { FilesEnum } from "@/js/viewer/FilesEnum";
 import { onMounted, reactive } from "vue";
 
-const picolt_1 = reactive([]);
+const lnr = reactive([]);
 onMounted(() => {
-  FilesEnum.getPicoltEnum("picolt-1").forEach((item) => {
-    picolt_1.push({ ...item, listShow: item.list.slice(0, 200) });
+  FilesEnum.getLnrEnum().forEach((item) => {
+    lnr.push({ ...item, listShow: item.list.slice(0, 200) });
   });
 });
 </script>
@@ -91,6 +91,7 @@ onMounted(() => {
       height: 50px;
       @include Flex-R-CT;
       color: $color-greengray-2;
+      margin-left: 10px;
     }
     .viewer-img-page {
       width: 100%;

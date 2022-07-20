@@ -8,7 +8,9 @@
       <el-tab-pane label="PICOLT聚合" name="picolt" lazy>
         <picolt-viewer></picolt-viewer>
       </el-tab-pane>
-      <el-tab-pane label="LNR聚合" name="lnr" lazy> </el-tab-pane>
+      <el-tab-pane label="LNR聚合" name="lnr" lazy>
+        <lnr-viewer></lnr-viewer>
+      </el-tab-pane>
       <el-tab-pane label="作者专题聚合" name="author" lazy>Role</el-tab-pane>
     </el-tabs>
   </div>
@@ -17,6 +19,7 @@
 import { ref } from "vue";
 import TimelineViewer from "@/components/icxorViewer/timelineViewer.vue";
 import PicoltViewer from "@/components/icxorViewer/picoltViewer.vue";
+import LnrViewer from "@/components/icxorViewer/lnrViewer.vue";
 
 const currentTab = ref("timeline");
 </script>

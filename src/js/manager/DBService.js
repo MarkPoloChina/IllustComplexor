@@ -78,4 +78,10 @@ export class MetaDB {
   static updateMeta = (condition, key, value) => {
     dbMeta.get('meta').find(condition).set(key, value).write()
   }
+
+  static updateMetaByPush = (condition, key, value) => {
+    if (!dbMeta.get('meta').find(condition).get(key).value())
+      dbMeta.get('meta').find(condition).set(key, []).write()
+    dbMeta.get('meta').find(condition).get(key).push(value).write()
+  }
 }

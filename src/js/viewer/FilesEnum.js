@@ -37,4 +37,17 @@ export class FilesEnum {
     })
     return list
   }
+
+  static getLnrEnum() {
+    let list = []
+    MetaDB.getMeta((item) => { return item.object && item.object.length != 0 }).forEach(item => {
+      item.object.forEach(obj => {
+        let index = list.findIndex((_item) => { return _item.obj == obj })
+        if (index == -1) {
+          list.push({ obj: obj, list: [path.join(item.basePath, item.filename)] })
+        } else list[index].list.push(path.join(item.basePath, item.filename))
+      })
+    })
+    return list
+  }
 }

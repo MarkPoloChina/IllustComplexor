@@ -148,13 +148,59 @@ export class UpdateMeta {
             ignoredList.push({ reason: 'notfound', filename: item, status: 'ignore' })
           else {
             successCnt++
-            MetaDB.updateMeta({ sid: pid, source: 'pixiv', page: page }, metaKey, metaValue)
+            if (metaKey == 'object')
+              MetaDB.updateMetaByPush({ sid: pid, source: 'pixiv', page: page }, metaKey, metaValue)
+            else
+              MetaDB.updateMeta({ sid: pid, source: 'pixiv', page: page }, metaKey, metaValue)
           }
           index++
           progress.value = Math.round(index / files.length * 1000) / 10
           await sleep()
         }
-        resolve({ status: 200, message: `完成副本导入，共${successCnt}个文件被录入，共${filesCnt - successCnt}个文件被忽略`, data: ignoredList })
+        resolve({ status: 200, message: `完成元数据更新，共${successCnt}个文件被更新，共${filesCnt - successCnt}个文件被忽略`, data: ignoredList })
+      })
+    })
+  }
+
+  /**
+  * @summary 从指定目录筛选可识别的文件名并匹配相应的元数据对象，更新其指定自字段。
+  * @param {String} [path] 文件夹路径
+  * @param {String} [metaKey] 字段
+  * @param {String} [metaValue] 字段值
+  * @param {Object} [progress] 进度对象
+  */
+  static updateMetaFromDirectoryWithFilename = (path, metaKey, progress) => {
+    return new Promise((resolve) => {
+      let successCnt = 0
+      let filesCnt = 0
+      let ignoredList = []
+      fs.readdir(path, async (err, files) => {
+        filesCnt = files.length
+        let index = 0
+        for (let item of files) {
+          let pid = FilenameComparator.getMatchedPixivId(item)
+          let page = FilenameComparator.getMatchedPixivPage(item)
+          let bookCnt = FilenameComparator.getPixivWebWithBookmarkBookCnt(item)
+          if (!pid || !page || !FilenameComparator.isLikeImage(item))
+            ignoredList.push({ reason: 'unknownName', filename: item, status: 'ignore' })
+          else if (!MetaDB.existMeta({ sid: pid, source: 'pixiv', page: page }))
+            ignoredList.push({ reason: 'notfound', filename: item, status: 'ignore' })
+          else if (metaKey == 'bookCnt') {
+            if (!bookCnt)
+              ignoredList.push({ reason: 'unknownName', filename: item, status: 'ignore' })
+            else {
+              successCnt++
+              MetaDB.updateMeta({ sid: pid, source: 'pixiv', page: page }, metaKey, bookCnt)
+            }
+          }
+          else {
+            ignoredList.push({ reason: 'notFoundMetaKey', filename: item, status: 'ignore' })
+          }
+          index++
+          progress.value = Math.round(index / files.length * 1000) / 10
+          await sleep()
+        }
+        resolve({ status: 200, message: `完成元数据更新，共${successCnt}个文件被更新，共${filesCnt - successCnt}个文件被忽略`, data: ignoredList })
       })
     })
   }

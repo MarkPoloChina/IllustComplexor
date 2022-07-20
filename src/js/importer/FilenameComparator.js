@@ -49,6 +49,10 @@ export class FilenameComparator {
       return /^\((\d+)\)/.exec(this.getBaseFilename(filename))[1];
     else if (this.isMatchPixivWeb(filename))
       return /^(\d+)_p\d+$/.exec(this.getBaseFilename(filename))[1];
+    else if (this.isMatchPixivWebWithBookmark(filename))
+      return /^\d+ - (\d+)_p\d+$/.exec(this.getBaseFilename(filename))[1];
+    else if (this.isMatchPixivWebWithBookmarkRank(filename))
+      return /^\d+ - \d+ - (\d+)_p\d+$/.exec(this.getBaseFilename(filename))[1];
     else return null;
   };
 
@@ -63,6 +67,10 @@ export class FilenameComparator {
       else return "0";
     } else if (this.isMatchPixivWeb(filename))
       return /^\d+_p(\d+)$/.exec(this.getBaseFilename(filename))[1];
+    else if (this.isMatchPixivWebWithBookmark(filename))
+      return /^\d+ - \d+_p(\d+)$/.exec(this.getBaseFilename(filename))[1];
+    else if (this.isMatchPixivWebWithBookmarkRank(filename))
+      return /^\d+ - \d+ - \d+_p(\d+)$/.exec(this.getBaseFilename(filename))[1];
     else return null;
   };
 
@@ -96,4 +104,26 @@ export class FilenameComparator {
   static test = () => {
     console.log(this.getPxderPixivTitle("(39339193) .jpg"));
   };
+
+  /**
+   * @summary 检查是否与带bookmark数量的PixivWeb文件名格式匹配
+   * @param {String} [filename] 文件名
+   */
+  static isMatchPixivWebWithBookmark = (filename) => {
+    if (filename.lastIndexOf(".") == -1) return null;
+    return /^\d+ - \d+_p\d+$/.test(this.getBaseFilename(filename))
+  }
+
+  static isMatchPixivWebWithBookmarkRank = (filename) => {
+    if (filename.lastIndexOf(".") == -1) return null;
+    return /^\d+ - \d+ - \d+_p\d+$/.test(this.getBaseFilename(filename));
+  };
+
+  static getPixivWebWithBookmarkBookCnt = (filename) => {
+    if (this.isMatchPixivWebWithBookmark(filename))
+      return /^(\d+) - \d+_p\d+$/.exec(this.getBaseFilename(filename))[1]
+    else if (this.isMatchPixivWebWithBookmarkRank(filename))
+      return /^\d+ - (\d+) - \d+_p\d+$/.exec(this.getBaseFilename(filename))[1]
+    return null
+  }
 }

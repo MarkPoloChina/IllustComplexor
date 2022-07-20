@@ -45,6 +45,10 @@
                     value: 'timestamp',
                     label: '时间戳',
                   },
+                  {
+                    value: 'bookCnt',
+                    label: '收藏数量（自动导入）',
+                  },
                 ]"
                 :key="item.value"
                 :label="item.label"
@@ -52,7 +56,10 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="元数据值">
+          <el-form-item
+            label="元数据值"
+            v-if="importOption.metaKey !== 'bookCnt'"
+          >
             <el-date-picker
               v-if="importOption.metaKey == 'timestamp'"
               v-model="importOption.metaValue"
@@ -60,7 +67,10 @@
               type="date"
               placeholder="Pick a day"
             />
-            <el-input v-model="importOption.metaValue" v-else />
+            <el-input
+              v-model="importOption.metaValue"
+              v-else-if="importOption.metaKey !== 'bookCnt'"
+            />
           </el-form-item>
         </el-form>
       </div>
@@ -155,21 +165,36 @@ const startUpdateMeta = () => {
     ElMessage.error("路径非法");
     return;
   }
-  if (importOption.metaKey == "" || importOption.metaValue == "") {
+  if (
+    importOption.metaKey == "" ||
+    (importOption.metaKey != "bookCnt" && importOption.metaValue == "")
+  ) {
     ElMessage.error("信息不完整");
     return;
   }
-  UpdateMeta.updateMetaFromDirectoryWithGiven(
-    importOption.paths[0],
-    importOption.metaKey,
-    importOption.metaValue,
-    progress
-  ).then((resp) => {
-    if (resp.status === 200) {
-      log.message = `${resp.message}${resp.data.length == 0 ? "" : ":"}`;
-      log.list = resp.data;
-    }
-  });
+  if (importOption.metaKey == "bookCnt") {
+    UpdateMeta.updateMetaFromDirectoryWithFilename(
+      importOption.paths[0],
+      importOption.metaKey,
+      progress
+    ).then((resp) => {
+      if (resp.status === 200) {
+        log.message = `${resp.message}${resp.data.length == 0 ? "" : ":"}`;
+        log.list = resp.data;
+      }
+    });
+  } else
+    UpdateMeta.updateMetaFromDirectoryWithGiven(
+      importOption.paths[0],
+      importOption.metaKey,
+      importOption.metaValue,
+      progress
+    ).then((resp) => {
+      if (resp.status === 200) {
+        log.message = `${resp.message}${resp.data.length == 0 ? "" : ":"}`;
+        log.list = resp.data;
+      }
+    });
 };
 </script>
 <style lang="scss" scoped>

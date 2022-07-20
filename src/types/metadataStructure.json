@@ -26,5 +26,6 @@
   "star": "1||2||3||4||5",
   "page": 0,
   "title": "",
+  "bookCnt": 0,
   "timestamp": "yyyy.MM.dd"
 }
