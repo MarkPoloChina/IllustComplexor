@@ -9,14 +9,14 @@
       <div class="viewer-main">
         <el-scrollbar style="border-radius: 5px">
           <div
-            v-for="(url, index) in item.listShow"
+            v-for="(obj, index) in item.listShow"
             :key="index"
             class="viewer-img-container"
           >
             <el-image
               class="viewer-img"
-              :src="url"
-              :preview-src-list="[url]"
+              :src="obj.url"
+              :preview-src-list="[obj.url]"
               fit="cover"
               lazy
             />
@@ -36,19 +36,43 @@
             layout="prev, pager, next"
             :total="item.list.length"
             :page-size="200"
+            :current-page="item.page"
             small
             @current-change="
               item.listShow = item.list.slice(($event - 1) * 200, $event * 200)
             "
           />
         </div>
-        <div class="viewer-info">共{{ item.list.length }}张插画</div>
+        <div class="viewer-bar">
+          <div class="viewer-info">共{{ item.list.length }}张插画</div>
+          <div class="viewer-sorter">
+            <el-select
+              v-model="item.sortType"
+              placeholder="排序"
+              @change="handleSortChange(item, $event)"
+            >
+              <template #prefix>
+                <el-icon><Sort /></el-icon>
+              </template>
+              <el-option
+                v-for="item in [
+                  { value: 'default', label: '默认' },
+                  { value: 'bookCnt', label: '收藏数量' },
+                ]"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </div>
+        </div>
       </div>
     </el-tab-pane>
   </el-tabs>
   <el-empty description="无插图" v-else />
 </template>
 <script setup>
+import { Sort } from "@element-plus/icons-vue";
 import { Document } from "@element-plus/icons-vue";
 import { FilesEnum } from "@/js/viewer/FilesEnum";
 import { onMounted, reactive } from "vue";
@@ -59,6 +83,15 @@ onMounted(() => {
     lnr.push({ ...item, listShow: item.list.slice(0, 200) });
   });
 });
+const handleSortChange = (item, value) => {
+  if (value == "bookCnt") {
+    item.list.sort((a, b) => {
+      return b.bookCnt - a.bookCnt;
+    });
+    item.listShow = item.list.slice(0, 200);
+    item.page = 1;
+  }
+};
 </script>
 <style lang="scss" scoped>
 .viewer-imgs {
@@ -87,17 +120,25 @@ onMounted(() => {
         border-radius: 5px;
       }
     }
-    .viewer-info {
-      height: 50px;
-      @include Flex-R-CT;
-      color: $color-greengray-2;
-      margin-left: 10px;
+    .viewer-bar {
+      height: 60px;
+      width: 100%;
+      @include Flex-R-SB;
+      .viewer-info {
+        color: $color-greengray-2;
+        margin-left: 10px;
+      }
+      .viewer-sorter {
+        margin-right: 10px;
+      }
     }
     .viewer-img-page {
       width: 100%;
       @include Flex-CT;
       margin: 10px 0 0 0;
-      :deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
+      :deep(.el-pagination.is-background
+          .el-pager
+          li:not(.is-disabled).is-active) {
         background-color: $color-stdblue-1;
       }
     }
