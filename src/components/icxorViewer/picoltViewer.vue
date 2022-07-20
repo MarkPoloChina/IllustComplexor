@@ -96,6 +96,9 @@ onMounted(() => {
       width: 100%;
       @include Flex-CT;
       margin: 10px 0 0 0;
+      :deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
+        background-color: $color-stdblue-1;
+      }
     }
   }
 }
