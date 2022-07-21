@@ -9,9 +9,12 @@
     <div class="import-area">
       <div class="title-block">导入选项</div>
       <div class="form-block">
-        <el-form :model="importOption" label-width="80px" style="width: 100%">
+        <el-form :model="importOption" label-width="100px" style="width: 100%">
           <el-form-item label="导入类型" @change="importOption.paths = ['']">
-            <el-radio-group v-model="importOption.importType">
+            <el-radio-group
+              v-model="importOption.importType"
+              @change="importOption.autoMeta.timestamp = $event == 'directory'"
+            >
               <el-radio label="directory">文件夹</el-radio>
               <el-radio label="files">文件</el-radio>
             </el-radio-group>
@@ -45,6 +48,28 @@
                 :value="item.value"
               />
             </el-select>
+          </el-form-item>
+          <el-form-item label="自动元数据">
+            <el-checkbox
+              v-model="importOption.autoMeta.pid"
+              label="PID"
+              disabled
+            />
+            <el-checkbox
+              v-model="importOption.autoMeta.page"
+              label="页号"
+              disabled
+            />
+            <el-checkbox
+              v-model="importOption.autoMeta.title"
+              label="标题"
+              disabled
+            />
+            <el-checkbox
+              v-model="importOption.autoMeta.timestamp"
+              label="时间戳(今天)"
+              disabled
+            />
           </el-form-item>
         </el-form>
       </div>
@@ -105,11 +130,23 @@ const initTab = () => {
   importOption.type = "std";
   importOption.importType = "directory";
   importOption.paths = [""];
+  importOption.autoMeta = {
+    pid: true,
+    page: true,
+    timestamp: true,
+    title: true,
+  };
 };
 const importOption = reactive({
   paths: [""],
   importType: "directory",
   type: "std",
+  autoMeta: {
+    pid: true,
+    page: true,
+    timestamp: true,
+    title: true,
+  },
 });
 const getDirectory = async () => {
   let _path = "";

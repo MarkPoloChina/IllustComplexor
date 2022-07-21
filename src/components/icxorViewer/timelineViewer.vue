@@ -55,9 +55,14 @@ import { onMounted, reactive } from "vue";
 
 const timeline = reactive([]);
 onMounted(() => {
-  FilesEnum.getTimelineEnum().forEach((item) => {
-    timeline.push({ ...item, listShow: item.list.slice(0, 200) });
-  });
+  let list = FilesEnum.getTimelineEnum();
+  list
+    .sort((a, b) => {
+      return b.time - a.time;
+    })
+    .forEach((item) => {
+      timeline.push({ ...item, listShow: item.list.slice(0, 200) });
+    });
 });
 </script>
 <style lang="scss" scoped>
@@ -97,7 +102,9 @@ onMounted(() => {
       width: 100%;
       @include Flex-CT;
       margin: 10px 0 0 0;
-      :deep(.el-pagination.is-background .el-pager li:not(.is-disabled).is-active) {
+      :deep(.el-pagination.is-background
+          .el-pager
+          li:not(.is-disabled).is-active) {
         background-color: $color-stdblue-1;
       }
     }
