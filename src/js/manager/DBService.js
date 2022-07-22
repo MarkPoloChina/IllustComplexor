@@ -6,14 +6,23 @@ import { app, remote } from 'electron' // 引入remote模块
 const APP = process.type === 'renderer' ? remote.app : app // 根据process.type来分辨在哪种模式使用哪种模块
 const STORE_PATH = APP.getPath('userData') // 获取electron应用的用户目录
 const dbConfig = Lowdb(new FileSync(path.join(STORE_PATH, '/config.json')))
-
 const dbMeta = Lowdb(new FileSync(path.join(STORE_PATH, '/meta.json')))
+
+// const tempReader = { randomId: "", obj: null }
 export class ConfigDB {
   static initDB = () => {
     if (!dbConfig.has('initStatus').value()) {
       dbConfig.defaults({ initStatus: 'true' }).write();
     }
     dbConfig.set('lastVisit', new Date().toISOString()).write()
+  }
+
+  static getByKey = (key) => {
+    return dbConfig.get(key).value()
+  }
+
+  static setByKey = (key, value) => {
+    dbConfig.set(key, value).write()
   }
 }
 

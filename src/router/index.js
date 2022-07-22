@@ -21,6 +21,11 @@ const routes = [
         path: 'view',
         name: 'viewer',
         component: () => import('../views/basic/IcxorViewer.vue')
+      },
+      {
+        path: 'settings',
+        name: 'settings',
+        component: () => import('../views/setting/IcxorSettings.vue')
       }
     ]
   }

@@ -53,3 +53,9 @@ $color-greengray-4: #b2c5cb;
   justify-content: center;
   align-items: center;
 }
+@mixin Flex-RCT {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}

@@ -138,6 +138,7 @@ export class UpdateMeta {
       let successCnt = 0
       let filesCnt = 0
       let ignoredList = []
+      let list = MetaDB.getAllMeta()
       fs.readdir(path, async (err, files) => {
         filesCnt = files.length
         let index = 0
@@ -146,7 +147,7 @@ export class UpdateMeta {
           let page = FilenameComparator.getMatchedPixivPage(item)
           if (!pid || !page || !FilenameComparator.isLikeImage(item))
             ignoredList.push({ reason: 'unknownName', filename: item, status: 'ignore' })
-          else if (!MetaDB.existMeta({ sid: pid, source: 'pixiv', page: page }))
+          else if (list.findIndex((item) => { return item.sid == pid && item.source == 'pixiv' && item.page == page }) == -1)
             ignoredList.push({ reason: 'notfound', filename: item, status: 'ignore' })
           else {
             successCnt++

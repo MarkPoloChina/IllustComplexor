@@ -16,7 +16,7 @@
         </el-menu-item>
       </el-menu>
       <el-menu default-active="" class="index-menu" collapse router>
-        <el-menu-item index="/setting">
+        <el-menu-item index="/settings">
           <el-icon><Setting /></el-icon>
           <template #title>设置</template>
         </el-menu-item>
@@ -34,12 +34,42 @@ import {
   Upload,
   Setting,
 } from "@element-plus/icons-vue";
+import { useStore } from "vuex";
 import { ConfigDB, MetaDB } from "@/js/manager/DBService";
 import { onMounted } from "vue";
+import { remote } from "electron";
 onMounted(() => {
   ConfigDB.initDB();
   MetaDB.initMeta();
+  useStore().commit("initStore");
+  initContext();
 });
+const initContext = () => {
+  const createContextMenu = () => {
+    return remote.Menu.buildFromTemplate([
+      { label: "撤销", role: "undo" },
+      { label: "重做", role: "redo" },
+      { type: "separator" },
+      { label: "剪切", role: "cut" },
+      { label: "复制", role: "copy" },
+      { label: "粘贴", role: "paste" },
+      { label: "删除", role: "delete" },
+      { type: "separator" },
+      { label: "全选", role: "selectAll" },
+    ]);
+  };
+  window.addEventListener(
+    "contextmenu",
+    (event) => {
+      event.preventDefault();
+      const contextMenu = createContextMenu();
+      contextMenu.popup({
+        window: remote.getCurrentWindow(),
+      });
+    },
+    false
+  );
+};
 </script>
 <style lang="scss" scoped>
 .index-container {
