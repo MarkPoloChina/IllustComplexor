@@ -4,6 +4,7 @@
       <el-image :src="url" class="home-img"></el-image>
       <div class="home-title">Illust Complexor</div>
       <div class="home-title-2">Powered by MPSTO</div>
+      <div class="version">Ver. Beta {{packageJson.version}}</div>
       <div class="about-info">
         <div class="title">Staff</div>
         <div class="info">
@@ -120,6 +121,7 @@
   </el-scrollbar>
 </template>
 <script setup>
+import packageJson from '../../../package.json'
 import { shell } from "electron";
 import url from "@/assets/logo.png";
 const linkClick = (url) => {
@@ -139,6 +141,9 @@ const linkClick = (url) => {
   }
   .home-title-2 {
     font-size: 25px;
+  }
+  .version {
+    font-size: 20px;
   }
   .about-info {
     text-align: center;
