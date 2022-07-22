@@ -44,8 +44,8 @@ export class FilesEnum {
       item.object.forEach(obj => {
         let index = list.findIndex((_item) => { return _item.obj == obj })
         if (index == -1) {
-          list.push({ obj: obj, list: [{ url: path.join(item.basePath, item.filename), bookCnt: item.bookCnt }] })
-        } else list[index].list.push({ url: path.join(item.basePath, item.filename), bookCnt: item.bookCnt })
+          list.push({ obj: obj, list: [{ url: path.join(item.basePath, item.filename), bookCnt: item.bookCnt, pid: item.sid }] })
+        } else list[index].list.push({ url: path.join(item.basePath, item.filename), bookCnt: item.bookCnt, pid: item.sid })
       })
     })
     return list

@@ -56,8 +56,10 @@
               </template>
               <el-option
                 v-for="item in [
-                  { value: 'default', label: '默认' },
-                  { value: 'bookCnt', label: '收藏数量' },
+                  { value: 'default', label: '默认-升序' },
+                  { value: 'defaultDown', label: '默认-降序' },
+                  { value: 'bookCnt', label: '收藏数量-升序' },
+                  { value: 'bookCntDown', label: '收藏数量-降序' },
                 ]"
                 :key="item.value"
                 :label="item.label"
@@ -80,13 +82,25 @@ import { onMounted, reactive } from "vue";
 const lnr = reactive([]);
 onMounted(() => {
   FilesEnum.getLnrEnum().forEach((item) => {
-    lnr.push({ ...item, listShow: item.list.slice(0, 200) });
+    lnr.push({
+      ...item,
+      listShow: item.list.slice(0, 200),
+      sortType: "default",
+    });
   });
 });
 const handleSortChange = (item, value) => {
-  if (value == "bookCnt") {
+  if (value.startsWith("bookCnt")) {
     item.list.sort((a, b) => {
-      return b.bookCnt - a.bookCnt;
+      return value.indexOf("Down") == -1
+        ? a.bookCnt - b.bookCnt
+        : b.bookCnt - a.bookCnt;
+    });
+    item.listShow = item.list.slice(0, 200);
+    item.page = 1;
+  } else if (value.startsWith("default")) {
+    item.list.sort((a, b) => {
+      return value.indexOf("Down") == -1 ? a.pid - b.pid : b.pid - a.pid;
     });
     item.listShow = item.list.slice(0, 200);
     item.page = 1;
