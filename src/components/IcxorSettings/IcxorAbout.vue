@@ -1,7 +1,7 @@
 <template>
   <el-scrollbar height="calc(100% - 80px)">
     <div class="about">
-      <el-image :src="url" class="home-img"></el-image>
+      <el-image :src="url" class="home-img" style="width:200px"></el-image>
       <div class="home-title">Illust Complexor</div>
       <div class="home-title-2">Powered by MPSTO</div>
       <div class="version">Ver. Beta {{packageJson.version}}</div>

@@ -22,10 +22,11 @@
             />
             <div class="viewer-img-info">
               <el-button
-                type="info"
-                :icon="Document"
+                text
+                :icon="MoreFilled"
                 circle
                 style="margin-right: 10px"
+                @click="getInfo(url)"
               />
             </div>
           </div>
@@ -47,13 +48,17 @@
     </el-tab-pane>
   </el-tabs>
   <el-empty description="无插图" v-else />
+  <info-viewer v-model="dialogVisible" :info="currentInfo.value"></info-viewer>
 </template>
 <script setup>
-import { Document } from "@element-plus/icons-vue";
+import InfoViewer from "./InfoViewer.vue";
+import { MoreFilled } from "@element-plus/icons-vue";
 import { FilesEnum } from "@/js/viewer/FilesEnum";
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 
 const timeline = reactive([]);
+const dialogVisible = ref(false);
+const currentInfo = reactive({ value: null });
 onMounted(() => {
   let list = FilesEnum.getTimelineEnum();
   list
@@ -64,6 +69,10 @@ onMounted(() => {
       timeline.push({ ...item, listShow: item.list.slice(0, 200) });
     });
 });
+const getInfo = (url) => {
+  currentInfo.value = FilesEnum.getMetaByUrl(url);
+  if (currentInfo.value) dialogVisible.value = true;
+};
 </script>
 <style lang="scss" scoped>
 .viewer-imgs {

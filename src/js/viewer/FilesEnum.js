@@ -50,4 +50,11 @@ export class FilesEnum {
     })
     return list
   }
+
+  static getMetaByUrl(url) {
+    let list = MetaDB.getMeta({ basePath: path.dirname(url), filename: path.basename(url) })
+    if (!list || list.length == 0)
+      return null
+    else return list[0]
+  }
 }
