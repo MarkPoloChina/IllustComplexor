@@ -2,13 +2,17 @@
   <el-dialog
     :model-value="modelValue"
     title="详细信息"
-    width="50%"
+    width="70%"
     :before-close="() => emit('update:modelValue', false)"
   >
-    <el-descriptions :column="3" border>
+    <el-descriptions :column="2" border>
       <template #extra>
         <!-- <el-button type="primary">Operation</el-button> -->
       </template>
+      <el-descriptions-item>
+        <template #label> 来源 </template>
+        {{ info.source }}
+      </el-descriptions-item>
       <el-descriptions-item>
         <template #label> PID </template>
         {{ info.sid }}
@@ -29,11 +33,12 @@
   </el-dialog>
 </template>
 <script setup>
-import { defineProps, defineEmits } from "vue";
+// eslint-disable-next-line no-undef
 defineProps({
   modelValue: Boolean,
   info: Object,
 });
+// eslint-disable-next-line no-undef
 const emit = defineEmits(["update:modelValue"]);
 </script>
 <style lang="scss" scoped></style>

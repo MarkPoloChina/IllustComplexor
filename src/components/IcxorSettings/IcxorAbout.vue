@@ -144,6 +144,9 @@ const linkClick = (url) => {
   }
   .version {
     font-size: 20px;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 2px 5px 2px 5px;
   }
   .about-info {
     text-align: center;

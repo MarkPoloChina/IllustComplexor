@@ -1,7 +1,12 @@
 {
   "name": "icxor",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "private": true,
+  "author": {
+    "name": "MarkPolo"
+  },
+  "description": "ICXOR is a manager for illusts.",
+  "license": "GPL v3.0",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

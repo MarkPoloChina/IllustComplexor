@@ -9,7 +9,7 @@
       <div class="viewer-main">
         <el-scrollbar style="border-radius: 5px">
           <div
-            v-for="(obj, index) in item.listShow"
+            v-for="(obj, index) in item.list"
             :key="index"
             class="viewer-img-container"
           >
@@ -22,27 +22,21 @@
             />
             <div class="viewer-img-info">
               <el-button
-                type="info"
-                :icon="Document"
+                text
+                bg
+                :icon="MoreFilled"
                 circle
-                style="margin-right: 10px"
+                @click="getInfo(obj.url)"
+              />
+            </div>
+            <div class="viewer-img-star">
+              <el-rate
+                v-model="item.star"
+                @change="handleStar(obj.url, $event)"
               />
             </div>
           </div>
         </el-scrollbar>
-        <div class="viewer-img-page">
-          <el-pagination
-            background
-            layout="prev, pager, next"
-            :total="item.list.length"
-            :page-size="200"
-            :current-page="item.page"
-            small
-            @current-change="
-              item.listShow = item.list.slice(($event - 1) * 200, $event * 200)
-            "
-          />
-        </div>
         <div class="viewer-bar">
           <div class="viewer-info">共{{ item.list.length }}张插画</div>
           <div class="viewer-sorter">
@@ -72,39 +66,45 @@
     </el-tab-pane>
   </el-tabs>
   <el-empty description="无插图" v-else />
+  <info-viewer v-model="dialogVisible" :info="currentInfo.value"></info-viewer>
 </template>
 <script setup>
+import InfoViewer from "./InfoViewer.vue";
 import { Sort } from "@element-plus/icons-vue";
-import { Document } from "@element-plus/icons-vue";
+import { MoreFilled } from "@element-plus/icons-vue";
 import { FilesEnum } from "@/js/viewer/FilesEnum";
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
+import { Updater } from "@/js/viewer/Updater";
 
 const lnr = reactive([]);
+const dialogVisible = ref(false);
+const currentInfo = reactive({ value: null });
 onMounted(() => {
   FilesEnum.getLnrEnum().forEach((item) => {
     lnr.push({
       ...item,
-      listShow: item.list.slice(0, 200),
       sortType: "default",
     });
   });
 });
 const handleSortChange = (item, value) => {
-  if (value.startsWith("bookCnt")) {
+  if (value.startsWith("bookCnt"))
     item.list.sort((a, b) => {
       return value.indexOf("Down") == -1
         ? a.bookCnt - b.bookCnt
         : b.bookCnt - a.bookCnt;
     });
-    item.listShow = item.list.slice(0, 200);
-    item.page = 1;
-  } else if (value.startsWith("default")) {
+  else if (value.startsWith("default"))
     item.list.sort((a, b) => {
       return value.indexOf("Down") == -1 ? a.pid - b.pid : b.pid - a.pid;
     });
-    item.listShow = item.list.slice(0, 200);
-    item.page = 1;
-  }
+};
+const getInfo = (url) => {
+  currentInfo.value = FilesEnum.getMetaByUrl(url);
+  if (currentInfo.value) dialogVisible.value = true;
+};
+const handleStar = (url, val) => {
+  Updater.saveStar(url, val);
 };
 </script>
 <style lang="scss" scoped>
@@ -123,15 +123,21 @@ const handleSortChange = (item, value) => {
         height: calc((100vw - 300px) / 4);
         width: calc((100vw - 300px) / 4);
       }
-      .viewer-img-info {
-        @include Flex-R-CTR;
+      .viewer-img-star {
+        @include Flex-RCT;
         position: absolute;
         bottom: 13px;
-        height: 20%;
+        height: 32px;
         width: calc(100% - 20px);
-        background-color: rgba(255, 255, 255, 0.7);
-        backdrop-filter: blur(10px);
+        background-color: rgba(255, 255, 255, 0.8);
+        // backdrop-filter: blur(10px);
         border-radius: 5px;
+      }
+      .viewer-img-info {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        // backdrop-filter: blur(10px);
       }
     }
     .viewer-bar {
@@ -144,16 +150,6 @@ const handleSortChange = (item, value) => {
       }
       .viewer-sorter {
         margin-right: 10px;
-      }
-    }
-    .viewer-img-page {
-      width: 100%;
-      @include Flex-CT;
-      margin: 10px 0 0 0;
-      :deep(.el-pagination.is-background
-          .el-pager
-          li:not(.is-disabled).is-active) {
-        background-color: $color-stdblue-1;
       }
     }
   }
