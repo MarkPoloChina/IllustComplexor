@@ -14,8 +14,7 @@
           <el-icon><Upload /></el-icon>
           <template #title>导入</template>
         </el-menu-item>
-      </el-menu>
-      <el-menu default-active="" class="index-menu" collapse router>
+        <div style="flex-grow: 1;"></div>
         <el-menu-item index="/settings">
           <el-icon><Setting /></el-icon>
           <template #title>设置</template>
@@ -78,10 +77,11 @@ const initContext = () => {
   width: 100%;
   height: 100%;
   .index-menu-container {
-    @include Flex-C-SB;
     height: 100%;
     background-color: $color-stdblue-1;
     .index-menu {
+      @include Flex-C-CT;
+      height: 100%;
       border-right: none;
       --el-menu-bg-color: transparent;
       --el-menu-active-color: white;

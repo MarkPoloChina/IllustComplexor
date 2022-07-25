@@ -3,7 +3,7 @@ module.exports = defineConfig({
   transpileDependencies: true,
   chainWebpack: config => {
     config.plugin('html').tap(args => {
-      args[0].title = 'IllustComplexor'
+      args[0].title = 'Illust Complexor'
       return args
     })
     config.module.rule('scss').oneOfs.store.forEach(item => {
@@ -21,7 +21,7 @@ module.exports = defineConfig({
       nodeIntegration: true,
       builderOptions: {
         appId: "com.mpsto.icxor",
-        productName: "IllustComplexor",
+        productName: "Illust Complexor",
         copyright: "Copyright © 2022 MPSTO",
         directories: {
           "buildResources": "build",
