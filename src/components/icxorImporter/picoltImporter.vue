@@ -2,7 +2,7 @@
   <div>
     <el-alert type="info" show-icon :closable="false">
       <template #title>
-        用于导入PICOLT。如果文件夹存在不在母本库中的图片, 则不会导入。
+        用于导入副本。如果文件夹存在不在母本库中的图片, 则不会导入。
       </template>
     </el-alert>
     <div class="import-area">
@@ -13,7 +13,26 @@
             <el-button @click="getDirectory">选择文件夹</el-button>
             <el-input :modelValue="importOption.paths[0]" disabled />
           </el-form-item>
-          <el-form-item label="PICOLT级">
+          <el-form-item label="副本分类">
+            <el-select v-model="importOption.type" placeholder="选择副本分类">
+              <el-option
+                v-for="item in [
+                  {
+                    value: 'picolt',
+                    label: 'PICOLT',
+                  },
+                  {
+                    value: 'others',
+                    label: '其他',
+                  },
+                ]"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="PICOLT级" v-if="importOption.type=='picolt'">
             <el-select
               v-model="importOption.copy.copyLevel"
               placeholder="选择类型"
@@ -36,7 +55,7 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="PICOLT卷">
+          <el-form-item label="PICOLT卷" v-if="importOption.type=='picolt'">
             <el-input-number
               v-if="importOption.copy.copyLevel == 'picolt-1'"
               v-model="importOption.copy.copyNo"
@@ -140,6 +159,7 @@ const initTab = () => {
     copyNo: 1,
     waifu2x: "",
   };
+  importOption.type = "";
 };
 const importOption = reactive({
   paths: [""],
@@ -150,6 +170,7 @@ const importOption = reactive({
     copyNo: 1,
     waifu2x: "",
   },
+  type: "",
 });
 const getDirectory = async () => {
   let _path = "";

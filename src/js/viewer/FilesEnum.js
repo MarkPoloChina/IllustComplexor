@@ -64,4 +64,15 @@ export class FilesEnum {
       return null
     else return list[0]
   }
+
+  static getAuthorEnum() {
+    let list = []
+    MetaDB.getMeta((item) => { return item.author && item.author != '' }).forEach(item => {
+      let index = list.findIndex((_item) => { return _item.author == item.author })
+      if (index == -1) {
+        list.push({ author: item.author, list: [{ url: path.join(item.basePath, item.filename), pid: item.sid }] })
+      } else list[index].list.push({ url: path.join(item.basePath, item.filename), pid: item.sid })
+    })
+    return list
+  }
 }

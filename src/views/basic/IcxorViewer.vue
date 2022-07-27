@@ -11,7 +11,9 @@
       <el-tab-pane label="LNR聚合" name="lnr" lazy>
         <lnr-viewer></lnr-viewer>
       </el-tab-pane>
-      <el-tab-pane label="作者专题聚合" name="author" lazy>Role</el-tab-pane>
+      <el-tab-pane label="作者专题聚合" name="author" lazy>
+        <author-viewer></author-viewer>
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -20,6 +22,7 @@ import { ref } from "vue";
 import TimelineViewer from "@/components/icxorViewer/timelineViewer.vue";
 import PicoltViewer from "@/components/icxorViewer/picoltViewer.vue";
 import LnrViewer from "@/components/icxorViewer/lnrViewer.vue";
+import AuthorViewer from "@/components/icxorViewer/authorViewer.vue";
 
 const currentTab = ref("timeline");
 </script>

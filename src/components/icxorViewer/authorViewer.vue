@@ -1,8 +1,8 @@
 <template>
-  <el-tabs tab-position="left" class="viewer-imgs" v-if="lnr.length != 0">
+  <el-tabs tab-position="left" class="viewer-imgs" v-if="author.length != 0">
     <el-tab-pane
-      :label="item.obj"
-      v-for="(item, index) in lnr"
+      :label="item.author"
+      v-for="(item, index) in author"
       :key="index"
       lazy
     >
@@ -39,7 +39,7 @@
         </el-scrollbar>
         <div class="viewer-bar">
           <div class="viewer-info">共{{ item.list.length }}张插画</div>
-          <div class="viewer-sorter">
+          <!-- <div class="viewer-sorter">
             <el-select
               v-model="item.sortType"
               placeholder="排序"
@@ -60,7 +60,7 @@
                 :value="item.value"
               />
             </el-select>
-          </div>
+          </div> -->
         </div>
       </div>
     </el-tab-pane>
@@ -70,35 +70,35 @@
 </template>
 <script setup>
 import InfoViewer from "./InfoViewer.vue";
-import { Sort } from "@element-plus/icons-vue";
+// import { Sort } from "@element-plus/icons-vue";
 import { MoreFilled } from "@element-plus/icons-vue";
 import { FilesEnum } from "@/js/viewer/FilesEnum";
 import { onMounted, reactive, ref } from "vue";
 import { Updater } from "@/js/viewer/Updater";
 
-const lnr = reactive([]);
+const author = reactive([]);
 const dialogVisible = ref(false);
 const currentInfo = reactive({ value: null });
 onMounted(() => {
-  FilesEnum.getLnrEnum().forEach((item) => {
-    lnr.push({
+  FilesEnum.getAuthorEnum().forEach((item) => {
+    author.push({
       ...item,
       sortType: "default",
     });
   });
 });
-const handleSortChange = (item, value) => {
-  if (value.startsWith("bookCnt"))
-    item.list.sort((a, b) => {
-      return value.indexOf("Down") == -1
-        ? a.bookCnt - b.bookCnt
-        : b.bookCnt - a.bookCnt;
-    });
-  else if (value.startsWith("default"))
-    item.list.sort((a, b) => {
-      return value.indexOf("Down") == -1 ? a.pid - b.pid : b.pid - a.pid;
-    });
-};
+// const handleSortChange = (item, value) => {
+//   if (value.startsWith("bookCnt"))
+//     item.list.sort((a, b) => {
+//       return value.indexOf("Down") == -1
+//         ? a.bookCnt - b.bookCnt
+//         : b.bookCnt - a.bookCnt;
+//     });
+//   else if (value.startsWith("default"))
+//     item.list.sort((a, b) => {
+//       return value.indexOf("Down") == -1 ? a.pid - b.pid : b.pid - a.pid;
+//     });
+// };
 const getInfo = (url) => {
   currentInfo.value = FilesEnum.getMetaByUrl(url);
   if (currentInfo.value) dialogVisible.value = true;
