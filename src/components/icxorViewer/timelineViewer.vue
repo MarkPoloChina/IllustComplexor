@@ -9,14 +9,14 @@
       <div class="viewer-main">
         <el-scrollbar style="border-radius: 5px">
           <div
-            v-for="(item, index) in item.list"
+            v-for="(obj, index) in item.list"
             :key="index"
             class="viewer-img-container"
           >
             <el-image
               class="viewer-img"
-              :src="item.url"
-              :preview-src-list="[item.url]"
+              :src="obj.url"
+              :preview-src-list="[obj.url]"
               fit="cover"
               lazy
             />
@@ -26,17 +26,53 @@
                 bg
                 :icon="MoreFilled"
                 circle
-                @click="getInfo(item.url)"
+                @click="getInfo(obj.url)"
               />
             </div>
             <div class="viewer-img-star">
               <el-rate
-                v-model="item.star"
-                @change="handleStar(item.url, $event)"
+                v-model="obj.star"
+                @change="handleStar(obj.url, $event)"
               />
             </div>
           </div>
         </el-scrollbar>
+        <div class="viewer-bat">
+          将所有
+          <el-select v-model="item.batFindAs" placeholder="原评级">
+            <el-option
+              v-for="item in [
+                { value: 'empty', label: '未指定' },
+                { value: '1', label: '1星' },
+                { value: '2', label: '2星' },
+                { value: '3', label: '3星' },
+                { value: '4', label: '4星' },
+                { value: '5', label: '5星' },
+                { value: 'all', label: '全部' },
+              ]"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          修改为
+          <el-select v-model="item.batTo" placeholder="修改后评级">
+            <el-option
+              v-for="item in [
+                { value: 'empty', label: '未指定' },
+                { value: '1', label: '1星' },
+                { value: '2', label: '2星' },
+                { value: '3', label: '3星' },
+                { value: '4', label: '4星' },
+                { value: '5', label: '5星' },
+              ]"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-button @click="handleBat(item)">执行</el-button>
+        </div>
         <div class="viewer-info">共{{ item.list.length }}张插画</div>
       </div>
     </el-tab-pane>
@@ -71,6 +107,19 @@ const getInfo = (url) => {
 const handleStar = (url, val) => {
   Updater.saveStar(url, val);
 };
+const handleBat = (item) => {
+  if (!item.batFindAs || !item.batTo) return;
+  item.list.forEach((obj) => {
+    if (
+      (!obj.star && item.batFindAs == "empty") ||
+      item.batFindAs == "all" ||
+      Number.parseInt(item.batFindAs) == obj.star
+    ) {
+      obj.star = item.batTo == "empty" ? 0 : Number.parseInt(item.batTo);
+      handleStar(obj.url,item.batTo == "empty" ? null : Number.parseInt(item.batTo))
+    }
+  });
+};
 </script>
 <style lang="scss" scoped>
 .viewer-imgs {
@@ -104,6 +153,13 @@ const handleStar = (url, val) => {
         right: 15px;
         // backdrop-filter: blur(10px);
       }
+    }
+    .viewer-bat {
+      height: 50px;
+      @include Flex-R-SB;
+      color: $color-greengray-2;
+      margin-left: 10px;
+      font-size: 15px;
     }
     .viewer-info {
       height: 50px;
