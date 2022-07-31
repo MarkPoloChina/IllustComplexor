@@ -40,6 +40,9 @@ module.exports = defineConfig({
           allowToChangeInstallationDirectory: true,
           createDesktopShortcut: true,
           createStartMenuShortcut: true
+        },
+        mac:{
+            icon: "build/icons/1024x1024.ico"
         }
       }
     }
