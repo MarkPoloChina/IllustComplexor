@@ -14,7 +14,11 @@
           <el-icon><Upload /></el-icon>
           <template #title>导入</template>
         </el-menu-item>
-        <div style="flex-grow: 1;"></div>
+        <el-menu-item index="/exporter">
+          <el-icon><Download /></el-icon>
+          <template #title>导出</template>
+        </el-menu-item>
+        <div style="flex-grow: 1"></div>
         <el-menu-item index="/settings">
           <el-icon><Setting /></el-icon>
           <template #title>设置</template>
@@ -31,6 +35,7 @@ import {
   House,
   PictureRounded,
   Upload,
+  Download,
   Setting,
 } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
