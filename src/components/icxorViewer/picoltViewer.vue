@@ -1,8 +1,10 @@
 <template>
-  <el-tabs tab-position="left" class="viewer-imgs" v-if="picolt_1.length != 0">
+  <el-tabs tab-position="left" class="viewer-imgs" v-if="picolt.length != 0">
     <el-tab-pane
-      :label="`Picolt-1-${item.name}`"
-      v-for="(item, index) in picolt_1"
+      :label="`${item.name == '1' || item.name == '2' ? '1' : '2'}-${
+        item.name
+      }`"
+      v-for="(item, index) in picolt"
       :key="index"
       lazy
     >
@@ -51,13 +53,24 @@ import InfoViewer from "./InfoViewer.vue";
 import { MoreFilled } from "@element-plus/icons-vue";
 import { Updater } from "@/js/viewer/Updater";
 
-const picolt_1 = reactive([]);
+const picolt = reactive([]);
 const dialogVisible = ref(false);
 const currentInfo = reactive({ value: null });
 onMounted(() => {
-  FilesEnum.getPicoltEnum("picolt-1").forEach((item) => {
-    picolt_1.push({ ...item });
-  });
+  FilesEnum.getPicoltEnum("picolt-1")
+    .sort((a, b) => {
+      return a.name - b.name;
+    })
+    .forEach((item) => {
+      picolt.push({ ...item });
+    });
+  FilesEnum.getPicoltEnum("picolt-2")
+    .sort((a, b) => {
+      return a.name.localeCompare(b.name);
+    })
+    .forEach((item) => {
+      picolt.push({ ...item });
+    });
 });
 const getInfo = (url) => {
   currentInfo.value = FilesEnum.getMetaByCopyUrl(url);
@@ -71,6 +84,10 @@ const handleStar = (url, val) => {
 .viewer-imgs {
   height: 100%;
 
+  :deep(.el-tabs__header.is-left) {
+    max-width: 100px;
+    text-overflow: ellipsis;
+  }
   .viewer-main {
     height: 100%;
     @include Flex-C-CT;
