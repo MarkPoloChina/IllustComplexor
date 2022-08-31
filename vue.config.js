@@ -42,7 +42,7 @@ module.exports = defineConfig({
           createStartMenuShortcut: true
         },
         mac:{
-            icon: "build/icons/1024x1024.ico"
+            icon: "build/icons/icon.icns"
         }
       }
     }

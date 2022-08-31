@@ -1,10 +1,10 @@
 <template>
   <el-scrollbar height="calc(100% - 80px)">
     <div class="about">
-      <el-image :src="url" class="home-img" style="width:200px"></el-image>
+      <el-image :src="url" class="home-img" style="width: 200px"></el-image>
       <div class="home-title">Illust Complexor</div>
       <div class="home-title-2">Powered by MPSTO</div>
-      <div class="version">Ver. Beta {{packageJson.version}}</div>
+      <div class="version">Ver. Beta {{ packageJson.version }}</div>
       <div class="about-info">
         <div class="title">Staff</div>
         <div class="info">
@@ -65,16 +65,32 @@
               >IKFB</el-link
             >
           </div>
+          <div style="margin-top: 5px">
+            Speical Thanks to <span style="color: #cc696b">Seven</span>
+          </div>
         </div>
         <div class="title">LICENSE</div>
         <div class="info">
           <div>Illust Complexor is licensed under the GNU GPL v3.0.</div>
           <br />
           <div class="single-info">
-            <img
-              src="https://v3.cn.vuejs.org/logo.png"
-              style="height: 25px; margin-right: 5px"
-            />
+            <svg
+              viewBox="0 0 128 128"
+              width="25"
+              height="25"
+              style="margin-right: 5px"
+            >
+              <path
+                fill="#42b883"
+                d="M78.8,10L64,35.4L49.2,10H0l64,110l64-110C128,10,78.8,10,78.8,10z"
+                data-v-904800b4=""
+              ></path>
+              <path
+                fill="#35495e"
+                d="M78.8,10L64,35.4L49.2,10H25.6L64,76l38.4-66H78.8z"
+                data-v-904800b4=""
+              ></path>
+            </svg>
             <div>Vue.js - The MIT License</div>
           </div>
           <div class="single-info">
@@ -121,7 +137,7 @@
   </el-scrollbar>
 </template>
 <script setup>
-import packageJson from '../../../package.json'
+import packageJson from "../../../package.json";
 import { shell } from "electron";
 import url from "@/assets/logo.png";
 const linkClick = (url) => {
