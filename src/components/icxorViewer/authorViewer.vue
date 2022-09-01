@@ -15,7 +15,7 @@
           >
             <el-image
               class="viewer-img"
-              :src="obj.url"
+              :src="PathComparator.getMPSIC(obj.url)"
               :preview-src-list="[obj.url]"
               fit="cover"
               lazy
@@ -73,6 +73,7 @@ import InfoViewer from "./InfoViewer.vue";
 // import { Sort } from "@element-plus/icons-vue";
 import { MoreFilled } from "@element-plus/icons-vue";
 import { FilesEnum } from "@/js/viewer/FilesEnum";
+import { PathComparator } from "@/js/viewer/PathComparator";
 import { onMounted, reactive, ref } from "vue";
 import { Updater } from "@/js/viewer/Updater";
 

@@ -1,6 +1,7 @@
 import { FilenameComparator } from "./FilenameComparator";
 import { MetaDB } from "../manager/DBService";
 import { Util } from '@/js/manager/util'
+import { Logger } from '@/js/manager/logger'
 import fs from 'fs-extra'
 import path from 'path'
 
@@ -44,6 +45,11 @@ export class LoadBase {
           await sleep()
         }
         MetaDB.mergeMeta(list)//出于性能考虑，使用一次IO策略
+        let log = { record: [] }
+        list.forEach(ele => {
+          log.record.push(ele.basePath + '\\' + ele.filename)
+        })
+        Logger.newLog(log)
         resolve({ status: 200, message: `完成母本导入，共${list.length}个文件被录入，共${filesCnt - list.length}个文件被忽略` })
       })
     })
