@@ -1,7 +1,9 @@
 import { FilenameComparator } from "../importer/FilenameComparator";
 import path from "path";
-// const IHSCloud = 'https://mp-ihs-1303103554.cos.ap-nanjing.myqcloud.com/mpsic'
-const IHSLocal = 'E:\\Pictures\\MPIHS\\SIC'
+// const IHSPath = 'https://mp-ihs-1303103554.cos.ap-nanjing.myqcloud.com/mpsic'
+// const IHSPath = 'E:\\Pictures\\MPIHS\\SIC'
+const IHSPath = 'http://ihs.markpolo.cn/files/SIC'
+
 export class PathComparator {
   static getSTDFromURL(url) {
     let filename_ori = path.basename(url);
@@ -15,7 +17,7 @@ export class PathComparator {
   }
 
   static getMPSIC(url) {
-    return `${IHSLocal}\\${this.getSTDFromURL(
+    return `${IHSPath}\\${this.getSTDFromURL(
       url
     )}`;
   }
