@@ -15,7 +15,7 @@
           >
             <el-image
               class="viewer-img"
-              :src="obj.url"
+              :src="PathComparator.getMPSIC(obj.url)"
               :preview-src-list="[obj.url]"
               fit="cover"
               lazy
@@ -85,6 +85,7 @@ import InfoViewer from "./InfoViewer.vue";
 import { MoreFilled } from "@element-plus/icons-vue";
 import { FilesEnum } from "@/js/viewer/FilesEnum";
 import { Updater } from "@/js/viewer/Updater";
+import { PathComparator } from "@/js/viewer/PathComparator";
 import { onMounted, reactive, ref } from "vue";
 
 const timeline = reactive([]);
@@ -116,7 +117,10 @@ const handleBat = (item) => {
       Number.parseInt(item.batFindAs) == obj.star
     ) {
       obj.star = item.batTo == "empty" ? 0 : Number.parseInt(item.batTo);
-      handleStar(obj.url,item.batTo == "empty" ? null : Number.parseInt(item.batTo))
+      handleStar(
+        obj.url,
+        item.batTo == "empty" ? null : Number.parseInt(item.batTo)
+      );
     }
   });
 };

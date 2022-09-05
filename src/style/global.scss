@@ -1,4 +1,9 @@
 // global variables & common style
+@font-face {
+  font-family: "Cascadia Mono"; /* Project id  */
+  src: url("https://cloud.markpolo.cn/static/fonts/CascadiaMono.ttf") format("truetype");
+}
+
 
 $color-stdblue-1: #2e89c0;
 $color-stdblue-2: #5dabdc;
