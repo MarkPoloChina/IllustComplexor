@@ -15,12 +15,12 @@
           >
             <el-image
               class="viewer-img"
-              :src="PathComparator.getMPSIC(obj.url)"
+              :src="API.getThumUrl(obj.sid)"
               :preview-src-list="[obj.url]"
               fit="cover"
               lazy
             />
-            <div class="viewer-img-info">
+            <!-- <div class="viewer-img-info">
               <el-button
                 text
                 bg
@@ -34,7 +34,7 @@
                 v-model="obj.star"
                 @change="handleStar(obj.url, $event)"
               />
-            </div>
+            </div> -->
           </div>
         </el-scrollbar>
         <div class="viewer-bat">
@@ -82,28 +82,42 @@
 </template>
 <script setup>
 import InfoViewer from "./InfoViewer.vue";
-import { MoreFilled } from "@element-plus/icons-vue";
-import { FilesEnum } from "@/js/viewer/FilesEnum";
+// import { MoreFilled } from "@element-plus/icons-vue";
+// import { FilesEnum } from "@/js/viewer/FilesEnum";
 import { Updater } from "@/js/viewer/Updater";
-import { PathComparator } from "@/js/viewer/PathComparator";
 import { onMounted, reactive, ref } from "vue";
+import { API } from "@/api/api";
+import { UtilDate } from "@/js/util/date";
 
 const timeline = reactive([]);
 const dialogVisible = ref(false);
 const currentInfo = reactive({ value: null });
 onMounted(() => {
-  let list = FilesEnum.getTimelineEnum();
-  list
-    .sort((a, b) => {
-      return b.time - a.time;
-    })
-    .forEach((item) => {
-      timeline.push({ ...item });
+  API.getTimelineEnum().then(async (data) => {
+    data.forEach((ele) => {
+      timeline.push({
+        time: UtilDate.getDateCST(new Date(ele.date), ""),
+        list: [],
+      });
     });
+    if (timeline[0]) timeline[0].list = await getIllusts(timeline[0].time);
+  });
+  // list
+  //   .sort((a, b) => {
+  //     return b.time - a.time;
+  //   })
+  //   .forEach((item) => {
+  //     timeline.push({ ...item });
+  //   });
 });
-const getInfo = (url) => {
-  currentInfo.value = FilesEnum.getMetaByUrl(url);
-  if (currentInfo.value) dialogVisible.value = true;
+// const getInfo = (url) => {
+//   currentInfo.value = FilesEnum.getMetaByUrl(url);
+//   if (currentInfo.value) dialogVisible.value = true;
+// };
+const getIllusts = async (timeline) => {
+  let list = await API.getTimelineIllusts({ date: [timeline] });
+  console.log(list);
+  return list;
 };
 const handleStar = (url, val) => {
   Updater.saveStar(url, val);
