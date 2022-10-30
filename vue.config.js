@@ -41,8 +41,14 @@ module.exports = defineConfig({
           createDesktopShortcut: true,
           createStartMenuShortcut: true
         },
-        mac:{
-            icon: "build/icons/icon.icns"
+        mac: {
+          icon: "build/icons/icon.icns",
+          target: {
+            target: 'dmg',
+            arch: ['universal',
+              'x64',
+              'arm64']
+          }
         }
       }
     }
