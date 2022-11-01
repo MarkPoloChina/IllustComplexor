@@ -37,15 +37,6 @@ const currentTab = ref("base");
   }
   .tabs {
     padding: 0 10px 0 10px;
-    :deep(.el-tabs__item.is-active) {
-      color: $color-stdblue-1;
-    }
-    :deep(.el-tabs__item:hover) {
-      color: $color-stdblue-1;
-    }
-    :deep(.el-tabs__active-bar) {
-      background-color: $color-stdblue-1;
-    }
   }
 }
 </style>

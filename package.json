@@ -1,6 +1,6 @@
 {
   "name": "icxor",
-  "version": "0.2.7",
+  "version": "0.2.8",
   "private": true,
   "author": {
     "name": "MarkPolo"
@@ -20,6 +20,7 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@vueuse/core": "^9.4.0",
     "axios": "^0.27.2",
     "core-js": "^3.8.3",
     "electron-icon-builder": "^2.0.1",

@@ -31,6 +31,8 @@
   </div>
 </template>
 <script setup>
+import { useDark } from "@vueuse/core";
+import { ipcRenderer } from "electron";
 import {
   House,
   PictureRounded,
@@ -42,7 +44,14 @@ import { useStore } from "vuex";
 import { ConfigDB, MetaDB } from "@/js/manager/DBService";
 import { onMounted } from "vue";
 import { remote } from "electron";
+
+const isDark = useDark();
+
 onMounted(() => {
+  ipcRenderer.invoke("dark-mode:get").then((value) => (isDark.value = value));
+  ipcRenderer.on("dark-mode:updated", (event, message) => {
+    isDark.value = message;
+  });
   ConfigDB.initDB();
   MetaDB.initMeta();
   useStore().commit("initStore");
