@@ -42,7 +42,7 @@ module.exports = defineConfig({
         },
         win: {
           target: ["msi", "nsis"],
-          icon: "build/icons/icon.ico",
+          icon: "build/common/icons/icon.ico",
         },
         nsis: {
           oneClick: false,
@@ -53,7 +53,7 @@ module.exports = defineConfig({
         },
         mac: {
           darkModeSupport: true,
-          icon: "build/icons/icon.icns",
+          icon: "build/mac/icons/icon.icns",
           target: {
             target: "dmg",
             arch: ["universal", "x64", "arm64"],
