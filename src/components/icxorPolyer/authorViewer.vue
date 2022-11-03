@@ -69,7 +69,7 @@
   <info-viewer v-model="dialogVisible" :info="currentInfo.value"></info-viewer>
 </template>
 <script setup>
-import InfoViewer from "./InfoViewer.vue";
+import InfoViewer from "./reusable/InfoViewer.vue";
 // import { Sort } from "@element-plus/icons-vue";
 import { MoreFilled } from "@element-plus/icons-vue";
 import { FilesEnum } from "@/js/viewer/FilesEnum";

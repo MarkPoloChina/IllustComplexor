@@ -24,16 +24,9 @@ const currentTab = ref("base");
 </script>
 <style lang="scss" scoped>
 .importer-container {
-  width: calc(100% - 20px);
-  height: calc(100% - 10px);
-  padding: 10px 10px 0 10px;
-  overflow: hidden;
-  @include Flex-C-CT;
+  @include Uni-Main-Container;
   .title {
-    padding: 10px;
-    font-size: 24px;
-    font-weight: bold;
-    color: $color-greengray-1;
+    @include Uni-Main-Title;
   }
   .tabs {
     padding: 0 10px 0 10px;

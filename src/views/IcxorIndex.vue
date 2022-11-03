@@ -10,6 +10,10 @@
           <el-icon><PictureRounded /></el-icon>
           <template #title>视图</template>
         </el-menu-item>
+        <el-menu-item index="/poly">
+          <el-icon><MessageBox /></el-icon>
+          <template #title>聚合</template>
+        </el-menu-item>
         <el-menu-item index="/importer">
           <el-icon><Upload /></el-icon>
           <template #title>导入</template>
@@ -17,6 +21,10 @@
         <el-menu-item index="/exporter">
           <el-icon><Download /></el-icon>
           <template #title>导出</template>
+        </el-menu-item>
+        <el-menu-item index="/pixiv">
+          <el-icon><img src="../assets/img/pixiv-square-logo.svg"></el-icon>
+          <template #title>Pixiv</template>
         </el-menu-item>
         <div style="flex-grow: 1"></div>
         <el-menu-item index="/settings">
@@ -36,6 +44,7 @@ import { ipcRenderer } from "electron";
 import {
   House,
   PictureRounded,
+  MessageBox,
   Upload,
   Download,
   Setting,

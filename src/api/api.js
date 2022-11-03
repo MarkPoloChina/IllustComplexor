@@ -10,7 +10,7 @@ export class API {
         requiredType: "pixiv",
       },
     });
-    console.log(resp.data);
+    // console.log(resp.data);
     return resp.data;
   }
   static async getIllusts(conditionJson, limit, offset, orderAs, orderDesc) {
@@ -21,6 +21,24 @@ export class API {
         offset: offset,
         limit: limit,
         conditionJson: conditionJson,
+      },
+    });
+    return resp.data;
+  }
+  static async getPicolt() {
+    const resp = await ax.get("/illust/poly/list", {
+      params: {
+        withIllust: false,
+        type: 'picolt',
+      },
+    });
+    return resp.data;
+  }
+  static async getPolyWithIllust() {
+    const resp = await ax.get("/illust/poly/list", {
+      params: {
+        withIllust: true,
+        type: 'picolt',
       },
     });
     return resp.data;

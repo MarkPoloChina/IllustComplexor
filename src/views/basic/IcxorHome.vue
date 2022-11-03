@@ -14,23 +14,16 @@
 <script setup>
 import { computed } from "vue";
 import { useStore } from "vuex";
-import url from "@/assets/avatar.jpg";
+import url from "@/assets/img/avatar.jpg";
 const username = computed(() => {
   return useStore().state.username;
 });
 </script>
 <style lang="scss" scoped>
 .home-container {
-  width: calc(100% - 20px);
-  height: calc(100% - 10px);
-  padding: 10px 10px 0 10px;
-  overflow: hidden;
-  @include Flex-C-CT;
+  @include Uni-Main-Container;
   .title {
-    padding: 10px;
-    font-size: 24px;
-    font-weight: bold;
-    color: $color-greengray-1;
+    @include Uni-Main-Title;
   }
   .home-main {
     @include Flex-CT;

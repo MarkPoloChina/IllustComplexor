@@ -5,21 +5,25 @@
     width="70%"
     :before-close="() => emit('update:modelValue', false)"
   >
-    <el-descriptions :column="2" border>
+    <el-descriptions :column="3" border>
       <template #extra>
         <!-- <el-button type="primary">Operation</el-button> -->
       </template>
       <el-descriptions-item>
         <template #label> 来源 </template>
-        {{ info.source }}
+        {{ info.type }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label> PID </template>
-        {{ info.sid }}
+        {{ info.meta.pid }}
+      </el-descriptions-item>
+      <el-descriptions-item>
+        <template #label> Page </template>
+        {{ info.meta.page }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label> 标题 </template>
-        {{ info.title }}
+        {{ info.meta.title }}
       </el-descriptions-item>
     </el-descriptions>
     <!-- <template #footer>
