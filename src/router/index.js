@@ -20,7 +20,7 @@ const routes = [
       {
         path: 'view',
         name: 'viewer',
-        component: () => import('../views/basic/IcxorViewer.vue')
+        component: () => import('../views/basic/IcxorPolyer.vue')
       },
       {
         path: 'settings',

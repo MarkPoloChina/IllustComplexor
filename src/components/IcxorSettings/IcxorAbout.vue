@@ -160,7 +160,7 @@ const linkClick = (url) => {
   }
   .version {
     font-size: 20px;
-    border: 1px solid black;
+    border: 1px solid var(--color-front);
     border-radius: 5px;
     padding: 2px 5px 2px 5px;
   }

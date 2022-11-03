@@ -1,5 +1,10 @@
 <template>
-  <el-tabs tab-position="left" class="viewer-imgs" v-if="timeline.length != 0">
+  <el-tabs
+    tab-position="left"
+    class="viewer-imgs"
+    v-if="timeline.length != 0"
+    v-model="curTab"
+  >
     <el-tab-pane
       :label="item.time"
       v-for="(item, index) in timeline"
@@ -15,9 +20,10 @@
           >
             <el-image
               class="viewer-img"
-              :src="API.getThumUrl(obj.sid)"
-              :preview-src-list="[obj.url]"
+              :src="API.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)"
+              :preview-src-list="[API.getPixivBlobOriginUrl(obj.meta.pid, obj.meta.page)]"
               fit="cover"
+              @click="openLoading()"
               lazy
             />
             <!-- <div class="viewer-img-info">
@@ -82,18 +88,19 @@
 </template>
 <script setup>
 import InfoViewer from "./InfoViewer.vue";
-// import { MoreFilled } from "@element-plus/icons-vue";
-// import { FilesEnum } from "@/js/viewer/FilesEnum";
-import { Updater } from "@/js/viewer/Updater";
-import { onMounted, reactive, ref } from "vue";
+import { nextTick, onMounted, reactive, ref, watch } from "vue";
 import { API } from "@/api/api";
 import { UtilDate } from "@/js/util/date";
+import { ElLoading } from "element-plus";
 
 const timeline = reactive([]);
 const dialogVisible = ref(false);
 const currentInfo = reactive({ value: null });
+const loadObj = reactive({ value: null });
+const curTab = ref("0");
+// const loadedSet = reactive({ value: new Set() });
 onMounted(() => {
-  API.getTimelineEnum().then(async (data) => {
+  API.getEnumTimeline().then(async (data) => {
     data.forEach((ele) => {
       timeline.push({
         time: UtilDate.getDateCST(new Date(ele.date), ""),
@@ -102,41 +109,33 @@ onMounted(() => {
     });
     if (timeline[0]) timeline[0].list = await getIllusts(timeline[0].time);
   });
-  // list
-  //   .sort((a, b) => {
-  //     return b.time - a.time;
-  //   })
-  //   .forEach((item) => {
-  //     timeline.push({ ...item });
-  //   });
 });
-// const getInfo = (url) => {
-//   currentInfo.value = FilesEnum.getMetaByUrl(url);
-//   if (currentInfo.value) dialogVisible.value = true;
-// };
+watch(curTab, async () => {
+  if (timeline[curTab.value].list.length == 0) {
+    timeline[curTab.value].list = await getIllusts(timeline[curTab.value].time);
+  }
+});
+const openLoading = () => {
+  const tryOpen = () =>
+    nextTick(() => {
+      if (!document.querySelector(".el-image-viewer__mask")) return tryOpen();
+      else
+        loadObj.value = ElLoading.service({
+          target: ".el-image-viewer__mask",
+        });
+    });
+  // if (!loadedSet.value.has(id))
+  tryOpen();
+};
 const getIllusts = async (timeline) => {
-  let list = await API.getTimelineIllusts({ date: [timeline] });
-  console.log(list);
+  let list = await API.getIllusts(
+    { date: [timeline] },
+    null,
+    null,
+    "meta.pid",
+    true
+  );
   return list;
-};
-const handleStar = (url, val) => {
-  Updater.saveStar(url, val);
-};
-const handleBat = (item) => {
-  if (!item.batFindAs || !item.batTo) return;
-  item.list.forEach((obj) => {
-    if (
-      (!obj.star && item.batFindAs == "empty") ||
-      item.batFindAs == "all" ||
-      Number.parseInt(item.batFindAs) == obj.star
-    ) {
-      obj.star = item.batTo == "empty" ? 0 : Number.parseInt(item.batTo);
-      handleStar(
-        obj.url,
-        item.batTo == "empty" ? null : Number.parseInt(item.batTo)
-      );
-    }
-  });
 };
 </script>
 <style lang="scss" scoped>
@@ -152,8 +151,8 @@ const handleBat = (item) => {
       padding: 10px;
       .viewer-img {
         border-radius: 5px;
-        height: calc((100vw - 300px) / 4);
-        width: calc((100vw - 300px) / 4);
+        height: calc((100vw - 320px) / 4);
+        width: calc((100vw - 320px) / 4);
       }
       .viewer-img-star {
         @include Flex-RCT;

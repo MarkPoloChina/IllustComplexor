@@ -4,27 +4,31 @@ module.exports = defineConfig({
   css: {
     loaderOptions: {
       sass: {
-        additionalData: `
-    @use "src/style/element.scss" as *;
-    @import "src/style/global.scss";`,
+        additionalData: `@import "src/style/global.scss";`,
       },
     },
   },
-  chainWebpack: (config) => {
-    config.plugin("html").tap((args) => {
-      args[0].title = "Illust Complexor";
-      return args;
-    });
-    // config.module.rule('scss').oneOfs.store.forEach(item => {
-    //   item
-    //     .use('sass-resources-loader')
-    //     .loader('sass-resources-loader')
-    //     .options({
-    //       resources: './src/style/global.scss'
-    //     })
-    //     .end()
-    // });
+  pages: {
+    index: {
+      entry: "./src/main.js",
+      title: "Illust Complexor",
+    },
   },
+  // chainWebpack: (config) => {
+  //   config.plugin("html").tap((args) => {
+  //     args[0].title = "Illust Complexor";
+  //     return args;
+  //   });
+  //   // config.module.rule('scss').oneOfs.store.forEach(item => {
+  //   //   item
+  //   //     .use('sass-resources-loader')
+  //   //     .loader('sass-resources-loader')
+  //   //     .options({
+  //   //       resources: './src/style/global.scss'
+  //   //     })
+  //   //     .end()
+  //   // });
+  // },
   pluginOptions: {
     electronBuilder: {
       nodeIntegration: true,
