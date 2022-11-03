@@ -1,10 +1,8 @@
 <template>
-  <el-tabs tab-position="left" class="viewer-imgs" v-if="picolt.length != 0">
+  <el-tabs tab-position="left" class="viewer-imgs" v-if="author.length != 0">
     <el-tab-pane
-      :label="`${item.name == '1' || item.name == '2' ? '1' : '2'}-${
-        item.name
-      }`"
-      v-for="(item, index) in picolt"
+      :label="item.author"
+      v-for="(item, index) in author"
       :key="index"
       lazy
     >
@@ -39,7 +37,31 @@
             </div>
           </div>
         </el-scrollbar>
-        <div class="viewer-info">共{{ item.list.length }}张插画</div>
+        <div class="viewer-bar">
+          <div class="viewer-info">共{{ item.list.length }}张插画</div>
+          <!-- <div class="viewer-sorter">
+            <el-select
+              v-model="item.sortType"
+              placeholder="排序"
+              @change="handleSortChange(item, $event)"
+            >
+              <template #prefix>
+                <el-icon><Sort /></el-icon>
+              </template>
+              <el-option
+                v-for="item in [
+                  { value: 'default', label: '默认-升序' },
+                  { value: 'defaultDown', label: '默认-降序' },
+                  { value: 'bookCnt', label: '收藏数量-升序' },
+                  { value: 'bookCntDown', label: '收藏数量-降序' },
+                ]"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </div> -->
+        </div>
       </div>
     </el-tab-pane>
   </el-tabs>
@@ -47,34 +69,39 @@
   <info-viewer v-model="dialogVisible" :info="currentInfo.value"></info-viewer>
 </template>
 <script setup>
-import { FilesEnum } from "@/js/viewer/FilesEnum";
-import { onMounted, reactive, ref } from "vue";
-import InfoViewer from "./InfoViewer.vue";
+import InfoViewer from "./reusable/InfoViewer.vue";
+// import { Sort } from "@element-plus/icons-vue";
 import { MoreFilled } from "@element-plus/icons-vue";
+import { FilesEnum } from "@/js/viewer/FilesEnum";
 import { PathComparator } from "@/js/viewer/PathComparator";
+import { onMounted, reactive, ref } from "vue";
 import { Updater } from "@/js/viewer/Updater";
 
-const picolt = reactive([]);
+const author = reactive([]);
 const dialogVisible = ref(false);
 const currentInfo = reactive({ value: null });
 onMounted(() => {
-  FilesEnum.getPicoltEnum("picolt-1")
-    .sort((a, b) => {
-      return a.name - b.name;
-    })
-    .forEach((item) => {
-      picolt.push({ ...item });
+  FilesEnum.getAuthorEnum().forEach((item) => {
+    author.push({
+      ...item,
+      sortType: "default",
     });
-  FilesEnum.getPicoltEnum("picolt-2")
-    .sort((a, b) => {
-      return a.name.localeCompare(b.name);
-    })
-    .forEach((item) => {
-      picolt.push({ ...item });
-    });
+  });
 });
+// const handleSortChange = (item, value) => {
+//   if (value.startsWith("bookCnt"))
+//     item.list.sort((a, b) => {
+//       return value.indexOf("Down") == -1
+//         ? a.bookCnt - b.bookCnt
+//         : b.bookCnt - a.bookCnt;
+//     });
+//   else if (value.startsWith("default"))
+//     item.list.sort((a, b) => {
+//       return value.indexOf("Down") == -1 ? a.pid - b.pid : b.pid - a.pid;
+//     });
+// };
 const getInfo = (url) => {
-  currentInfo.value = FilesEnum.getMetaByCopyUrl(url);
+  currentInfo.value = FilesEnum.getMetaByUrl(url);
   if (currentInfo.value) dialogVisible.value = true;
 };
 const handleStar = (url, val) => {
@@ -84,11 +111,11 @@ const handleStar = (url, val) => {
 <style lang="scss" scoped>
 .viewer-imgs {
   height: 100%;
-
   :deep(.el-tabs__header.is-left) {
     max-width: 100px;
     text-overflow: ellipsis;
   }
+
   .viewer-main {
     height: 100%;
     @include Flex-C-CT;
@@ -118,10 +145,17 @@ const handleStar = (url, val) => {
         // backdrop-filter: blur(10px);
       }
     }
-    .viewer-info {
-      height: 50px;
-      @include Flex-R-CT;
-      color: $color-greengray-2;
+    .viewer-bar {
+      height: 60px;
+      width: 100%;
+      @include Flex-R-SB;
+      .viewer-info {
+        color: $color-greengray-2;
+        margin-left: 10px;
+      }
+      .viewer-sorter {
+        margin-right: 10px;
+      }
     }
   }
 }

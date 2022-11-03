@@ -10,6 +10,10 @@
           <el-icon><PictureRounded /></el-icon>
           <template #title>视图</template>
         </el-menu-item>
+        <el-menu-item index="/poly">
+          <el-icon><MessageBox /></el-icon>
+          <template #title>聚合</template>
+        </el-menu-item>
         <el-menu-item index="/importer">
           <el-icon><Upload /></el-icon>
           <template #title>导入</template>
@@ -17,6 +21,10 @@
         <el-menu-item index="/exporter">
           <el-icon><Download /></el-icon>
           <template #title>导出</template>
+        </el-menu-item>
+        <el-menu-item index="/pixiv">
+          <el-icon><img src="../assets/img/pixiv-square-logo.svg"></el-icon>
+          <template #title>Pixiv</template>
         </el-menu-item>
         <div style="flex-grow: 1"></div>
         <el-menu-item index="/settings">
@@ -31,9 +39,12 @@
   </div>
 </template>
 <script setup>
+import { useDark } from "@vueuse/core";
+import { ipcRenderer } from "electron";
 import {
   House,
   PictureRounded,
+  MessageBox,
   Upload,
   Download,
   Setting,
@@ -42,7 +53,14 @@ import { useStore } from "vuex";
 import { ConfigDB, MetaDB } from "@/js/manager/DBService";
 import { onMounted } from "vue";
 import { remote } from "electron";
+
+const isDark = useDark();
+
 onMounted(() => {
+  ipcRenderer.invoke("dark-mode:get").then((value) => (isDark.value = value));
+  ipcRenderer.on("dark-mode:updated", (event, message) => {
+    isDark.value = message;
+  });
   ConfigDB.initDB();
   MetaDB.initMeta();
   useStore().commit("initStore");

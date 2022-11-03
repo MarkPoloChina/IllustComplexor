@@ -74,34 +74,21 @@
           <div>Illust Complexor is licensed under the GNU GPL v3.0.</div>
           <br />
           <div class="single-info">
-            <svg
-              viewBox="0 0 128 128"
-              width="25"
-              height="25"
-              style="margin-right: 5px"
-            >
-              <path
-                fill="#42b883"
-                d="M78.8,10L64,35.4L49.2,10H0l64,110l64-110C128,10,78.8,10,78.8,10z"
-                data-v-904800b4=""
-              ></path>
-              <path
-                fill="#35495e"
-                d="M78.8,10L64,35.4L49.2,10H25.6L64,76l38.4-66H78.8z"
-                data-v-904800b4=""
-              ></path>
-            </svg>
+            <img
+              src="../../assets/img/vue-logo.svg"
+              style="height: 25px; margin-right: 5px"
+            />
             <div>Vue.js - The MIT License</div>
           </div>
           <div class="single-info">
             <img
-              src="https://element-plus.gitee.io/images/element-plus-logo.svg"
+              src="../../assets/img/element-plus-logo.svg"
               style="height: 25px; margin-right: 5px"
             />Element Plus - The MIT License
           </div>
           <div class="single-info">
             <img
-              src="https://www.electronjs.org/assets/img/logo.svg"
+              src="../../assets/img/electron-logo.svg"
               style="height: 25px; margin-right: 5px"
             />Electron - The MIT License
           </div>
@@ -139,7 +126,7 @@
 <script setup>
 import packageJson from "../../../package.json";
 import { shell } from "electron";
-import url from "@/assets/logo.png";
+import url from "@/assets/img/logo.png";
 const linkClick = (url) => {
   shell.openExternal(url);
 };
@@ -160,7 +147,7 @@ const linkClick = (url) => {
   }
   .version {
     font-size: 20px;
-    border: 1px solid black;
+    border: 1px solid var(--color-front);
     border-radius: 5px;
     padding: 2px 5px 2px 5px;
   }

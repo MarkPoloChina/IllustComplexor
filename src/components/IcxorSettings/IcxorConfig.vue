@@ -42,18 +42,17 @@ import { useStore } from "vuex";
 import { onMounted, reactive } from "vue";
 
 const configForm = reactive({ username: "", path: "" });
-const store = reactive({ store: null });
+const store = useStore();
 onMounted(() => {
   initForm();
 });
 const initForm = () => {
-  store.store = useStore();
-  configForm.username = store.store.state.username;
-  configForm.path = store.store.state.basePath;
+  configForm.username = store.state.username;
+  configForm.path = store.state.basePath;
 };
 const commit = () => {
-  store.store.commit("reviseUsername", configForm.username);
-  store.store.commit("saveToDB");
+  store.commit("reviseUsername", configForm.username);
+  store.commit("saveToDB");
 };
 const revoke = () => {
   initForm();

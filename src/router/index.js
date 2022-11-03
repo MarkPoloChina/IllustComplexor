@@ -23,6 +23,11 @@ const routes = [
         component: () => import('../views/basic/IcxorViewer.vue')
       },
       {
+        path: 'poly',
+        name: 'polyer',
+        component: () => import('../views/basic/IcxorPolyer.vue')
+      },
+      {
         path: 'settings',
         name: 'settings',
         component: () => import('../views/setting/IcxorSettings.vue')

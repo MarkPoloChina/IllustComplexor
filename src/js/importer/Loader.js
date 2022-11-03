@@ -36,9 +36,9 @@ export class LoadBase {
           let timestamp = Util.getThisDate()
           if (pid && page && FilenameComparator.isLikeImage(item) && !MetaDB.existMeta({ sid: pid, source: 'pixiv', page: page })) {
             if (title)
-              list.push({ sid: pid, source: 'pixiv', page: page, title: title, basePath: path, baseType: type, filename: item, timestamp: timestamp })
+              list.push({ sid: pid, source: 'pixiv', page: page, title: title, basePath: path.charAt(0) == '/' ? `file:/${path}` : path, baseType: type, filename: item, timestamp: timestamp })
             else
-              list.push({ sid: pid, source: 'pixiv', page: page, basePath: path, baseType: type, filename: item, timestamp: timestamp })
+              list.push({ sid: pid, source: 'pixiv', page: page, basePath: path.charAt(0) == '/' ? `file:/${path}` : path, baseType: type, filename: item, timestamp: timestamp })
           }
           index++
           progress.value = Math.round(index / files.length * 1000) / 10
@@ -72,9 +72,9 @@ export class LoadBase {
           if (pid && page && FilenameComparator.isLikeImage(item) && !MetaDB.existMeta({ sid: pid, source: 'pixiv', page: page })) {
             successCnt++
             if (title)
-              MetaDB.pushMeta({ sid: pid, source: 'pixiv', page: page, title: title, basePath: path.parse(_path).dir, baseType: type, filename: item })
+              MetaDB.pushMeta({ sid: pid, source: 'pixiv', page: page, title: title, basePath: path.parse(_path).dir.charAt(0) == '/' ? `file:/${path.parse(_path).dir}` : path.parse(_path).dir, baseType: type, filename: item })
             else
-              MetaDB.pushMeta({ sid: pid, source: 'pixiv', page: page, basePath: path.parse(_path).dir, baseType: type, filename: item })
+              MetaDB.pushMeta({ sid: pid, source: 'pixiv', page: page, basePath: path.parse(_path).dir.charAt(0) == '/' ? `file:/${path.parse(_path).dir}` : path.parse(_path).dir, baseType: type, filename: item })
           }
           progress.value = Math.round((index + 1) / paths.length * 1000) / 10
           await sleep()
