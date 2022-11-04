@@ -144,9 +144,10 @@
 <script setup>
 import { Check, Remove } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { remote } from "electron";
 import { AddCopy } from "@/js/importer/Loader";
 import { reactive, ref } from "vue";
+const remote = require("@electron/remote");
+
 const log = reactive({ message: "", list: [] });
 const progress = ref(0);
 

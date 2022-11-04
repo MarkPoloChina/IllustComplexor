@@ -102,11 +102,11 @@
 </template>
 <script setup>
 import { Check, Remove } from "@element-plus/icons-vue";
-import { remote } from "electron";
 import { ElMessage } from "element-plus";
 import { onMounted, reactive, ref } from "vue";
 import { FilesEnum } from "@/js/viewer/FilesEnum";
 import { FileCopy } from "@/js/fileTransfer/FileCopy";
+const remote = require("@electron/remote");
 
 const log = reactive({ message: "", list: [] });
 const progress = ref(0);

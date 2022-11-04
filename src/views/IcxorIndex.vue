@@ -23,7 +23,7 @@
           <template #title>导出</template>
         </el-menu-item>
         <el-menu-item index="/pixiv">
-          <el-icon><img src="../assets/img/pixiv-square-logo.svg"></el-icon>
+          <el-icon><img src="../assets/img/pixiv-square-logo.svg" /></el-icon>
           <template #title>Pixiv</template>
         </el-menu-item>
         <div style="flex-grow: 1"></div>
@@ -52,7 +52,7 @@ import {
 import { useStore } from "vuex";
 import { ConfigDB, MetaDB } from "@/js/manager/DBService";
 import { onMounted } from "vue";
-import { remote } from "electron";
+const remote = require("@electron/remote");
 
 const isDark = useDark();
 

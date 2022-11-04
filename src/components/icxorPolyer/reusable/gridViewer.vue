@@ -77,7 +77,7 @@
 import { nextTick, reactive } from "vue";
 import { API } from "@/api/api";
 import { ElLoading } from "element-plus";
-import { remote } from "electron";
+const remote = require("@electron/remote");
 const { Menu, MenuItem } = remote;
 // eslint-disable-next-line no-undef
 defineProps({
