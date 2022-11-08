@@ -30,22 +30,23 @@ const currentInfo = reactive({ value: null });
 const curTab = ref("0");
 // const loadedSet = reactive({ value: new Set() });
 onMounted(() => {
-  API.getEnumTimeline().then(async (data) => {
-    data.forEach((ele) => {
-      timeline.push({
-        time: UtilDate.getDateCST(new Date(ele.date), ""),
-        list: [],
-      });
-    });
-    if (timeline[0]) timeline[0].list = await getIllusts(timeline[0].time);
-  });
+  getEnum();
 });
 watch(curTab, async () => {
   if (timeline[curTab.value].list.length == 0) {
     timeline[curTab.value].list = await getIllusts(timeline[curTab.value].time);
   }
 });
-
+const getEnum = async () => {
+  const data = await API.getEnumTimeline();
+  data.forEach((ele) => {
+    timeline.push({
+      time: UtilDate.getDateCST(new Date(ele.date), ""),
+      list: [],
+    });
+  });
+  if (timeline[0]) timeline[0].list = await getIllusts(timeline[0].time);
+};
 const getIllusts = async (timeline) => {
   let list = await API.getIllusts(
     { date: [timeline] },

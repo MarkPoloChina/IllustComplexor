@@ -104,6 +104,16 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
   }
+
+  // win.on("resize", () => {
+  //   win.webContents.send("resized");
+  // });
+  // win.on("minimize", () => {
+  //   win.webContents.send("resized");
+  // });
+  // win.on("maximize", () => {
+  //   win.webContents.send("resized");
+  // });
 }
 ipcMain.handle("dark-mode:toggle", () => {
   if (nativeTheme.shouldUseDarkColors) {

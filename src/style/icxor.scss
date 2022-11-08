@@ -19,7 +19,8 @@ html.dark {
   --color-greengray-2: #607b84;
   --color-greengray-3: #2c3c49;
   --color-greengray-4: #161e21;
-  --color-bg: #242526;
+  // --color-bg: #242526;
+  --color-bg: #161616;
   --color-front: white;
 }
 $color-stdblue-1: var(--color-stdblue-1);
@@ -33,15 +34,15 @@ $color-greengray-4: var(--color-greengray-4);
 
 @mixin Uni-Main-Container {
   width: calc(100% - 20px);
-  height: calc(100% - 10px);
-  padding: 10px 10px 0 10px;
+  height: calc(100% - 15px);
+  padding: 10px 10px 5px 10px;
   overflow: hidden;
   @include Flex-C-CT;
 }
 
 @mixin Uni-Main-Title {
-  padding: 10px;
-  font-size: 24px;
+  padding: 5px 10px 10px 10px;
+  font-size: 26px;
   font-weight: bold;
   color: $color-greengray-1;
 }
