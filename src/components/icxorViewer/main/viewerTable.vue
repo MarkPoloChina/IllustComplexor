@@ -24,30 +24,30 @@
   </div>
 </template>
 <script setup>
-import { onMounted, ref, watch } from "vue";
+import { onMounted, ref } from "vue";
 
 const currentSelected = ref([]);
 const currentRow = ref();
 const table = ref();
 // eslint-disable-next-line no-undef
-const props = defineProps({
+defineProps({
   tableData: Array,
 });
-watch(
-  props.tableData,
-  () => {
-    console.log("jj");
-    table.value.setScrollTop(0);
-  },
-  { deep: true }
-);
+// eslint-disable-next-line no-undef
+const emits = defineEmits(["select-change", "selects-change"]);
+const resetScroll = () => {
+  table.value.setScrollTop(0);
+};
 onMounted(() => {});
 const handleSelectionChange = (val) => {
   currentSelected.value = val;
 };
 const handleCurrentChange = (val) => {
   currentRow.value = val;
+  emits("select-change", val);
 };
+// eslint-disable-next-line no-undef
+defineExpose({ resetScroll });
 </script>
 <style lang="scss" scoped>
 .table-container {

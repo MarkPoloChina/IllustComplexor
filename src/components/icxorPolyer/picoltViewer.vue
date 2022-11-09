@@ -43,7 +43,7 @@ onMounted(() => {
   //   });
 });
 const getData = async () => {
-  const data = await API.getPolyWithIllust();
+  const data = await API.getPicoltWithIllust();
   data.forEach((item) => {
     picolt.push({
       name: `${item.parent}-${item.name}`,

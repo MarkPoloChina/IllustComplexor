@@ -103,7 +103,7 @@ const handleRightClick = (event, obj) => {
   const menu = new Menu();
   menu.append(
     new MenuItem({
-      label: "🔎详情",
+      label: "详情",
       click: () => {
         emit("showInfo", obj);
       },

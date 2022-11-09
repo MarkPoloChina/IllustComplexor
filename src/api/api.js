@@ -25,20 +25,28 @@ export class API {
     });
     return resp.data;
   }
-  static async getPicolt() {
-    const resp = await ax.get("/illust/poly/list", {
+  static async getIllustsCount(conditionJson) {
+    const resp = await ax.get("/illust/list/count", {
       params: {
-        withIllust: false,
-        type: 'picolt',
+        conditionJson: conditionJson,
       },
     });
     return resp.data;
   }
-  static async getPolyWithIllust() {
+  static async getPicolt() {
+    const resp = await ax.get("/illust/poly/list", {
+      params: {
+        withIllust: false,
+        type: "picolt",
+      },
+    });
+    return resp.data;
+  }
+  static async getPicoltWithIllust() {
     const resp = await ax.get("/illust/poly/list", {
       params: {
         withIllust: true,
-        type: 'picolt',
+        type: "picolt",
       },
     });
     return resp.data;
