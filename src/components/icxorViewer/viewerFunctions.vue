@@ -63,6 +63,9 @@ const viewerTypeChange = (val) => {
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    :deep(.el-radio) {
+      margin-right: 10px;
+    }
   }
 }
 </style>

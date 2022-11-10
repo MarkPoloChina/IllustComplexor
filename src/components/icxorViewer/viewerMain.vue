@@ -1,7 +1,13 @@
 <template>
   <div style="height: 100%">
     <component
-      :is="viewerType == 'table' ? ViewerTable : ViewerGrid"
+      :is="
+        viewerType == 'table'
+          ? ViewerTable
+          : viewerType == 'grid'
+          ? ViewerGrid
+          : ViewerFocus
+      "
       :tableData="list"
       ref="viewer"
       @select-change="handleSelectedChanged"
@@ -10,8 +16,9 @@
 </template>
 <script setup>
 import { ref } from "vue";
-import ViewerTable from "./viewerTable.vue";
-import ViewerGrid from "./viewerGrid.vue";
+import ViewerTable from "./main/viewerTable.vue";
+import ViewerGrid from "./main/viewerGrid.vue";
+import ViewerFocus from "./main/viewerFocus.vue";
 const viewer = ref(null);
 const viewerType = ref("table");
 // eslint-disable-next-line no-undef

@@ -1,11 +1,11 @@
 {
   "name": "icxor",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "private": true,
   "author": {
     "name": "MarkPolo"
   },
-  "description": "ICXOR is a manager for illusts.",
+  "description": "ICXOR (Illust Complexor) is a tool built by electron to manage illusts at both local and remote.",
   "license": "GPL v3.0",
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -25,7 +25,6 @@
     "@vueuse/core": "^9.4.0",
     "axios": "^0.27.2",
     "core-js": "^3.8.3",
-    "electron-icon-builder": "^2.0.1",
     "element-plus": "^2.2.8",
     "fs-extra": "^10.1.0",
     "lowdb": "1.0.0",
@@ -45,6 +44,7 @@
     "@vue/cli-service": "~5.0.0",
     "electron": "^13.0.0",
     "electron-devtools-installer": "^3.1.0",
+    "electron-icon-builder": "^2.0.1",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "sass": "^1.32.7",

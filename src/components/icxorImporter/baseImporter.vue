@@ -2,8 +2,8 @@
   <div>
     <el-alert type="info" show-icon :closable="false">
       <template #title>
-        用于添加母本。请保证母本的唯一性和准确性, 如果已经有相同的id,
-        则不会导入。
+        用于添加基准。请保证基准的唯一性和准确性, 如果已经有相同的id,
+        则不会导入。只有离散卷会进行本地映射。
       </template>
     </el-alert>
     <div class="import-area">

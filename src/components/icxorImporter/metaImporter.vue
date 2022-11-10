@@ -2,7 +2,7 @@
   <div>
     <el-alert type="info" show-icon :closable="false">
       <template #title>
-        用于导入元数据。一次只能导入一条元数据，且不含副本中的元数据。如果文件夹存在不在母本库中的图片,
+        用于导入元数据。一次只能导入一种元数据。如果文件不能匹配上基准数据,
         则不会导入。
       </template>
     </el-alert>

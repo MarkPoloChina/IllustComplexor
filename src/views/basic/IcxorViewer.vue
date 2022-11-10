@@ -32,7 +32,7 @@
 </template>
 <script setup>
 import { API } from "@/api/api";
-import ViewerMain from "@/components/icxorViewer/main/viewerMain.vue";
+import ViewerMain from "@/components/icxorViewer/viewerMain.vue";
 import ViewerFilter from "@/components/icxorViewer/viewerFilter.vue";
 import ViewerFunctions from "@/components/icxorViewer/viewerFunctions.vue";
 import ViewerInfo from "@/components/icxorViewer/viewerInfo.vue";

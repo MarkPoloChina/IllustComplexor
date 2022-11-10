@@ -2,7 +2,7 @@
   <div>
     <el-alert type="info" show-icon :closable="false">
       <template #title>
-        用于导入副本。如果文件夹存在不在母本库中的图片, 则不会导入。
+        用于导入聚合。如果文件不能匹配上基准数据, 则不会导入。
       </template>
     </el-alert>
     <div class="import-area">
