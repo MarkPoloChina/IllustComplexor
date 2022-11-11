@@ -1,30 +1,29 @@
 <template>
-  <el-scrollbar style="border-radius: 5px" class="v-grid-container" ref="table">
-    <div class="grid-container">
-      <div
-        v-for="(obj, index) in tableData"
-        :key="index"
-        class="viewer-grid-container"
+  <el-scrollbar style="border-radius: 5px" class="grid-container" ref="table">
+    <div
+      v-for="(obj, index) in tableData"
+      :key="index"
+      class="viewer-grid-container"
+    >
+      <div class="expo"></div>
+      <el-image
+        class="viewer-img"
+        :class="checkIfInSelected(obj) ? 'with-border' : ''"
+        :src="API.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)"
+        :preview-src-list="[
+          API.getPixivBlobOriginUrl(obj.meta.pid, obj.meta.page),
+        ]"
+        fit="cover"
+        @click="openLoading()"
+        @contextmenu.prevent="handleRightClick($event, obj)"
+        loading="lazy"
       >
-        <el-image
-          class="viewer-img"
-          :class="checkIfInSelected(obj) ? 'with-border' : ''"
-          :src="API.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)"
-          :preview-src-list="[
-            API.getPixivBlobOriginUrl(obj.meta.pid, obj.meta.page),
-          ]"
-          fit="cover"
-          @click="openLoading()"
-          @contextmenu.prevent="handleRightClick($event, obj)"
-          loading="lazy"
-        >
-          <template #error>
-            <div class="image-slot">
-              <el-icon><Picture /></el-icon>
-            </div>
-          </template>
-        </el-image>
-      </div>
+        <template #error>
+          <div class="image-slot">
+            <el-icon><Picture /></el-icon>
+          </div>
+        </template>
+      </el-image>
     </div>
   </el-scrollbar>
 </template>
@@ -116,14 +115,22 @@ defineExpose({ resetScroll });
   .viewer-grid-container {
     display: inline-block;
     position: relative;
-    padding: 10px;
+    margin: 10px;
     width: calc((100% - 60px) / 3);
-    .viewer-img {
-      border-radius: 5px;
+    .expo {
       position: relative;
       width: 100%;
-      height: 100%;
-      min-height: 50px;
+      height: 0;
+      padding: 0;
+      padding-bottom: 100%;
+    }
+    .viewer-img {
+      border-radius: 5px;
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
       .image-slot {
         display: flex;
         justify-content: center;
