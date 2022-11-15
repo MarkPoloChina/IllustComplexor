@@ -67,7 +67,7 @@ const currentIndex = ref(0);
 const emit = defineEmits(["select-change", "selects-change"]);
 const table = ref();
 // eslint-disable-next-line no-undef
-defineProps({
+const props = defineProps({
   tableData: Array,
 });
 // eslint-disable-next-line no-undef
@@ -131,11 +131,16 @@ const handleSelect = (obj, index) => {
   currentRow.value = obj;
   emit("select-change", obj);
 };
+const handleIndexChange = (action) => {
+  if (action == "up") {
+    if (currentIndex.value < props.tableData.length - 1) currentIndex.value++;
+  } else if (action == "down") if (currentIndex.value > 0) currentIndex.value--;
+};
 // const handleSelectionChange = (val) => {
 //   currentSelected.value = val;
 // };
 // eslint-disable-next-line no-undef
-defineExpose({ resetScroll });
+defineExpose({ resetScroll, handleIndexChange });
 </script>
 <style lang="scss" scoped>
 .v-focus-container {

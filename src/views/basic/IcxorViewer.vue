@@ -16,11 +16,21 @@
         <div class="func-row">
           <ViewerFunctions
             :illust-count="illustCount"
+            :hasSelected="
+              currentSelected.value != null &&
+              currentSelected.value != undefined
+            "
+            :cur-star="
+              currentSelected.value ? currentSelected.value.star : null
+            "
             @page-change="
               viewerMain.handleResetScroll();
               getIllusts($event);
             "
             @viewer-type-change="viewerMain && viewerMain.handleSetType($event)"
+            @curStarChange="handleCurStarChange"
+            @focus-up="viewerMain.handleFocusIndexChange('up')"
+            @focus-down="viewerMain.handleFocusIndexChange('down')"
           ></ViewerFunctions>
         </div>
       </div>
@@ -67,6 +77,10 @@ const handleFilterChange = (filter) => {
   getIllusts(1, filter);
   getIllustsCount(filter);
 };
+const handleCurStarChange = (star)=>{
+  currentSelected.value.star = star
+  
+}
 </script>
 <style lang="scss" scoped>
 .viewer-container {

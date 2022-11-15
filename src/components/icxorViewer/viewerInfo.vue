@@ -13,6 +13,7 @@
       </template>
       <el-descriptions-item label="Id">{{ info.id }}</el-descriptions-item>
       <el-descriptions-item label="类型">{{ info.type }}</el-descriptions-item>
+      <el-descriptions-item label="评分"><el-rate :model-value="info.star" disabled/></el-descriptions-item>
       <el-descriptions-item label="入库时间">
         {{ info.date }}</el-descriptions-item
       >

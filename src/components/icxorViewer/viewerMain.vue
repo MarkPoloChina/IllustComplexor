@@ -36,7 +36,10 @@ const handleResetScroll = () => {
 const handleSetType = (type) => {
   viewerType.value = type;
 };
+const handleFocusIndexChange = (action) => {
+  viewer.value.handleIndexChange(action);
+};
 // eslint-disable-next-line no-undef
-defineExpose({ handleResetScroll, handleSetType });
+defineExpose({ handleResetScroll, handleSetType, handleFocusIndexChange });
 </script>
 <style lang="scss" scoped></style>
