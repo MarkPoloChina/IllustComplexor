@@ -65,5 +65,8 @@ const getInfo = (obj) => {
 <style lang="scss" scoped>
 .viewer-imgs {
   height: 100%;
+  > :deep(.el-tabs__content) {
+    height: 100%;
+  }
 }
 </style>

@@ -63,9 +63,12 @@ const getInfo = (obj) => {
 .viewer-imgs {
   height: 100%;
 
-  :deep(.el-tabs__header.is-left) {
-    max-width: 100px;
-    text-overflow: ellipsis;
+  // > :deep(.el-tabs__header.is-left) {
+  //   max-width: 100px;
+  //   text-overflow: ellipsis;
+  // }
+  > :deep(.el-tabs__content) {
+    height: 100%;
   }
 }
 </style>

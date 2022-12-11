@@ -2,8 +2,12 @@
   <div>
     <el-alert type="info" show-icon :closable="false">
       <template #title>
-        用于添加基准。请保证基准的唯一性和准确性, 如果已经有相同的id,
-        则不会导入。只有离散卷会进行本地映射。
+        用于导入Illust。对于标准卷的Pixiv类型, 将在导入时检查文件名,
+        匹配时同时导入元。已经有相同的id的元时不会导入。
+        <br />
+        对于标准卷的其他类型, 仅导入基准。
+        <br />
+        对于离散卷, 在导入基准后还将进行本地映射。
       </template>
     </el-alert>
     <div class="import-area">
@@ -11,10 +15,7 @@
       <div class="form-block">
         <el-form :model="importOption" label-width="100px" style="width: 100%">
           <el-form-item label="导入类型" @change="importOption.paths = ['']">
-            <el-radio-group
-              v-model="importOption.importType"
-              @change="importOption.autoMeta.timestamp = $event == 'directory'"
-            >
+            <el-radio-group v-model="importOption.importType">
               <el-radio label="directory">文件夹</el-radio>
               <el-radio label="files">文件</el-radio>
             </el-radio-group>
@@ -31,16 +32,21 @@
             <el-input :modelValue="importOption.paths.toString()" disabled />
           </el-form-item>
           <el-form-item label="类型">
-            <el-select v-model="importOption.type" placeholder="选择类型">
+            <el-select
+              v-model="importOption.info.type"
+              placeholder="选择类型"
+              filterable
+              allow-create
+            >
               <el-option
                 v-for="item in [
                   {
-                    value: 'std',
-                    label: '标准卷',
+                    value: 'pixiv',
+                    label: '标准卷:pixiv',
                   },
                   {
                     value: 'dep',
-                    label: '离散卷',
+                    label: '默认离散卷',
                   },
                 ]"
                 :key="item.value"
@@ -49,27 +55,16 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="自动元数据">
-            <el-checkbox
-              v-model="importOption.autoMeta.pid"
-              label="PID"
-              disabled
+          <el-form-item label="入库时间">
+            <el-date-picker
+              v-model="importOption.info.date"
+              value-format="YYYY-MM-DD"
+              type="date"
+              placeholder="Pick a day"
             />
-            <el-checkbox
-              v-model="importOption.autoMeta.page"
-              label="页号"
-              disabled
-            />
-            <el-checkbox
-              v-model="importOption.autoMeta.title"
-              label="标题"
-              disabled
-            />
-            <el-checkbox
-              v-model="importOption.autoMeta.timestamp"
-              label="时间戳(今天)"
-              disabled
-            />
+          </el-form-item>
+          <el-form-item label="评级">
+            <el-rate v-model="importOption.info.star" />
           </el-form-item>
         </el-form>
       </div>
@@ -121,32 +116,27 @@
 <script setup>
 import { Check, Remove } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { LoadBase } from "@/js/importer/Loader";
+import { RemoteLoader } from "@/js/importer/Loader";
 import { reactive, ref } from "vue";
+import { API } from "@/api/api";
 
 const remote = require("@electron/remote");
 const log = reactive({ message: "", list: [] });
 const progress = ref(0);
 const initTab = () => {
-  importOption.type = "std";
+  importOption.info.type = "pixiv";
   importOption.importType = "directory";
   importOption.paths = [""];
-  importOption.autoMeta = {
-    pid: true,
-    page: true,
-    timestamp: true,
-    title: true,
-  };
+  importOption.info.date = null;
+  importOption.info.star = null;
 };
 const importOption = reactive({
   paths: [""],
   importType: "directory",
-  type: "std",
-  autoMeta: {
-    pid: true,
-    page: true,
-    timestamp: true,
-    title: true,
+  info: {
+    type: "pixiv",
+    date: null,
+    star: null,
   },
 });
 const getDirectory = async () => {
@@ -170,39 +160,53 @@ const getFile = async () => {
   if (_path.length == 0) return;
   else importOption.paths = _path;
 };
-const startImportBase = () => {
+const startImportBase = async () => {
   progress.value = 0;
   if (!importOption.paths[0] || importOption.paths[0] == "") {
     ElMessage.error("路径非法");
     return;
   }
-  if (importOption.importType == "directory") {
-    LoadBase.loadFromDirectory(
+  if (
+    importOption.importType == "directory" &&
+    importOption.info.type == "pixiv"
+  ) {
+    ElMessage.info("开始收集信息");
+    const resp = await RemoteLoader.getPixivLoaderDtoListFromDirectory(
       importOption.paths[0],
-      importOption.type,
+      importOption.info,
       progress
-    ).then((resp) => {
-      if (resp.status === 200) {
-        log.message = resp.message;
-        log.list = [];
+    );
+    ElMessage.info(`信息收集完成，共${resp.dto.length}条有效数据`);
+    log.list = resp.log;
+    API.newIllusts(resp.dto);
+  } else if (
+    importOption.importType == "files" &&
+    importOption.info.type == "pixiv"
+  ) {
+    ElMessage.info("开始收集信息");
+    const resp = await RemoteLoader.getPixivLoaderDtoListFromFiles(
+      importOption.paths,
+      importOption.info,
+      progress
+    );
+    log;
+    ElMessage.info(`信息收集完成，共${resp.dto.length}条有效数据`);
+    log.list = resp.log;
+    API.newIllusts(resp.dto).then(data=>{
+      if (data.code==200000)
+      {
+        ElMessage.info('上传完成');
+        data.passedList.forEach((bid)=>{
+          log.list.find((item)=>{return item.bid==bid}).status = 'passed'
+        })
       }
     });
-  } else if (importOption.importType == "files") {
-    LoadBase.loadFromFiles(importOption.paths, importOption.type, progress)
-      .then((resp) => {
-        if (resp.status === 200) {
-          log.message = resp.message;
-          log.list = [];
-        }
-      })
-      .catch((resp) => {
-        log.message = resp.message;
-      });
   }
 };
 </script>
 <style lang="scss" scoped>
 .import-area {
+  padding: 0 10px 0 10px;
   .form-block {
     @include Flex-C-AC;
   }

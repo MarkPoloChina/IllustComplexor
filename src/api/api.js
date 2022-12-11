@@ -10,7 +10,6 @@ export class API {
         requiredType: "pixiv",
       },
     });
-    // console.log(resp.data);
     return resp.data;
   }
   static async getIllusts(conditionJson, limit, offset, orderAs, orderDesc) {
@@ -31,6 +30,10 @@ export class API {
         conditionJson: conditionJson,
       },
     });
+    return resp.data;
+  }
+  static async newIllusts(illustList) {
+    const resp = await ax.post("/illust/list", illustList);
     return resp.data;
   }
   static async getPicolt() {
@@ -68,5 +71,13 @@ export class API {
     url.searchParams.append("pid", pid);
     url.searchParams.append("page", page);
     return url.href;
+  }
+  static async getBookmark(isPrivate) {
+    const resp = await ax.get("/pixiv-api/pixiv-json/latest", {
+      params: {
+        private: isPrivate,
+      },
+    });
+    return resp.data;
   }
 }

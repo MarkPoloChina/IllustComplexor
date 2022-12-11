@@ -8,7 +8,7 @@
     <div class="import-area">
       <div class="title-block">导入选项</div>
       <div class="form-block">
-        <el-form :model="importOption" label-width="80px" style="width: 100%">
+        <el-form :model="importOption" label-width="100px" style="width: 100%">
           <el-form-item label="路径">
             <el-button @click="getDirectory">选择文件夹</el-button>
             <el-input :modelValue="importOption.paths[0]" disabled />
@@ -228,6 +228,7 @@ const startImportPicolt = () => {
 </script>
 <style lang="scss" scoped>
 .import-area {
+  padding: 0 10px 0 10px;
   .form-block {
     @include Flex-C-AC;
   }

@@ -34,13 +34,13 @@ const currentTab = ref("timeline");
   }
   .tabs {
     padding: 0 10px 0 10px;
-    height: 100%;
+    height: calc(100% - 52px);
     position: relative;
     :deep(.el-tab-pane) {
       height: 100%;
     }
-    :deep(.el-tabs__content) {
-      height: calc(100% - 50px);
+    > :deep(.el-tabs__content) {
+      height: calc(100% - 55px);
     }
   }
 }

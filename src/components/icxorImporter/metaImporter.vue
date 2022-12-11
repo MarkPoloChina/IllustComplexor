@@ -200,6 +200,7 @@ const startUpdateMeta = () => {
 </script>
 <style lang="scss" scoped>
 .import-area {
+  padding: 0 10px 0 10px;
   .form-block {
     @include Flex-C-AC;
   }
