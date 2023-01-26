@@ -17,59 +17,8 @@
           @contextmenu.prevent="handleRightClick($event, obj)"
           lazy
         />
-        <!-- <div class="viewer-img-info">
-              <el-button
-                text
-                bg
-                :icon="MoreFilled"
-                circle
-                @click="getInfo(obj)"
-              />
-            </div> -->
-        <!-- <div class="viewer-img-star">
-              <el-rate
-                v-model="obj.star"
-                @change="handleStar(obj.url, $event)"
-              />
-            </div> -->
       </div>
     </el-scrollbar>
-    <!-- <div class="viewer-bat">
-          将所有
-          <el-select v-model="item.batFindAs" placeholder="原评级">
-            <el-option
-              v-for="item in [
-                { value: 'empty', label: '未指定' },
-                { value: '1', label: '1星' },
-                { value: '2', label: '2星' },
-                { value: '3', label: '3星' },
-                { value: '4', label: '4星' },
-                { value: '5', label: '5星' },
-                { value: 'all', label: '全部' },
-              ]"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          修改为
-          <el-select v-model="item.batTo" placeholder="修改后评级">
-            <el-option
-              v-for="item in [
-                { value: 'empty', label: '未指定' },
-                { value: '1', label: '1星' },
-                { value: '2', label: '2星' },
-                { value: '3', label: '3星' },
-                { value: '4', label: '4星' },
-                { value: '5', label: '5星' },
-              ]"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <el-button @click="handleBat(item)">执行</el-button>
-        </div> -->
     <div class="viewer-info">共{{ list.length }}张插画</div>
   </div>
 </template>

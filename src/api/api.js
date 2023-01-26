@@ -54,20 +54,20 @@ export class API {
     });
     return resp.data;
   }
-  static async getPicolt() {
+  static async getPoly(type) {
     const resp = await ax.get("/illust/poly/list", {
       params: {
         withIllust: false,
-        type: "picolt",
+        type: type,
       },
     });
     return resp.data;
   }
-  static async getPicoltWithIllust() {
+  static async getPolyWithIllust(type) {
     const resp = await ax.get("/illust/poly/list", {
       params: {
         withIllust: true,
-        type: "picolt",
+        type: type,
       },
     });
     return resp.data;

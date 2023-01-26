@@ -6,63 +6,7 @@
       :key="index"
       lazy
     >
-      <div class="viewer-main">
-        <el-scrollbar style="border-radius: 5px">
-          <div
-            v-for="(obj, index) in item.list"
-            :key="index"
-            class="viewer-img-container"
-          >
-            <el-image
-              class="viewer-img"
-              :src="PathComparator.getMPSIC(obj.url)"
-              :preview-src-list="[obj.url]"
-              fit="cover"
-              lazy
-            />
-            <div class="viewer-img-info">
-              <el-button
-                text
-                bg
-                :icon="MoreFilled"
-                circle
-                @click="getInfo(obj.url)"
-              />
-            </div>
-            <div class="viewer-img-star">
-              <el-rate
-                v-model="item.star"
-                @change="handleStar(obj.url, $event)"
-              />
-            </div>
-          </div>
-        </el-scrollbar>
-        <div class="viewer-bar">
-          <div class="viewer-info">共{{ item.list.length }}张插画</div>
-          <div class="viewer-sorter">
-            <el-select
-              v-model="item.sortType"
-              placeholder="排序"
-              @change="handleSortChange(item, $event)"
-            >
-              <template #prefix>
-                <el-icon><Sort /></el-icon>
-              </template>
-              <el-option
-                v-for="item in [
-                  { value: 'default', label: '默认-升序' },
-                  { value: 'defaultDown', label: '默认-降序' },
-                  { value: 'bookCnt', label: '收藏数量-升序' },
-                  { value: 'bookCntDown', label: '收藏数量-降序' },
-                ]"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </div>
-        </div>
-      </div>
+      <GridViewer @showInfo="getInfo" :list="item.list"></GridViewer>
     </el-tab-pane>
   </el-tabs>
   <el-empty description="无插图" v-else />
@@ -70,28 +14,41 @@
 </template>
 <script setup>
 import InfoViewer from "./reusable/InfoViewer.vue";
-import { Sort } from "@element-plus/icons-vue";
-import { MoreFilled } from "@element-plus/icons-vue";
+import GridViewer from "./reusable/gridViewer.vue";
 import { onMounted, reactive, ref } from "vue";
+import { API } from "@/api/api";
 
 const lnr = reactive([]);
 const dialogVisible = ref(false);
 const currentInfo = reactive({ value: null });
-onMounted(() => {});
-const handleSortChange = (item, value) => {
-  if (value.startsWith("bookCnt"))
-    item.list.sort((a, b) => {
-      return value.indexOf("Down") == -1
-        ? a.bookCnt - b.bookCnt
-        : b.bookCnt - a.bookCnt;
+onMounted(() => {
+  getData();
+});
+const getData = async () => {
+  const data = await API.getPolyWithIllust("lnr");
+  data.forEach((item) => {
+    lnr.push({
+      name: `${item.parent}-${item.name}`,
+      list: item.illusts,
     });
-  else if (value.startsWith("default"))
-    item.list.sort((a, b) => {
-      return value.indexOf("Down") == -1 ? a.pid - b.pid : b.pid - a.pid;
-    });
+  });
 };
-const getInfo = () => {};
-const handleStar = () => {};
+// const handleSortChange = (item, value) => {
+//   if (value.startsWith("bookCnt"))
+//     item.list.sort((a, b) => {
+//       return value.indexOf("Down") == -1
+//         ? a.bookCnt - b.bookCnt
+//         : b.bookCnt - a.bookCnt;
+//     });
+//   else if (value.startsWith("default"))
+//     item.list.sort((a, b) => {
+//       return value.indexOf("Down") == -1 ? a.pid - b.pid : b.pid - a.pid;
+//     });
+// };
+const getInfo = (obj) => {
+  currentInfo.value = obj;
+  if (currentInfo.value) dialogVisible.value = true;
+};
 </script>
 <style lang="scss" scoped>
 .viewer-imgs {
