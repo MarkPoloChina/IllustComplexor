@@ -2,7 +2,7 @@
   <div>
     <el-alert type="info" show-icon :closable="false">
       <template #title>
-        从时间线中导出符合条件的插图到指定文件夹，但是不会自动定义副本。
+        从聚合中导入文件。可带条件筛选。
       </template>
     </el-alert>
     <div class="export-area">

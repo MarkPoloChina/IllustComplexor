@@ -12,6 +12,15 @@ export class API {
     });
     return resp.data;
   }
+  static async getEnumSource() {
+    const resp = await ax.get("/illust/enum", {
+      params: {
+        row: "type",
+        desc: false,
+      },
+    });
+    return resp.data;
+  }
   static async getIllusts(conditionJson, limit, offset, orderAs, orderDesc) {
     const resp = await ax.get("/illust/list", {
       params: {

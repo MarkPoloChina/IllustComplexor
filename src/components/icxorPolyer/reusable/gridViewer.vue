@@ -1,23 +1,28 @@
 <template>
   <div class="viewer-main">
     <el-scrollbar style="border-radius: 5px">
-      <div
-        v-for="(obj, index) in list"
-        :key="index"
-        class="viewer-img-container"
-      >
-        <el-image
-          class="viewer-img"
-          :src="UrlGenerator.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)"
-          :preview-src-list="[
-            UrlGenerator.getPixivBlobOriginUrl(obj.meta.pid, obj.meta.page),
-          ]"
-          fit="cover"
-          @click="openLoading()"
-          @contextmenu.prevent="handleRightClick($event, obj)"
-          lazy
-        />
-      </div>
+      <el-row>
+        <el-col
+          :span="6"
+          v-for="(obj, index) in list"
+          :key="index"
+          class="viewer-img-container"
+        >
+          <el-image
+            class="viewer-img"
+            :src="
+              UrlGenerator.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)
+            "
+            :preview-src-list="[
+              UrlGenerator.getPixivBlobOriginUrl(obj.meta.pid, obj.meta.page),
+            ]"
+            fit="cover"
+            @click="openLoading()"
+            @contextmenu.prevent="handleRightClick($event, obj)"
+            lazy
+          />
+        </el-col>
+      </el-row>
     </el-scrollbar>
     <div class="viewer-info">共{{ list.length }}张插画</div>
   </div>
@@ -70,37 +75,13 @@ const handleRightClick = (event, obj) => {
   height: 100%;
   @include Flex-C-CT;
   .viewer-img-container {
-    display: inline-block;
-    position: relative;
-    padding: 10px;
+    @include Flex-CT;
+    padding: 10px 0 10px 0;
     .viewer-img {
       border-radius: 5px;
       height: calc((100vw - 320px) / 4);
       width: calc((100vw - 320px) / 4);
     }
-    .viewer-img-star {
-      @include Flex-RCT;
-      position: absolute;
-      bottom: 13px;
-      height: 32px;
-      width: calc(100% - 20px);
-      background-color: rgba(255, 255, 255, 0.8);
-      // backdrop-filter: blur(10px);
-      border-radius: 5px;
-    }
-    .viewer-img-info {
-      position: absolute;
-      top: 15px;
-      right: 15px;
-      // backdrop-filter: blur(10px);
-    }
-  }
-  .viewer-bat {
-    height: 50px;
-    @include Flex-R-SB;
-    color: $color-greengray-2;
-    margin-left: 10px;
-    font-size: 15px;
   }
   .viewer-info {
     height: 50px;
