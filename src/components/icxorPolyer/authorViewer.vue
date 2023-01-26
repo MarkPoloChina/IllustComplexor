@@ -72,21 +72,13 @@
 import InfoViewer from "./reusable/InfoViewer.vue";
 // import { Sort } from "@element-plus/icons-vue";
 import { MoreFilled } from "@element-plus/icons-vue";
-import { FilesEnum } from "@/js/viewer/FilesEnum";
-import { PathComparator } from "@/js/viewer/PathComparator";
 import { onMounted, reactive, ref } from "vue";
-import { Updater } from "@/js/viewer/Updater";
 
 const author = reactive([]);
 const dialogVisible = ref(false);
 const currentInfo = reactive({ value: null });
 onMounted(() => {
-  FilesEnum.getAuthorEnum().forEach((item) => {
-    author.push({
-      ...item,
-      sortType: "default",
-    });
-  });
+  
 });
 // const handleSortChange = (item, value) => {
 //   if (value.startsWith("bookCnt"))
@@ -100,12 +92,9 @@ onMounted(() => {
 //       return value.indexOf("Down") == -1 ? a.pid - b.pid : b.pid - a.pid;
 //     });
 // };
-const getInfo = (url) => {
-  currentInfo.value = FilesEnum.getMetaByUrl(url);
-  if (currentInfo.value) dialogVisible.value = true;
+const getInfo = () => {
 };
-const handleStar = (url, val) => {
-  Updater.saveStar(url, val);
+const handleStar = () => {
 };
 </script>
 <style lang="scss" scoped>

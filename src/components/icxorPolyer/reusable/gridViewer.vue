@@ -8,9 +8,9 @@
       >
         <el-image
           class="viewer-img"
-          :src="API.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)"
+          :src="UrlGenerator.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)"
           :preview-src-list="[
-            API.getPixivBlobOriginUrl(obj.meta.pid, obj.meta.page),
+            UrlGenerator.getPixivBlobOriginUrl(obj.meta.pid, obj.meta.page),
           ]"
           fit="cover"
           @click="openLoading()"
@@ -75,7 +75,7 @@
 </template>
 <script setup>
 import { nextTick, reactive } from "vue";
-import { API } from "@/api/api";
+import { UrlGenerator } from "@/api/api";
 import { ElLoading } from "element-plus";
 const remote = require("@electron/remote");
 const { Menu, MenuItem } = remote;

@@ -2,16 +2,14 @@
   <div class="importer-container">
     <div class="title">导入</div>
     <el-tabs class="tabs" v-model="currentTab">
-      <el-tab-pane label="本地导入" name="base">
-        <base-importer></base-importer>
+      <el-tab-pane label="Pixiv导入" name="pixiv">
+        <pixiv-importer></pixiv-importer>
       </el-tab-pane>
-      <el-tab-pane label="本地赋元" name="meta">
-        <meta-importer></meta-importer>
-      </el-tab-pane>
+      <el-tab-pane label="其他导入" name="oth"> </el-tab-pane>
       <el-tab-pane label="聚合" name="poly">
-        <picolt-importer></picolt-importer>
+        <poly-importer></poly-importer>
       </el-tab-pane>
-      <el-tab-pane label="Pixiv收藏" name="pixiv">
+      <el-tab-pane label="Pixiv收藏" name="bookmark">
         <PixivRemoteImporter></PixivRemoteImporter>
       </el-tab-pane>
     </el-tabs>
@@ -19,12 +17,11 @@
 </template>
 <script setup>
 import { ref } from "vue";
-import PicoltImporter from "@/components/icxorImporter/picoltImporter.vue";
-import BaseImporter from "@/components/icxorImporter/baseImporter.vue";
-import MetaImporter from "@/components/icxorImporter/metaImporter.vue";
+import PolyImporter from "@/components/icxorImporter/polyImporter.vue";
+import PixivImporter from "@/components/icxorImporter/pixivImporter.vue";
 import PixivRemoteImporter from "@/components/icxorImporter/pixivRemoteImporter.vue";
 
-const currentTab = ref("base");
+const currentTab = ref("pixiv");
 </script>
 <style lang="scss" scoped>
 .importer-container {

@@ -5,13 +5,13 @@
         class="viewer-img"
         :class="checkIfInSelected(tableData[currentIndex]) ? 'with-border' : ''"
         :src="
-          API.getPixivBlobThumUrl(
+          UrlGenerator.getPixivBlobThumUrl(
             tableData[currentIndex].meta.pid,
             tableData[currentIndex].meta.page
           )
         "
         :preview-src-list="[
-          API.getPixivBlobOriginUrl(
+          UrlGenerator.getPixivBlobOriginUrl(
             tableData[currentIndex].meta.pid,
             tableData[currentIndex].meta.page
           ),
@@ -35,7 +35,7 @@
         <el-image
           class="viewer-img"
           :class="checkIfInSelected(obj) ? 'with-border' : ''"
-          :src="API.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)"
+          :src="UrlGenerator.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)"
           fit="cover"
           @click="handleSelect(obj, index)"
           @contextmenu.prevent="handleRightClick($event, obj)"
@@ -55,7 +55,7 @@
 import { Picture } from "@element-plus/icons-vue";
 import { ElLoading } from "element-plus";
 import { nextTick } from "vue";
-import { API } from "@/api/api";
+import { UrlGenerator } from "@/api/api";
 import { onMounted, ref } from "vue";
 const remote = require("@electron/remote");
 const { Menu, MenuItem } = remote;

@@ -9,9 +9,9 @@
       <el-image
         class="viewer-img"
         :class="checkIfInSelected(obj) ? 'with-border' : ''"
-        :src="API.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)"
+        :src="UrlGenerator.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)"
         :preview-src-list="[
-          API.getPixivBlobOriginUrl(obj.meta.pid, obj.meta.page),
+          UrlGenerator.getPixivBlobOriginUrl(obj.meta.pid, obj.meta.page),
         ]"
         fit="cover"
         @click="openLoading()"
@@ -31,7 +31,7 @@
 import { Picture } from "@element-plus/icons-vue";
 import { ElLoading } from "element-plus";
 import { nextTick } from "vue";
-import { API } from "@/api/api";
+import { UrlGenerator } from "@/api/api";
 import { onMounted, ref } from "vue";
 const remote = require("@electron/remote");
 const { Menu, MenuItem } = remote;

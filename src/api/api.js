@@ -36,6 +36,24 @@ export class API {
     const resp = await ax.post("/illust/list", illustList);
     return resp.data;
   }
+  static async updateIllustsByMatch(illustList) {
+    const resp = await ax.put("/illust/list", illustList, {
+      params: {
+        byMatch: true,
+        addIfNotFound: false,
+      },
+    });
+    return resp.data;
+  }
+  static async coverIllustsByMatch(illustList) {
+    const resp = await ax.put("/illust/list", illustList, {
+      params: {
+        byMatch: true,
+        addIfNotFound: true,
+      },
+    });
+    return resp.data;
+  }
   static async getPicolt() {
     const resp = await ax.get("/illust/poly/list", {
       params: {
@@ -54,6 +72,17 @@ export class API {
     });
     return resp.data;
   }
+  static async getBookmark(isPrivate) {
+    const resp = await ax.get("/pixiv-api/pixiv-json/latest", {
+      params: {
+        private: isPrivate,
+      },
+    });
+    return resp.data;
+  }
+}
+
+export class UrlGenerator {
   static getPixivBlobThumUrl(pid, page) {
     let url = new URL(`${config.baseURL}/pixiv-api/blob/thum`);
     url.searchParams.append("pid", pid);
@@ -71,13 +100,5 @@ export class API {
     url.searchParams.append("pid", pid);
     url.searchParams.append("page", page);
     return url.href;
-  }
-  static async getBookmark(isPrivate) {
-    const resp = await ax.get("/pixiv-api/pixiv-json/latest", {
-      params: {
-        private: isPrivate,
-      },
-    });
-    return resp.data;
   }
 }

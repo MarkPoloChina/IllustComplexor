@@ -1,6 +1,6 @@
 import { createStore } from 'vuex'
-import { ConfigDB } from "@/js/manager/DBService";
-import { PathAnalyzer } from '@/js/manager/PathAnalyzer';
+import { ConfigDB } from "@/js/local/DBService";
+import { PathHelper } from '@/js/util/pathHelper';
 
 export default createStore({
   state: {
@@ -26,7 +26,7 @@ export default createStore({
         username = "MarkPolo";
       }
       this.commit("reviseUsername", username)
-      this.commit("reviseBasePath", PathAnalyzer.getBaseUrl());
+      this.commit("reviseBasePath", PathHelper.getBaseUrl());
     }
   },
   actions: {

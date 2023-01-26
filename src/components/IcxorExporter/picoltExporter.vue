@@ -104,8 +104,7 @@
 import { Check, Remove } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { onMounted, reactive, ref } from "vue";
-import { FilesEnum } from "@/js/viewer/FilesEnum";
-import { FileCopy } from "@/js/fileTransfer/FileCopy";
+
 const remote = require("@electron/remote");
 
 const log = reactive({ message: "", list: [] });
@@ -162,32 +161,32 @@ const startExport = () => {
       });
     }
   });
-  FileCopy.copyFilesTo(
-    urls,
-    exportOption.paths[0],
-    exportOption.nameStyle,
-    progress
-  )
-    .then((resp) => {
-      if (resp.status === 200) {
-        log.message = resp.message;
-        log.list = [];
-      }
-    })
-    .catch((resp) => {
-      log.message = resp.message;
-    });
+  // FileTransfer.copyFilesTo(
+  //   urls,
+  //   exportOption.paths[0],
+  //   exportOption.nameStyle,
+  //   progress
+  // )
+  //   .then((resp) => {
+  //     if (resp.status === 200) {
+  //       log.message = resp.message;
+  //       log.list = [];
+  //     }
+  //   })
+  //   .catch((resp) => {
+  //     log.message = resp.message;
+  //   });
 };
 const loadSourceFromTimeline = () => {
-  let list = FilesEnum.getTimelineEnum();
-  list
-    .sort((a, b) => {
-      return b.time - a.time;
-    })
-    .forEach((item) => {
-      timeline.push({ ...item });
-      sourceEnum.push({ value: item.time, label: item.time });
-    });
+  // let list = FilesEnum.getTimelineEnum();
+  // list
+  //   .sort((a, b) => {
+  //     return b.time - a.time;
+  //   })
+  //   .forEach((item) => {
+  //     timeline.push({ ...item });
+  //     sourceEnum.push({ value: item.time, label: item.time });
+  //   });
 };
 onMounted(() => {
   loadSourceFromTimeline();

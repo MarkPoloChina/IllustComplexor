@@ -50,7 +50,7 @@ import {
   Setting,
 } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
-import { ConfigDB, MetaDB } from "@/js/manager/DBService";
+import { ConfigDB, MetaDB } from "@/js/local/DBService";
 import { onMounted } from "vue";
 const remote = require("@electron/remote");
 
