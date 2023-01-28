@@ -29,7 +29,7 @@
 import { Picture } from "@element-plus/icons-vue";
 import { ElLoading } from "element-plus";
 import { nextTick } from "vue";
-import { UrlGenerator } from "@/js/util/pathHelper";
+import { UrlGenerator } from "@/js/util/path";
 import { onMounted, ref } from "vue";
 const remote = require("@electron/remote");
 const { Menu, MenuItem } = remote;

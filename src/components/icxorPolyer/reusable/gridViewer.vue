@@ -25,7 +25,7 @@
 </template>
 <script setup>
 import { nextTick, reactive } from "vue";
-import { UrlGenerator } from "@/js/util/pathHelper";
+import { UrlGenerator } from "@/js/util/path";
 import { ElLoading } from "element-plus";
 const remote = require("@electron/remote");
 const { Menu, MenuItem } = remote;

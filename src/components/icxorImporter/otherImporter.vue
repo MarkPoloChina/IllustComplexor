@@ -108,7 +108,7 @@
 <script setup>
 import { Check, Remove, Download } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { FilenameAdapter } from "@/js/util/filenameAdapter";
+import { FilenameAdapter } from "@/js/util/filename";
 import { reactive, ref, onMounted } from "vue";
 import BaseForm from "./reusable/baseForm.vue";
 import RemoteForm from "./reusable/remoteForm.vue";
@@ -221,7 +221,6 @@ const handleUpload = () => {
   });
 };
 const updateInfo = (data) => {
-  console.log(data);
   Object.keys(data).forEach((key) => {
     importOption.addition[key] = data[key];
   });

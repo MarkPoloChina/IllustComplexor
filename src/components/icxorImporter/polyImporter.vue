@@ -151,7 +151,7 @@
   </div>
 </template>
 <script setup>
-import { FilenameAdapter } from "@/js/util/filenameAdapter";
+import { FilenameAdapter } from "@/js/util/filename";
 import { Check, Remove, Download } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { reactive, ref, onMounted } from "vue";

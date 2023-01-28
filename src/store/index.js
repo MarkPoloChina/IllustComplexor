@@ -1,36 +1,32 @@
-import { createStore } from 'vuex'
+import { createStore } from "vuex";
 import { ConfigDB } from "@/js/local/DBService";
-import { PathHelper } from '@/js/util/pathHelper';
+const defaultSetting = {
+  username: "MarkPolo",
+  useIhsForPixiv: false,
+};
 
 export default createStore({
   state: {
     username: "",
-    basePath: ""
+    useIhsForPixiv: false,
   },
-  getters: {
-  },
+  getters: {},
   mutations: {
-    reviseUsername(state, username) {
-      state.username = username
+    reviseByKey(state, { key, value }) {
+      state[key] = value;
+      ConfigDB.setByKey(key, value);
     },
-    reviseBasePath(state, basePath) {
-      state.basePath = basePath
+    initStore(state) {
+      Object.keys(state).forEach((key) => {
+        let value = ConfigDB.getByKey(key);
+        if (value === null) {
+          ConfigDB.setByKey(key, defaultSetting[key]);
+          value = defaultSetting[key];
+        }
+        state[key] = value;
+      });
     },
-    saveToDB(state) {
-      ConfigDB.setByKey('username', state.username)
-    },
-    initStore() {
-      let username = ConfigDB.getByKey("username");
-      if (!username) {
-        ConfigDB.setByKey("username", "MarkPolo");
-        username = "MarkPolo";
-      }
-      this.commit("reviseUsername", username)
-      this.commit("reviseBasePath", PathHelper.getBaseUrl());
-    }
   },
-  actions: {
-  },
-  modules: {
-  }
-})
+  actions: {},
+  modules: {},
+});

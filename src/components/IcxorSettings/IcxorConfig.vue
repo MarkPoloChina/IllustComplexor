@@ -13,10 +13,18 @@
       <el-form :model="configForm" label-width="100px" style="width: 100%">
         <el-form-item label="本地路径">
           <el-input
-            v-model="configForm.path"
+            :model-value="PathHelper.getBaseUrl()"
             placeholder="请输入路径"
             disabled
           />
+        </el-form-item>
+      </el-form>
+    </div>
+    <div class="title-block">偏好信息</div>
+    <div class="form-block">
+      <el-form :model="configForm" label-width="100px" style="width: 100%">
+        <el-form-item label="优先IHS">
+          <el-switch v-model="configForm.useIhsForPixiv" />
         </el-form-item>
       </el-form>
     </div>
@@ -40,19 +48,21 @@
 import { Check, Remove } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import { onMounted, reactive } from "vue";
+import { PathHelper } from "@/js/util/path";
 
-const configForm = reactive({ username: "", path: "" });
+const configForm = reactive({ username: "", useIhsForPixiv: false });
 const store = useStore();
 onMounted(() => {
   initForm();
 });
 const initForm = () => {
   configForm.username = store.state.username;
-  configForm.path = store.state.basePath;
+  configForm.useIhsForPixiv = store.state.useIhsForPixiv;
 };
 const commit = () => {
-  store.commit("reviseUsername", configForm.username);
-  store.commit("saveToDB");
+  Object.keys(configForm).forEach((key) => {
+    store.commit("reviseByKey", { key: key, value: configForm[key] });
+  });
 };
 const revoke = () => {
   initForm();

@@ -95,7 +95,7 @@
 <script setup>
 import { Check, Remove, Download } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { FilenameAdapter } from "@/js/util/filenameAdapter";
+import { FilenameAdapter } from "@/js/util/filename";
 import { reactive, ref } from "vue";
 import { API } from "@/api/api";
 import MetaForm from "./reusable/metaForm.vue";
@@ -239,7 +239,6 @@ const handleUpload = () => {
   }
 };
 const updateInfo = (data) => {
-  console.log(data);
   Object.keys(data).forEach((key) => {
     if (data[key] === true) autoKeys.value.push(key);
     importOption.addition[key] = data[key];
