@@ -2,7 +2,8 @@
   <div>
     <el-alert type="info" show-icon :closable="false">
       <template #title>
-        识别Pixiv规则的文件名, 匹配对应的PID和Page, 然后生成聚合。
+        利用文件名人工创建Illust信息, 指向对应的Remote, 或者上传图片,
+        也可附加元数据。
       </template>
     </el-alert>
     <div class="import-area">
@@ -41,81 +42,25 @@
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item label="聚合类型">
+          <el-form-item label="基类型">
             <el-select
-              v-model="importOption.poly.type"
-              placeholder="选择聚合类型"
-              @change="getPolyParentEnum"
-            >
-              <el-option
-                v-for="item in [
-                  {
-                    value: 'picolt',
-                    label: 'PICOLT',
-                  },
-                  {
-                    value: 'lnr',
-                    label: 'LNR',
-                  },
-                  {
-                    value: 'author',
-                    label: '作者专题',
-                  },
-                ]"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="聚合簇">
-            <el-select
-              style="width: 100%"
-              v-model="importOption.poly.parent"
+              v-model="importOption.addition.type"
               filterable
               allow-create
-              placeholder="选择或填写聚合簇,可以留空"
+              placeholder="选择或填写类型"
             >
               <el-option
-                v-for="item in polyParentEnum"
-                :key="item.parent"
-                :label="item.parent"
-                :value="item.parent"
+                v-for="item in typeEnum"
+                :key="item.type"
+                :label="item.type"
+                :value="item.type"
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="聚合名">
-            <el-input
-              v-model="importOption.poly.name"
-              placeholder="输入聚合名"
-            />
+          <el-form-item>
+            <el-button @click="showDialog2 = true">远程指向</el-button>
+            <el-button @click="showDialog = true">附加元</el-button>
           </el-form-item>
-          <!-- <el-form-item label="Waifu2x">
-            <el-select
-              v-model="importOption.copy.waifu2x"
-              placeholder="选择Waifu2x"
-            >
-              <el-option
-                v-for="item in [
-                  {
-                    value: 'null',
-                    label: '原始版本',
-                  },
-                  {
-                    value: 'ncnn',
-                    label: 'NCNN',
-                  },
-                  {
-                    value: 'real',
-                    label: 'RealGUN',
-                  },
-                ]"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item> -->
         </el-form>
       </div>
     </div>
@@ -149,50 +94,62 @@
       ></el-button>
     </div>
   </div>
+  <BaseForm
+    v-model="showDialog"
+    @confirm="updateInfo"
+    ref="metaForm"
+  ></BaseForm>
+  <RemoteForm
+    v-model="showDialog2"
+    @confirm="updateInfo"
+    ref="remoteForm"
+  ></RemoteForm>
 </template>
 <script setup>
-import { FilenameAdapter } from "@/js/util/filenameAdapter";
 import { Check, Remove, Download } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
+import { FilenameAdapter } from "@/js/util/filenameAdapter";
 import { reactive, ref, onMounted } from "vue";
+import BaseForm from "./reusable/baseForm.vue";
+import RemoteForm from "./reusable/remoteForm.vue";
 import FilterTable from "./reusable/filterTable.vue";
 import { API } from "@/api/api";
-const remote = require("@electron/remote");
 
+const remote = require("@electron/remote");
+const typeEnum = ref([]);
 const log = reactive({ message: "", list: [] });
 const idto = ref([]);
 const selectedList = ref([]);
+const showDialog = ref(false);
+const showDialog2 = ref(false);
+const metaForm = ref();
+const remoteForm = ref();
 const table = ref();
-const polyParentEnum = ref([]);
-
 const initTab = () => {
   importOption.importType = "directory";
   importOption.paths = [];
   importOption.pathDir = "";
-  importOption.poly.type = "picolt";
-  importOption.poly.parent = "";
-  importOption.poly.name = "";
-  importOption.poly.waifu2x = "";
+  importOption.addition = { type: "" };
   log.list.length = 0;
   log.message = "";
   selectedList.value.length = 0;
   idto.value.length = 0;
-  getPolyParentEnum(importOption.poly.type);
+  metaForm.value.initForm();
+  remoteForm.value.initForm();
 };
+onMounted(() => {
+  getEnumType();
+});
 const importOption = reactive({
-  paths: [""],
+  paths: [],
   pathDir: "",
   importType: "directory",
-  poly: {
-    type: "picolt",
-    parent: "",
-    name: "",
-    waifu2x: "",
-  },
+  addition: { type: "" },
 });
-onMounted(() => {
-  getPolyParentEnum(importOption.poly.type);
-});
+const getEnumType = async () => {
+  const data = await API.getEnumSource();
+  typeEnum.value = data;
+};
 const getDirectory = async () => {
   let _path = "";
   _path = (
@@ -227,29 +184,26 @@ const startAction = async () => {
       ? FilenameAdapter.parseBaseFilenamesFromDirectory(importOption.pathDir)
       : importOption.paths;
   ElMessage.info("开始收集信息");
-  const resp = await FilenameAdapter.getPixivDtoSet(paths);
+  const resp = await FilenameAdapter.getOtherDtoSet(paths);
   ElMessage.info(`信息收集完成，共${resp.dto.length}条有效数据`);
   log.list = resp.log;
   idto.value = resp.dto;
 };
 const handleUpload = () => {
-  if (importOption.poly.name == "") {
-    ElMessage.error("至少应当填写聚合名");
-    return;
-  }
   let dto = [];
   selectedList.value.forEach((ele) => {
     const i = idto.value.find((value) => {
       return value.bid == ele;
     });
-    if (i) dto.push(i);
+    if (i)
+      dto.push({
+        bid: i.bid,
+        ...importOption.addition,
+        remote_info: { ...importOption.addition.remote_info, ...i.remote_info },
+      });
   });
-  API.coverPolyByMatch(
-    importOption.poly.type,
-    importOption.poly.parent,
-    importOption.poly.name,
-    dto
-  ).then((data) => {
+
+  API.newIllusts(dto).then((data) => {
     if (data.code == 200000) {
       ElMessage.info("处理完成");
       data.data.forEach((item) => {
@@ -266,12 +220,11 @@ const handleUpload = () => {
     }
   });
 };
-const getPolyParentEnum = (type) => {
-  if (type && type != "") {
-    API.getEnumPolyParent(type).then((data) => {
-      polyParentEnum.value = data;
-    });
-  }
+const updateInfo = (data) => {
+  console.log(data);
+  Object.keys(data).forEach((key) => {
+    importOption.addition[key] = data[key];
+  });
 };
 </script>
 <style lang="scss" scoped>

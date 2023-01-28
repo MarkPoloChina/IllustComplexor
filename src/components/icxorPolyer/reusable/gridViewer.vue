@@ -10,12 +10,8 @@
         >
           <el-image
             class="viewer-img"
-            :src="
-              UrlGenerator.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)
-            "
-            :preview-src-list="[
-              UrlGenerator.getPixivBlobOriginUrl(obj.meta.pid, obj.meta.page),
-            ]"
+            :src="UrlGenerator.getBlobThumUrl(obj)"
+            :preview-src-list="[UrlGenerator.getBlobOriginUrl(obj)]"
             fit="cover"
             @click="openLoading()"
             @contextmenu.prevent="handleRightClick($event, obj)"
@@ -29,7 +25,7 @@
 </template>
 <script setup>
 import { nextTick, reactive } from "vue";
-import { UrlGenerator } from "@/api/api";
+import { UrlGenerator } from "@/js/util/pathHelper";
 import { ElLoading } from "element-plus";
 const remote = require("@electron/remote");
 const { Menu, MenuItem } = remote;
@@ -38,7 +34,7 @@ defineProps({
   list: Array,
 });
 // eslint-disable-next-line no-undef
-const emit = defineEmits(["showInfo"]);
+const emit = defineEmits(["showInfo", "remove"]);
 const loadObj = reactive({ value: null });
 const openLoading = () => {
   const tryOpen = () =>
@@ -60,6 +56,14 @@ const handleRightClick = (event, obj) => {
       label: "详情",
       click: () => {
         emit("showInfo", obj);
+      },
+    })
+  );
+  menu.append(
+    new MenuItem({
+      label: "移除",
+      click: () => {
+        emit("remove", obj);
       },
     })
   );

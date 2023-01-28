@@ -14,12 +14,13 @@
       <el-table-column prop="type" label="类型" :min-width="80" />
       <el-table-column prop="meta.pid" label="PID" :min-width="120" />
       <el-table-column prop="meta.page" label="页号" :min-width="50" />
-      <el-table-column
-        prop="meta.title"
-        label="标题"
-        :min-width="280"
-        show-overflow-tooltip
-      />
+      <el-table-column label="标题" :min-width="280" show-overflow-tooltip>
+        <template #default="scope">
+          {{
+            scope.row.meta ? scope.row.meta.title : scope.row.remote_endpoint
+          }}
+        </template>
+      </el-table-column>
     </el-table>
   </div>
 </template>

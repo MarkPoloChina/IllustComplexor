@@ -57,7 +57,7 @@ import { ArrowLeftBold, ArrowRightBold } from "@element-plus/icons-vue";
 
 import { onMounted, reactive, ref, watch } from "vue";
 
-const show = ref(true);
+const show = ref(false);
 const values = reactive({
   value: {
     "illust.type": [],
@@ -91,7 +91,7 @@ onMounted(() => {
 });
 const poly = reactive({ value: null });
 const getPolyOptions = async () => {
-  const polies = await API.getPicolt();
+  const polies = await API.getPoly('picolt');
   poly.value = polies;
   polies.forEach((poly) => {
     let index = polyOptions.value.findIndex((val) => {

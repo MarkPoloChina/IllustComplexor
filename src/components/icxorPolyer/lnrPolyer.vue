@@ -1,12 +1,22 @@
 <template>
-  <el-tabs tab-position="left" class="viewer-imgs" v-if="lnr.length != 0">
+  <el-tabs
+    tab-position="left"
+    class="viewer-imgs"
+    v-if="lnr.length != 0"
+    v-model="currentKey"
+  >
     <el-tab-pane
-      :label="item.obj"
+      :label="item.name"
       v-for="(item, index) in lnr"
       :key="index"
       lazy
+      @contextmenu.prevent="handleRightClick"
     >
-      <GridViewer @showInfo="getInfo" :list="item.list"></GridViewer>
+      <GridViewer
+        @showInfo="getInfo"
+        :list="item.list"
+        @remove="handleRemove"
+      ></GridViewer>
     </el-tab-pane>
   </el-tabs>
   <el-empty description="无插图" v-else />
@@ -17,6 +27,10 @@ import InfoViewer from "./reusable/InfoViewer.vue";
 import GridViewer from "./reusable/gridViewer.vue";
 import { onMounted, reactive, ref } from "vue";
 import { API } from "@/api/api";
+import { ElMessage, ElMessageBox } from "element-plus";
+const currentKey = ref("0");
+const remote = require("@electron/remote");
+const { Menu, MenuItem } = remote;
 
 const lnr = reactive([]);
 const dialogVisible = ref(false);
@@ -25,10 +39,12 @@ onMounted(() => {
   getData();
 });
 const getData = async () => {
+  lnr.length = 0;
   const data = await API.getPolyWithIllust("lnr");
   data.forEach((item) => {
     lnr.push({
-      name: `${item.parent}-${item.name}`,
+      id: item.id,
+      name: item.parent ? `${item.parent}-${item.name}` : item.name,
       list: item.illusts,
     });
   });
@@ -45,60 +61,74 @@ const getData = async () => {
 //       return value.indexOf("Down") == -1 ? a.pid - b.pid : b.pid - a.pid;
 //     });
 // };
+const handleRightClick = (event) => {
+  event.preventDefault();
+  const menu = new Menu();
+  menu.append(
+    new MenuItem({
+      label: "详情",
+      click: () => {},
+    })
+  );
+  menu.append(
+    new MenuItem({
+      label: "删除当前聚合",
+      click: () => {
+        handleDeletePoly();
+      },
+    })
+  );
+  menu.popup({ window: remote.getCurrentWindow() });
+};
 const getInfo = (obj) => {
   currentInfo.value = obj;
   if (currentInfo.value) dialogVisible.value = true;
+};
+const handleRemove = (obj) => {
+  ElMessageBox.confirm("将从本聚合移除该图，确认？", "Warning", {
+    confirmButtonText: "OK",
+    cancelButtonText: "Cancel",
+    type: "warning",
+  })
+    .then(() => {
+      API.removePolyById(lnr[currentKey.value].id, [obj.id]).then(
+        async (data) => {
+          if (data.code == 200000) {
+            ElMessage.success("移除成功");
+            const data = await API.getPolyWithIllust("lnr");
+            data.forEach((item) => {
+              if (item.id == lnr[currentKey.value].id)
+                lnr[currentKey.value].list = item.illusts;
+            });
+          }
+        }
+      );
+    })
+    .catch(() => {});
+};
+const handleDeletePoly = () => {
+  ElMessageBox.confirm("将删除本聚合，确认？", "Warning", {
+    confirmButtonText: "OK",
+    cancelButtonText: "Cancel",
+    type: "warning",
+  })
+    .then(() => {
+      API.deletePoly(lnr[currentKey.value].id).then((data) => {
+        if (data.code == 200000) {
+          ElMessage.success("删除成功");
+          getData();
+        }
+      });
+    })
+    .catch(() => {});
 };
 </script>
 <style lang="scss" scoped>
 .viewer-imgs {
   height: 100%;
-  :deep(.el-tabs__header.is-left) {
-    max-width: 100px;
-    text-overflow: ellipsis;
-  }
 
-  .viewer-main {
+  > :deep(.el-tabs__content) {
     height: 100%;
-    @include Flex-C-CT;
-    .viewer-img-container {
-      display: inline-block;
-      position: relative;
-      padding: 10px;
-      .viewer-img {
-        border-radius: 5px;
-        height: calc((100vw - 300px) / 4);
-        width: calc((100vw - 300px) / 4);
-      }
-      .viewer-img-star {
-        @include Flex-RCT;
-        position: absolute;
-        bottom: 13px;
-        height: 32px;
-        width: calc(100% - 20px);
-        background-color: rgba(255, 255, 255, 0.8);
-        // backdrop-filter: blur(10px);
-        border-radius: 5px;
-      }
-      .viewer-img-info {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        // backdrop-filter: blur(10px);
-      }
-    }
-    .viewer-bar {
-      height: 60px;
-      width: 100%;
-      @include Flex-R-SB;
-      .viewer-info {
-        color: $color-greengray-2;
-        margin-left: 10px;
-      }
-      .viewer-sorter {
-        margin-right: 10px;
-      }
-    }
   }
 }
 </style>

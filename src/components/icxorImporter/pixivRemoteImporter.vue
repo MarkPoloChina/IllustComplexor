@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-alert type="info" show-icon :closable="false">
-      <template #title> 用于将Pixiv收藏数据导入基准。 </template>
+      <template #title> 导入Pixiv收藏。 </template>
     </el-alert>
     <!-- <el-steps :active="active" finish-status="success">
       <el-step title="Step 1" />

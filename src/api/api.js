@@ -1,6 +1,15 @@
 import axios from "axios";
 import config from "./config";
 const ax = axios.create({ baseURL: config.baseURL });
+
+/**
+ * API Class
+ * get - fetch info;
+ * new - create info while no conflict data;
+ * update - find and update or not found error;
+ * cover - find and update or not found but create;
+ * @class
+ */
 export class API {
   static async getEnumTimeline() {
     const resp = await ax.get("/illust/enum", {
@@ -16,6 +25,16 @@ export class API {
     const resp = await ax.get("/illust/enum", {
       params: {
         row: "type",
+        desc: false,
+      },
+    });
+    return resp.data;
+  }
+  static async getEnumPolyParent(requiredType) {
+    const resp = await ax.get("/illust/poly/enum", {
+      params: {
+        requiredType: requiredType,
+        row: "parent",
         desc: false,
       },
     });
@@ -81,6 +100,34 @@ export class API {
     });
     return resp.data;
   }
+  static async coverPolyByMatch(type, parent, name, illustList) {
+    const resp = await ax.post("/illust/poly/list", illustList, {
+      params: {
+        byMatch: true,
+        type: type,
+        parent: parent,
+        name: name,
+      },
+    });
+    return resp.data;
+  }
+  static async removePolyById(polyId, illustList) {
+    const resp = await ax.delete("/illust/poly/list", {
+      params: {
+        polyId: polyId,
+        illustList: illustList,
+      },
+    });
+    return resp.data;
+  }
+  static async deletePoly(polyId) {
+    const resp = await ax.delete("/illust/poly", {
+      params: {
+        polyId: polyId,
+      },
+    });
+    return resp.data;
+  }
   static async getBookmark(isPrivate) {
     const resp = await ax.get("/pixiv-api/pixiv-json/latest", {
       params: {
@@ -89,25 +136,12 @@ export class API {
     });
     return resp.data;
   }
-}
-
-export class UrlGenerator {
-  static getPixivBlobThumUrl(pid, page) {
-    let url = new URL(`${config.baseURL}/pixiv-api/blob/thum`);
-    url.searchParams.append("pid", pid);
-    url.searchParams.append("page", page);
-    return url.href;
-  }
-  static getPixivBlobOriginUrl(pid, page) {
-    let url = new URL(`${config.baseURL}/pixiv-api/blob/origin`);
-    url.searchParams.append("pid", pid);
-    url.searchParams.append("page", page);
-    return url.href;
-  }
-  static getPixivBlobSquareUrl(pid, page) {
-    let url = new URL(`${config.baseURL}/pixiv-api/blob/square`);
-    url.searchParams.append("pid", pid);
-    url.searchParams.append("page", page);
-    return url.href;
+  static async getRemoteBase() {
+    const resp = await ax.get("/illust/remote-base/list", {
+      params: {
+        withIllust: 0,
+      },
+    });
+    return resp.data;
   }
 }

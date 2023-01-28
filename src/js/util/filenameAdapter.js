@@ -76,4 +76,75 @@ export class FilenameAdapter {
   static parseBaseFilenamesFromDirectory = (path) => {
     return fs.readdirSync(path);
   };
+
+  /**
+   * @summary 从指定文件列表解析DTO, 但只用于确定Illust
+   * @param {Array<string>} [paths] 文件路径
+   */
+  static getPixivDtoSet = async (paths) => {
+    let list = [];
+    let logs = [];
+    let index = 0;
+    for (const item of paths) {
+      const filename = path.basename(item);
+      index++;
+      let log = { filename: filename, status: "ready", bid: index };
+      const reso = FilenameResolver.getObjFromFilename(filename);
+      if (reso) {
+        const dto = {
+          meta: {
+            pid: reso.pid,
+            page: reso.page,
+          },
+          bid: index,
+        };
+        const ti = list.findIndex((value) => {
+          return (
+            value.meta.pid == dto.meta.pid && value.meta.page == dto.meta.page
+          );
+        });
+        if (ti != -1) {
+          log.status = "ignore";
+          log.message = "重复识别";
+        } else list.push(dto);
+      } else {
+        log.status = "ignore";
+        log.message = "不可识别的文件";
+      }
+      logs.push(log);
+      // await sleep();
+    }
+    return { dto: list, log: logs };
+  };
+
+  /**
+   * @summary 从指定文件列表解析DTO, 但只用于确定文件名
+   * @param {Array<string>} [paths] 文件路径
+   */
+  static getOtherDtoSet = async (paths) => {
+    let list = [];
+    let logs = [];
+    let index = 0;
+    for (const item of paths) {
+      const filename = path.basename(item);
+      index++;
+      let log = { filename: filename, status: "ready", bid: index };
+      if ([".jpg", ".png", ".gif"].includes(path.extname(filename))) {
+        const dto = {
+          remote_info: {
+            remote_endpoint: filename,
+            thum_endpoint: filename.replace(path.extname(filename), ".jpg"),
+          },
+          bid: index,
+        };
+        list.push(dto);
+      } else {
+        log.status = "ignore";
+        log.message = "不可识别的文件";
+      }
+      logs.push(log);
+      // await sleep();
+    }
+    return { dto: list, log: logs };
+  };
 }
