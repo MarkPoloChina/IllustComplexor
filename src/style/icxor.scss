@@ -8,6 +8,7 @@
   --color-greengray-3: #607b84;
   --color-greengray-4: #b2c5cb;
   --color-bg: white;
+  --color-bg-alpha: #ffffffcc;
   --color-front: black;
 }
 html.dark {
@@ -21,6 +22,7 @@ html.dark {
   --color-greengray-4: #161e21;
   // --color-bg: #242526;
   --color-bg: #161616;
+  --color-bg-alpha: #171717cc;
   --color-front: white;
 }
 $color-stdblue-1: var(--color-stdblue-1);

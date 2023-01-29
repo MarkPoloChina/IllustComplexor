@@ -3,12 +3,14 @@ import { ConfigDB } from "@/js/local/DBService";
 const defaultSetting = {
   username: "MarkPolo",
   useIhsForPixiv: false,
+  localApi: true,
 };
 
 export default createStore({
   state: {
     username: "",
     useIhsForPixiv: false,
+    localApi: true,
   },
   getters: {},
   mutations: {

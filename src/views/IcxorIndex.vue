@@ -103,6 +103,10 @@ const initContext = () => {
   flex-direction: row;
   width: 100%;
   height: 100%;
+  // background-image: url("@/assets/img/avatar.jpg");
+  // background-size: cover;
+  background-color: var(--color-bg);
+
   .index-menu-container {
     height: 100%;
     background-color: $color-stdblue-1;
@@ -124,6 +128,7 @@ const initContext = () => {
   }
   .index-main {
     width: 100%;
+    // background-color: var(--color-bg-alpha);
   }
 }
 </style>

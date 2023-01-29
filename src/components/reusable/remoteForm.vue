@@ -105,7 +105,7 @@ const initForm = () => {
 };
 const handleConfirm = () => {
   dialogVisible.value = false;
-  emit("confirm", { remote_info: baseInfo });
+  emit("confirm", { data: { remote_info: baseInfo } });
 };
 // eslint-disable-next-line no-undef
 defineExpose({ initForm });

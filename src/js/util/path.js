@@ -78,19 +78,31 @@ export class UrlGenerator {
   }
 
   static getPixivBlobThumUrl(pid, page) {
-    let url = new URL(`${config.baseURL}/pixiv-api/blob/thum`);
+    let url = new URL(
+      `${
+        store.state.localApi ? config.baseURL : config.baseURL_mpi3s
+      }/pixiv-api/blob/thum`
+    );
     url.searchParams.append("pid", pid);
     url.searchParams.append("page", page);
     return url.href;
   }
   static getPixivBlobOriginUrl(pid, page) {
-    let url = new URL(`${config.baseURL}/pixiv-api/blob/origin`);
+    let url = new URL(
+      `${
+        store.state.localApi ? config.baseURL : config.baseURL_mpi3s
+      }/pixiv-api/blob/origin`
+    );
     url.searchParams.append("pid", pid);
     url.searchParams.append("page", page);
     return url.href;
   }
   static getPixivBlobSquareUrl(pid, page) {
-    let url = new URL(`${config.baseURL}/pixiv-api/blob/square`);
+    let url = new URL(
+      `${
+        store.state.localApi ? config.baseURL : config.baseURL_mpi3s
+      }/pixiv-api/blob/square`
+    );
     url.searchParams.append("pid", pid);
     url.searchParams.append("page", page);
     return url.href;

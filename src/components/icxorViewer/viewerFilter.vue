@@ -78,7 +78,7 @@
       <div class="item-bottom">
         <el-button :icon="MessageBox" circle @click="emit('openPolyDialog')" />
       </div>
-      <div>
+      <div class="item-bottom">
         <el-button :icon="EditPen" circle @click="emit('openUpdateDialog')" />
       </div>
       <div>

@@ -1,6 +1,9 @@
 import axios from "axios";
 import config from "./config";
-const ax = axios.create({ baseURL: config.baseURL });
+import store from "@/store";
+const ax = axios.create({
+  baseURL: store.state.localApi ? config.baseURL : config.baseURL_mpi3s,
+});
 
 /**
  * API Class

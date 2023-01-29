@@ -28,6 +28,14 @@
         </el-form-item>
       </el-form>
     </div>
+    <div class="title-block">调试信息</div>
+    <div class="form-block">
+      <el-form :model="configForm" label-width="100px" style="width: 100%">
+        <el-form-item label="本地API">
+          <el-switch v-model="configForm.localApi" />
+        </el-form-item>
+      </el-form>
+    </div>
     <div class="btn-block">
       <el-button
         @click="commit"
@@ -50,7 +58,11 @@ import { useStore } from "vuex";
 import { onMounted, reactive } from "vue";
 import { PathHelper } from "@/js/util/path";
 
-const configForm = reactive({ username: "", useIhsForPixiv: false });
+const configForm = reactive({
+  username: "",
+  useIhsForPixiv: false,
+  localApi: false,
+});
 const store = useStore();
 onMounted(() => {
   initForm();
@@ -58,6 +70,7 @@ onMounted(() => {
 const initForm = () => {
   configForm.username = store.state.username;
   configForm.useIhsForPixiv = store.state.useIhsForPixiv;
+  configForm.localApi = store.state.localApi;
 };
 const commit = () => {
   Object.keys(configForm).forEach((key) => {
