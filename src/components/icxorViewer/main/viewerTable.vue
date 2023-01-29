@@ -27,21 +27,33 @@
 <script setup>
 import { onMounted, ref } from "vue";
 
-const currentSelected = ref([]);
 const currentRow = ref();
 const table = ref();
 // eslint-disable-next-line no-undef
-defineProps({
+const props = defineProps({
   tableData: Array,
+  selections: Array,
 });
+// watch(props.selections, (val, oval) => {
+//   val.forEach((ele) => {
+//     if (!oval.includes(ele)) table.value.toggleRowSelection(ele);
+//   });
+//   oval.forEach((ele) => {
+//     if (!val.includes(ele)) table.value.toggleRowSelection(ele);
+//   });
+// });
 // eslint-disable-next-line no-undef
-const emits = defineEmits(["select-change", "selects-change"]);
+const emits = defineEmits(["select-change", "update:selections"]);
 const resetScroll = () => {
   table.value.setScrollTop(0);
 };
-onMounted(() => {});
+onMounted(() => {
+  props.selections.forEach((ele) => {
+    table.value.toggleRowSelection(ele);
+  });
+});
 const handleSelectionChange = (val) => {
-  currentSelected.value = val;
+  emits("update:selections", val);
 };
 const handleCurrentChange = (val) => {
   currentRow.value = val;

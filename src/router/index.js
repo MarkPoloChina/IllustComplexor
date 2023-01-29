@@ -1,49 +1,54 @@
-import { createRouter, createWebHashHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from "vue-router";
 
 const routes = [
   {
-    path: '/',
-    name: 'index',
-    redirect: 'home',
-    component: () => import('../views/IcxorIndex.vue'),
+    path: "/",
+    name: "index",
+    redirect: "home",
+    component: () => import("../views/IcxorIndex.vue"),
     children: [
       {
-        path: 'home',
-        name: 'home',
-        component: () => import('../views/basic/IcxorHome.vue')
+        path: "home",
+        name: "home",
+        component: () => import("../views/basic/IcxorHome.vue"),
       },
       {
-        path: 'importer',
-        name: 'importer',
-        component: () => import('../views/basic/IcxorImporter.vue')
+        path: "importer",
+        name: "importer",
+        component: () => import("../views/basic/IcxorImporter.vue"),
       },
       {
-        path: 'view',
-        name: 'viewer',
-        component: () => import('../views/basic/IcxorViewer.vue')
+        path: "view",
+        name: "viewer",
+        component: () => import("../views/basic/IcxorViewer.vue"),
       },
       {
-        path: 'poly',
-        name: 'polyer',
-        component: () => import('../views/basic/IcxorPolyer.vue')
+        path: "poly",
+        name: "polyer",
+        component: () => import("../views/basic/IcxorPolyer.vue"),
       },
       {
-        path: 'settings',
-        name: 'settings',
-        component: () => import('../views/setting/IcxorSettings.vue')
+        path: "settings",
+        name: "settings",
+        component: () => import("../views/setting/IcxorSettings.vue"),
       },
       {
-        path: 'exporter',
-        name: 'exporter',
-        component: () => import('../views/basic/IcxorExporter.vue')
-      }
-    ]
-  }
-]
+        path: "tools",
+        name: "tools",
+        component: () => import("../views/basic/IcxorTool.vue"),
+      },
+      {
+        path: "pixiv",
+        name: "pixiv",
+        component: () => import("../views/basic/IcxorPixiv.vue"),
+      },
+    ],
+  },
+];
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes
-})
+  routes,
+});
 
-export default router
+export default router;

@@ -1,80 +1,112 @@
 <template>
   <el-scrollbar class="info-container">
     <el-descriptions
-      v-if="info"
+      v-if="writableInfo"
       class="info"
       style="margin-bottom: 10px"
       title="基准"
       :column="1"
       border
+      direction="vertical"
     >
       <template #extra>
-        <el-button type="primary" size="small">操作</el-button>
+        <el-switch v-model="editable" :active-icon="Edit" />
       </template>
-      <el-descriptions-item label="Id">{{ info.id }}</el-descriptions-item>
-      <el-descriptions-item label="类型">{{ info.type }}</el-descriptions-item>
-      <el-descriptions-item label="评分"><el-rate :model-value="info.star" disabled/></el-descriptions-item>
+      <el-descriptions-item label="ID">{{
+        writableInfo.id
+      }}</el-descriptions-item>
+      <el-descriptions-item label="类型">{{
+        writableInfo.type
+      }}</el-descriptions-item>
+      <el-descriptions-item label="评分"
+        ><el-rate
+          v-model="writableInfo.star"
+          :disabled="!editable"
+          @change="emit('update:info', writableInfo)"
+      /></el-descriptions-item>
       <el-descriptions-item label="入库时间">
-        {{ info.date }}</el-descriptions-item
-      >
+        <el-date-picker
+          v-model="writableInfo.date"
+          value-format="YYYY-MM-DD"
+          type="date"
+          placeholder="Pick a day"
+          :disabled="!editable"
+      /></el-descriptions-item>
       <el-descriptions-item label="标签"></el-descriptions-item>
     </el-descriptions>
     <el-descriptions
-      v-if="info && info.meta"
+      v-if="writableInfo && writableInfo.meta"
       class="info"
       style="margin-bottom: 10px"
       title="元数据"
       :column="1"
       border
+      direction="vertical"
     >
       <template #extra>
         <el-button type="primary" size="small">在Pixiv打开</el-button>
       </template>
       <el-descriptions-item label="PId">{{
-        info.meta.pid
+        writableInfo.meta.pid
       }}</el-descriptions-item>
       <el-descriptions-item label="页号">{{
-        info.meta.page
+        writableInfo.meta.page
       }}</el-descriptions-item>
       <el-descriptions-item label="限制级">{{
-        info.meta.limit ?? "-"
+        writableInfo.meta.limit ?? "-"
       }}</el-descriptions-item>
       <el-descriptions-item label="作者">{{
-        info.meta.author ?? "-"
+        writableInfo.meta.author ?? "-"
       }}</el-descriptions-item>
       <el-descriptions-item label="收藏数">{{
-        info.meta.bookCnt ?? "-"
+        writableInfo.meta.bookCnt ?? "-"
       }}</el-descriptions-item>
       <el-descriptions-item label="标题">
-        {{ info.meta.title ?? "-" }}</el-descriptions-item
+        {{ writableInfo.meta.title ?? "-" }}</el-descriptions-item
       >
       <el-descriptions-item label="标签"></el-descriptions-item>
     </el-descriptions>
     <el-descriptions
-      v-if="info && info.poly"
+      v-if="writableInfo && writableInfo.poly"
       class="info"
       title="聚合数据"
       :column="1"
       border
+      direction="vertical"
     >
       <template #extra> </template>
       <el-descriptions-item label="聚合类型">{{
-        info.poly.type ?? "-"
+        writableInfo.poly.type ?? "-"
       }}</el-descriptions-item>
       <el-descriptions-item label="聚合簇">{{
-        info.poly.parent ?? "-"
+        writableInfo.poly.parent ?? "-"
       }}</el-descriptions-item>
       <el-descriptions-item label="聚合名">{{
-        info.poly.name ?? "-"
+        writableInfo.poly.name ?? "-"
       }}</el-descriptions-item>
     </el-descriptions>
+    <el-empty description="尚未选定" v-if="!info" />
   </el-scrollbar>
 </template>
 <script setup>
+import { Edit } from "@element-plus/icons-vue";
+import { computed, ref } from "vue";
+
 // eslint-disable-next-line no-undef
-defineProps({
+const props = defineProps({
   info: Object,
 });
+// eslint-disable-next-line no-undef
+const emit = defineEmits(["update:info"]);
+const writableInfo = computed({
+  get: () => {
+    return props.info;
+  },
+  set: (value) => {
+    emit("update:info", value);
+  },
+});
+const editable = ref(false);
 </script>
 <style lang="scss" scoped>
 .info-container {

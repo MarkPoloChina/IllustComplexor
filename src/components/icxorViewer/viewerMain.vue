@@ -11,6 +11,7 @@
       :tableData="list"
       ref="viewer"
       @select-change="handleSelectedChanged"
+      v-model:selections="selections"
     />
   </div>
 </template>
@@ -27,6 +28,7 @@ const emit = defineEmits(["select-change"]);
 defineProps({
   list: Array,
 });
+const selections = ref([]);
 const handleSelectedChanged = (val) => {
   emit("select-change", val);
 };
@@ -39,7 +41,15 @@ const handleSetType = (type) => {
 const handleFocusIndexChange = (action) => {
   viewer.value.handleIndexChange(action);
 };
+const getSelections = () => {
+  return selections.value;
+};
 // eslint-disable-next-line no-undef
-defineExpose({ handleResetScroll, handleSetType, handleFocusIndexChange });
+defineExpose({
+  handleResetScroll,
+  handleSetType,
+  handleFocusIndexChange,
+  getSelections,
+});
 </script>
 <style lang="scss" scoped></style>

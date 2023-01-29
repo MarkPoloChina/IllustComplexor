@@ -1,17 +1,15 @@
 <template>
   <div class="importer-container">
-    <div class="title">导出</div>
+    <div class="title">本地工具</div>
     <el-tabs class="tabs" v-model="currentTab">
-      <el-tab-pane label="PICOLT导出" name="picolt">
-        <picolt-exporter></picolt-exporter>
-      </el-tab-pane>
+      <el-tab-pane label="条件复制" name="copy"> </el-tab-pane>
+      <el-tab-pane label="重命名" name="rename"> </el-tab-pane>
     </el-tabs>
   </div>
 </template>
 <script setup>
 import { ref } from "vue";
-import PicoltExporter from "@/components/IcxorExporter/picoltExporter.vue";
-const currentTab = ref("picolt");
+const currentTab = ref("copy");
 </script>
 <style lang="scss" scoped>
 .importer-container {

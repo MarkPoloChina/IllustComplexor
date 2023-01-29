@@ -2,9 +2,12 @@
   <div>
     <el-dialog v-model="dialogVisible" title="元数据表单" width="60%">
       <el-form :model="baseInfo" label-width="100px" style="width: 100%">
-        <el-form-item label="自动注入">
+        <el-form-item label="对于全部" v-if="type == 'viewer'">
+          <el-switch v-model="updateAll" />
+        </el-form-item>
+        <el-form-item label="自动注入" v-if="type == 'pixiv'">
           <el-checkbox
-            v-model="baseInfo.meta.title"
+            v-model="autoKeys['meta.title']"
             label="标题"
             :disabled="disableChangeAuto"
           />
@@ -20,7 +23,7 @@
         <el-form-item label="评级">
           <el-rate v-model="baseInfo.star" />
         </el-form-item>
-        <el-form-item label="分级">
+        <el-form-item label="分级" v-if="type != 'other'">
           <el-select v-model="baseInfo.meta.limit" placeholder="Select">
             <el-option
               v-for="item in limitOptions"
@@ -41,16 +44,19 @@
   </div>
 </template>
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive, computed, ref } from "vue";
 
 const baseInfo = reactive({
   date: null,
   star: 0,
   meta: {
     limit: null,
-    title: false,
   },
 });
+const autoKeys = reactive({
+  "meta.title": false,
+});
+const updateAll = ref(false);
 const limitOptions = [
   {
     value: "R-18",
@@ -69,6 +75,7 @@ const limitOptions = [
 const props = defineProps({
   modelValue: Boolean,
   disableChangeAuto: Boolean,
+  type: String,
 });
 // eslint-disable-next-line no-undef
 const emit = defineEmits(["update:modelValue", "confirm"]);
@@ -84,11 +91,29 @@ const initForm = () => {
   baseInfo.date = null;
   baseInfo.star = 0;
   baseInfo.meta.limit = null;
-  baseInfo.meta.title = false;
+  updateAll.value = false;
+  autoKeys["meta.title"] = false;
 };
 const handleConfirm = () => {
   dialogVisible.value = false;
-  emit("confirm", { ...baseInfo, star: baseInfo.star || null });
+  let controller = null;
+  let data = null;
+  if (props.type == "pixiv") {
+    controller = [];
+    Object.keys(autoKeys).forEach((key) => {
+      if (autoKeys[key]) controller.push(key);
+    });
+    data = { ...baseInfo, star: baseInfo.star || null };
+  } else if (props.type == "other") {
+    data = { ...baseInfo, star: baseInfo.star || null, meta: null };
+  } else if (props.type == "viewer") {
+    data = { ...baseInfo, star: baseInfo.star || null };
+    controller = updateAll.value;
+  }
+  emit("confirm", {
+    data: data,
+    controller: controller,
+  });
 };
 // eslint-disable-next-line no-undef
 defineExpose({ initForm });

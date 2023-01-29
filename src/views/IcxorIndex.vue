@@ -18,12 +18,16 @@
           <el-icon><Upload /></el-icon>
           <template #title>导入</template>
         </el-menu-item>
-        <el-menu-item index="/exporter">
-          <el-icon><Download /></el-icon>
-          <template #title>导出</template>
+        <el-menu-item index="/tools">
+          <el-icon><CopyDocument /></el-icon>
+          <template #title>本地工具</template>
         </el-menu-item>
         <el-menu-item index="/pixiv">
-          <el-icon><img src="../assets/img/pixiv-square-logo.svg" style="user-select: none;"/></el-icon>
+          <el-icon
+            ><img
+              src="../assets/img/pixiv-square-logo.svg"
+              style="user-select: none"
+          /></el-icon>
           <template #title>Pixiv</template>
         </el-menu-item>
         <div style="flex-grow: 1"></div>
@@ -46,8 +50,8 @@ import {
   PictureRounded,
   MessageBox,
   Upload,
-  Download,
   Setting,
+  CopyDocument,
 } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import { ConfigDB, MetaDB } from "@/js/local/DBService";

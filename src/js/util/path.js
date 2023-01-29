@@ -16,11 +16,13 @@ export class PathHelper {
 }
 
 export class UrlGenerator {
-  static getBlobThumUrl(obj) {
+  static getBlobThumUrl(obj, noSquare = false) {
     let base_url;
     if (obj.type == "pixiv") {
       if (!store.state.useIhsForPixiv)
-        return this.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page);
+        return noSquare
+          ? this.getPixivBlobThumUrl(obj.meta.pid, obj.meta.page)
+          : this.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page);
       else
         return `${
           config.ihs_pixiv_base
@@ -33,7 +35,31 @@ export class UrlGenerator {
     else if (obj.remote_type == "cos") base_url = config.cos_base;
     if (obj.thum_base) {
       return `${base_url}${obj.thum_base.url}/${encodeURIComponent(
-        `${obj.thum_endpoint}`
+        obj.thum_endpoint
+      )}`;
+    } else return "";
+  }
+
+  static getBlobThumUrlWhenErr(obj, noSquare = false) {
+    let base_url;
+    if (obj.type == "pixiv") {
+      if (store.state.useIhsForPixiv)
+        return noSquare
+          ? this.getPixivBlobThumUrl(obj.meta.pid, obj.meta.page)
+          : this.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page);
+      else
+        return `${
+          config.ihs_pixiv_base
+        }/${FilenameResolver.generatePixivWebFilename(
+          obj.meta.pid,
+          obj.meta.page,
+          "jpg"
+        )}`;
+    } else if (obj.remote_type == "mpihs") base_url = config.ihs_base;
+    else if (obj.remote_type == "cos") base_url = config.cos_base;
+    if (obj.thum_base) {
+      return `${base_url}${obj.thum_base.url}/${encodeURIComponent(
+        obj.thum_endpoint
       )}`;
     } else return "";
   }
@@ -45,7 +71,9 @@ export class UrlGenerator {
     else if (obj.remote_type == "mpihs") base_url = config.ihs_base;
     else if (obj.remote_type == "cos") base_url = config.cos_base;
     if (obj.remote_base)
-      return `${base_url}${obj.remote_base.url}/${obj.remote_endpoint}`;
+      return `${base_url}${obj.remote_base.url}/${encodeURIComponent(
+        obj.remote_endpoint
+      )}`;
     else return "";
   }
 
@@ -66,5 +94,6 @@ export class UrlGenerator {
     url.searchParams.append("pid", pid);
     url.searchParams.append("page", page);
     return url.href;
+    // return await API.getThumUrl(pid, page);
   }
 }

@@ -4,7 +4,11 @@
       <el-image
         class="viewer-img"
         :class="checkIfInSelected(tableData[currentIndex]) ? 'with-border' : ''"
-        :src="UrlGenerator.getBlobThumUrl(tableData[currentIndex])"
+        :src="
+          tableData[currentIndex].err
+            ? UrlGenerator.getBlobThumUrlWhenErr(tableData[currentIndex], true)
+            : UrlGenerator.getBlobThumUrl(tableData[currentIndex], true)
+        "
         :preview-src-list="[
           UrlGenerator.getBlobOriginUrl(tableData[currentIndex]),
         ]"
@@ -24,14 +28,20 @@
         :key="index"
         class="viewer-flow-container"
       >
+        <div class="expo"></div>
         <el-image
           class="viewer-img"
           :class="checkIfInSelected(obj) ? 'with-border' : ''"
-          :src="UrlGenerator.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page)"
+          :src="
+            obj.err
+              ? UrlGenerator.getBlobThumUrlWhenErr(obj)
+              : UrlGenerator.getBlobThumUrl(obj)
+          "
           fit="cover"
           @click="handleSelect(obj, index)"
           @contextmenu.prevent="handleRightClick($event, obj)"
           loading="lazy"
+          @error="obj.err = true"
         >
           <template #error>
             <div class="image-slot">
@@ -174,14 +184,21 @@ defineExpose({ resetScroll, handleIndexChange });
     .viewer-flow-container {
       display: inline-block;
       position: relative;
-      padding: 5px;
       width: calc((100% - 10px));
-      .viewer-img {
-        border-radius: 5px;
+      .expo {
         position: relative;
         width: 100%;
-        height: 100%;
-        min-height: 50px;
+        height: 0;
+        padding: 0;
+        padding-bottom: 100%;
+      }
+      .viewer-img {
+        border-radius: 5px;
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        bottom: 5px;
+        left: 5px;
         .image-slot {
           display: flex;
           justify-content: center;

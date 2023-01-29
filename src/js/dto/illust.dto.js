@@ -1,14 +1,16 @@
 export class IllustDto {
-  constructor() {
+  constructor(type, star, date, pid, page, title) {
+    this.type = type;
+    this.star = star;
+    this.date = date;
     this.meta = {
-      pid: undefined,
-      page: undefined,
-      title: undefined,
+      pid: pid,
+      page: page,
+      title: title,
     };
   }
   type;
   star;
   date;
   meta;
-  bid;
 }

@@ -90,6 +90,7 @@
     @confirm="updateInfo"
     :disableChangeAuto="log.list.length != 0"
     ref="metaForm"
+    type="pixiv"
   ></MetaForm>
 </template>
 <script setup>
@@ -98,7 +99,7 @@ import { ElMessage } from "element-plus";
 import { FilenameAdapter } from "@/js/util/filename";
 import { reactive, ref } from "vue";
 import { API } from "@/api/api";
-import MetaForm from "./reusable/metaForm.vue";
+import MetaForm from "../reusable/metaForm.vue";
 import FilterTable from "./reusable/filterTable.vue";
 
 const remote = require("@electron/remote");
@@ -238,16 +239,9 @@ const handleUpload = () => {
       break;
   }
 };
-const updateInfo = (data) => {
-  Object.keys(data).forEach((key) => {
-    if (data[key] === true) autoKeys.value.push(key);
-    importOption.addition[key] = data[key];
-  });
-  if (data.meta) {
-    for (const key of Object.keys(data.meta)) {
-      if (data.meta[key] === true) autoKeys.value.push(`meta.${key}`);
-    }
-  }
+const updateInfo = ({ data, controller }) => {
+  importOption.addition = { ...importOption.addition, ...data };
+  autoKeys.value.push(...controller);
 };
 </script>
 <style lang="scss" scoped>

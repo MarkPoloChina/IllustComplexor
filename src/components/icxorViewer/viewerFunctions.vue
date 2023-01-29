@@ -28,7 +28,7 @@
       </el-button-group>
       <el-pagination
         background
-        layout="prev, pager, next"
+        layout="total, prev, pager, next"
         :total="illustCount"
         :page-size="100"
         :pager-count="5"
@@ -37,44 +37,25 @@
         @current-change="handlePageChange"
       />
     </div>
-    <div class="viewer-function">
-      <el-rate v-model="curStarNum" v-if="hasSelected" />
-      <!-- <el-button
-        :icon="show ? ArrowLeftBold : ArrowRightBold"
-        circle
-        @click="show ^= true"
-      /> -->
-    </div>
   </div>
 </template>
 <script setup>
 import { ArrowLeftBold, ArrowRightBold } from "@element-plus/icons-vue";
-import { computed, reactive } from "vue";
+import { reactive } from "vue";
 
 const viewerController = reactive({
   type: "table",
-});
-const curStarNum = computed({
-  get() {
-    return props.curStar;
-  },
-  set(v) {
-    emit("curStarChange", v);
-  },
 });
 // eslint-disable-next-line no-undef
 const emit = defineEmits([
   "pageChange",
   "viewerTypeChange",
-  "curStarChange",
   "focusUp",
   "focusDown",
 ]);
 // eslint-disable-next-line no-undef
-const props = defineProps({
+defineProps({
   illustCount: Number,
-  curStar: Number,
-  hasSelected: Boolean,
 });
 const handlePageChange = (val) => {
   emit("pageChange", val);
@@ -96,12 +77,6 @@ const viewerTypeChange = (val) => {
     :deep(.el-radio) {
       margin-right: 10px;
     }
-  }
-  .viewer-function {
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
   }
 }
 </style>

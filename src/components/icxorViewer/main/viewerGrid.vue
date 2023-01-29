@@ -1,28 +1,36 @@
 <template>
   <el-scrollbar style="border-radius: 5px" class="grid-container" ref="table">
-    <div
-      v-for="(obj, index) in tableData"
-      :key="index"
-      class="viewer-grid-container"
-    >
-      <div class="expo"></div>
-      <el-image
-        class="viewer-img"
-        :class="checkIfInSelected(obj) ? 'with-border' : ''"
-        :src="UrlGenerator.getBlobThumUrl(obj)"
-        :preview-src-list="[UrlGenerator.getBlobOriginUrl(obj)]"
-        fit="cover"
-        @click="openLoading()"
-        @contextmenu.prevent="handleRightClick($event, obj)"
-        loading="lazy"
+    <el-row>
+      <el-col
+        :span="8"
+        v-for="(obj, index) in tableData"
+        :key="index"
+        class="viewer-grid-container"
       >
-        <template #error>
-          <div class="image-slot">
-            <el-icon><Picture /></el-icon>
-          </div>
-        </template>
-      </el-image>
-    </div>
+        <div class="expo"></div>
+        <el-image
+          class="viewer-img"
+          :class="checkIfInSelected(obj) ? 'with-border' : ''"
+          :src="
+            obj.err
+              ? UrlGenerator.getBlobThumUrlWhenErr(obj)
+              : UrlGenerator.getBlobThumUrl(obj)
+          "
+          :preview-src-list="[UrlGenerator.getBlobOriginUrl(obj)]"
+          fit="cover"
+          @click="openLoading()"
+          @contextmenu.prevent="handleRightClick($event, obj)"
+          loading="lazy"
+          @error="obj.err = true"
+        >
+          <template #error>
+            <div class="image-slot">
+              <el-icon><Picture /></el-icon>
+            </div>
+          </template>
+        </el-image>
+      </el-col>
+    </el-row>
   </el-scrollbar>
 </template>
 <script setup>
@@ -37,18 +45,29 @@ const { Menu, MenuItem } = remote;
 const currentSelected = ref([]);
 const currentRow = ref();
 // eslint-disable-next-line no-undef
-const emit = defineEmits(["select-change", "selects-change"]);
+const emit = defineEmits(["select-change", "update:selections"]);
 const table = ref();
 // eslint-disable-next-line no-undef
-defineProps({
+const props = defineProps({
   tableData: Array,
+  selections: Array,
 });
-// eslint-disable-next-line no-undef
-// const emits = defineEmits(["select-change", "selects-change"]);
 const resetScroll = () => {
   table.value.setScrollTop(0);
 };
-onMounted(() => {});
+// watch(props.selections, (val, oval) => {
+//   val.forEach((ele) => {
+//     if (!oval.includes(ele)) handleToggle(ele);
+//   });
+//   oval.forEach((ele) => {
+//     if (!val.includes(ele)) handleToggle(ele);
+//   });
+// });
+onMounted(() => {
+  props.selections.forEach((ele) => {
+    currentSelected.value.push(ele);
+  });
+});
 const openLoading = () => {
   const tryOpen = () =>
     nextTick(() => {
@@ -92,17 +111,15 @@ const handleToggle = (obj) => {
   });
   if (index != -1) currentSelected.value.splice(index, 1);
   else currentSelected.value.push(obj);
+  emit("update:selections", currentSelected.value);
 };
 const checkIfInSelected = (obj) => {
   return (
-    currentSelected.value.find((val) => {
+    currentSelected.value.findIndex((val) => {
       return obj.id == val.id;
-    }) !== undefined
+    }) != -1
   );
 };
-// const handleSelectionChange = (val) => {
-//   currentSelected.value = val;
-// };
 // eslint-disable-next-line no-undef
 defineExpose({ resetScroll });
 </script>
@@ -111,10 +128,7 @@ defineExpose({ resetScroll });
   height: 100%;
   position: relative;
   .viewer-grid-container {
-    display: inline-block;
     position: relative;
-    margin: 10px;
-    width: calc((100% - 60px) / 3);
     .expo {
       position: relative;
       width: 100%;
@@ -125,10 +139,10 @@ defineExpose({ resetScroll });
     .viewer-img {
       border-radius: 5px;
       position: absolute;
-      top: 0;
-      right: 0;
-      bottom: 0;
-      left: 0;
+      top: 10px;
+      right: 10px;
+      bottom: 10px;
+      left: 10px;
       .image-slot {
         display: flex;
         justify-content: center;

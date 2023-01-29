@@ -8,15 +8,26 @@
           :key="index"
           class="viewer-img-container"
         >
+          <div class="expo"></div>
           <el-image
             class="viewer-img"
-            :src="UrlGenerator.getBlobThumUrl(obj)"
+            :src="
+              obj.err
+                ? UrlGenerator.getBlobThumUrlWhenErr(obj)
+                : UrlGenerator.getBlobThumUrl(obj)
+            "
             :preview-src-list="[UrlGenerator.getBlobOriginUrl(obj)]"
             fit="cover"
             @click="openLoading()"
             @contextmenu.prevent="handleRightClick($event, obj)"
             lazy
+            @error="obj.err = true"
           />
+          <template #error>
+            <div class="image-slot">
+              <el-icon><Picture /></el-icon>
+            </div>
+          </template>
         </el-col>
       </el-row>
     </el-scrollbar>
@@ -24,6 +35,7 @@
   </div>
 </template>
 <script setup>
+import { Picture } from "@element-plus/icons-vue";
 import { nextTick, reactive } from "vue";
 import { UrlGenerator } from "@/js/util/path";
 import { ElLoading } from "element-plus";
@@ -67,10 +79,10 @@ const handleRightClick = (event, obj) => {
       },
     })
   );
-  menu.append(new MenuItem({ type: "separator" })); //分割线
-  menu.append(
-    new MenuItem({ label: "testCheckBox", type: "checkbox", checked: true })
-  );
+  // menu.append(new MenuItem({ type: "separator" })); //分割线
+  // menu.append(
+  //   new MenuItem({ label: "testCheckBox", type: "checkbox", checked: true })
+  // );
   menu.popup({ window: remote.getCurrentWindow() });
 };
 </script>
@@ -79,12 +91,31 @@ const handleRightClick = (event, obj) => {
   height: 100%;
   @include Flex-C-CT;
   .viewer-img-container {
-    @include Flex-CT;
-    padding: 10px 0 10px 0;
+    position: relative;
+    .expo {
+      position: relative;
+      width: 100%;
+      height: 0;
+      padding: 0;
+      padding-bottom: 100%;
+    }
     .viewer-img {
       border-radius: 5px;
-      height: calc((100vw - 320px) / 4);
-      width: calc((100vw - 320px) / 4);
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      bottom: 10px;
+      left: 10px;
+      .image-slot {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        background: var(--el-fill-color-light);
+        color: var(--el-text-color-secondary);
+        font-size: 30px;
+      }
     }
   }
   .viewer-info {

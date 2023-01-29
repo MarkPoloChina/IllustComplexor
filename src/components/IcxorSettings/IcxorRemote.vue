@@ -1,11 +1,7 @@
 <template>
   <div class="config">
     <div class="title-block">远程基</div>
-    <div class="form-block">
-      <el-form :model="configForm" label-width="100px" style="width: 100%">
-        <el-form-item label="用户名"> </el-form-item>
-      </el-form>
-    </div>
+    <div class="form-block"></div>
     <div class="btn-block">
       <el-button
         @click="commit"
@@ -24,9 +20,8 @@
 </template>
 <script setup>
 import { Check, Remove } from "@element-plus/icons-vue";
-import { onMounted, reactive } from "vue";
+import { onMounted } from "vue";
 
-const configForm = reactive({});
 onMounted(() => {
   initForm();
 });

@@ -41,81 +41,9 @@
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item label="聚合类型">
-            <el-select
-              v-model="importOption.poly.type"
-              placeholder="选择聚合类型"
-              @change="getPolyParentEnum"
-            >
-              <el-option
-                v-for="item in [
-                  {
-                    value: 'picolt',
-                    label: 'PICOLT',
-                  },
-                  {
-                    value: 'lnr',
-                    label: 'LNR',
-                  },
-                  {
-                    value: 'author',
-                    label: '作者专题',
-                  },
-                ]"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
+          <el-form-item>
+            <el-button @click="showDialog = true">聚合设置</el-button>
           </el-form-item>
-          <el-form-item label="聚合簇">
-            <el-select
-              style="width: 100%"
-              v-model="importOption.poly.parent"
-              filterable
-              allow-create
-              placeholder="选择或填写聚合簇,可以留空"
-            >
-              <el-option
-                v-for="item in polyParentEnum"
-                :key="item.parent"
-                :label="item.parent"
-                :value="item.parent"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="聚合名">
-            <el-input
-              v-model="importOption.poly.name"
-              placeholder="输入聚合名"
-            />
-          </el-form-item>
-          <!-- <el-form-item label="Waifu2x">
-            <el-select
-              v-model="importOption.copy.waifu2x"
-              placeholder="选择Waifu2x"
-            >
-              <el-option
-                v-for="item in [
-                  {
-                    value: 'null',
-                    label: '原始版本',
-                  },
-                  {
-                    value: 'ncnn',
-                    label: 'NCNN',
-                  },
-                  {
-                    value: 'real',
-                    label: 'RealGUN',
-                  },
-                ]"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item> -->
         </el-form>
       </div>
     </div>
@@ -148,50 +76,46 @@
         circle
       ></el-button>
     </div>
+    <PolyForm
+      v-model="showDialog"
+      @confirm="updateInfo"
+      ref="polyForm"
+      type="pixiv"
+    ></PolyForm>
   </div>
 </template>
 <script setup>
 import { FilenameAdapter } from "@/js/util/filename";
 import { Check, Remove, Download } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
-import { reactive, ref, onMounted } from "vue";
+import { reactive, ref } from "vue";
 import FilterTable from "./reusable/filterTable.vue";
 import { API } from "@/api/api";
+import PolyForm from "../reusable/polyForm.vue";
 const remote = require("@electron/remote");
 
 const log = reactive({ message: "", list: [] });
 const idto = ref([]);
 const selectedList = ref([]);
 const table = ref();
-const polyParentEnum = ref([]);
+const polyForm = ref()
+const showDialog = ref(false);
 
 const initTab = () => {
   importOption.importType = "directory";
   importOption.paths = [];
   importOption.pathDir = "";
-  importOption.poly.type = "picolt";
-  importOption.poly.parent = "";
-  importOption.poly.name = "";
-  importOption.poly.waifu2x = "";
   log.list.length = 0;
   log.message = "";
   selectedList.value.length = 0;
   idto.value.length = 0;
-  getPolyParentEnum(importOption.poly.type);
+  polyForm.value.initForm()
 };
 const importOption = reactive({
   paths: [""],
   pathDir: "",
   importType: "directory",
-  poly: {
-    type: "picolt",
-    parent: "",
-    name: "",
-    waifu2x: "",
-  },
-});
-onMounted(() => {
-  getPolyParentEnum(importOption.poly.type);
+  poly: {},
 });
 const getDirectory = async () => {
   let _path = "";
@@ -244,7 +168,7 @@ const handleUpload = () => {
     });
     if (i) dto.push(i);
   });
-  API.coverPolyByMatch(
+  API.addPolyByMatch(
     importOption.poly.type,
     importOption.poly.parent,
     importOption.poly.name,
@@ -266,12 +190,8 @@ const handleUpload = () => {
     }
   });
 };
-const getPolyParentEnum = (type) => {
-  if (type && type != "") {
-    API.getEnumPolyParent(type).then((data) => {
-      polyParentEnum.value = data;
-    });
-  }
+const updateInfo = ({ data }) => {
+  importOption.poly = { ...importOption.poly, ...data };
 };
 </script>
 <style lang="scss" scoped>

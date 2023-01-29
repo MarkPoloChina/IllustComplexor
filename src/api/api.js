@@ -15,7 +15,7 @@ export class API {
     const resp = await ax.get("/illust/enum", {
       params: {
         row: "date",
-        desc: true,
+        desc: 1,
         requiredType: "pixiv",
       },
     });
@@ -25,7 +25,7 @@ export class API {
     const resp = await ax.get("/illust/enum", {
       params: {
         row: "type",
-        desc: false,
+        desc: 0,
       },
     });
     return resp.data;
@@ -35,7 +35,7 @@ export class API {
       params: {
         requiredType: requiredType,
         row: "parent",
-        desc: false,
+        desc: 0,
       },
     });
     return resp.data;
@@ -67,8 +67,8 @@ export class API {
   static async updateIllustsByMatch(illustList) {
     const resp = await ax.put("/illust/list", illustList, {
       params: {
-        byMatch: true,
-        addIfNotFound: false,
+        byMatch: 1,
+        addIfNotFound: 0,
       },
     });
     return resp.data;
@@ -76,8 +76,27 @@ export class API {
   static async coverIllustsByMatch(illustList) {
     const resp = await ax.put("/illust/list", illustList, {
       params: {
-        byMatch: true,
-        addIfNotFound: true,
+        byMatch: 1,
+        addIfNotFound: 0,
+      },
+    });
+    return resp.data;
+  }
+  static async updateIllustsById(illustList) {
+    const resp = await ax.put("/illust/list", illustList, {
+      params: {
+        byMatch: 0,
+        addIfNotFound: 0,
+      },
+    });
+    return resp.data;
+  }
+  static async updateIllustsByCondition(conditionObj, illustDto) {
+    const resp = await ax.put("/illust/list", [illustDto], {
+      params: {
+        addIfNotFound: 0,
+        byCondition: 1,
+        conditionJson: conditionObj,
       },
     });
     return resp.data;
@@ -85,7 +104,7 @@ export class API {
   static async getPoly(type) {
     const resp = await ax.get("/illust/poly/list", {
       params: {
-        withIllust: false,
+        withIllust: 0,
         type: type,
       },
     });
@@ -94,19 +113,41 @@ export class API {
   static async getPolyWithIllust(type) {
     const resp = await ax.get("/illust/poly/list", {
       params: {
-        withIllust: true,
+        withIllust: 1,
         type: type,
       },
     });
     return resp.data;
   }
-  static async coverPolyByMatch(type, parent, name, illustList) {
+  static async addPolyByMatch(type, parent, name, illustList) {
     const resp = await ax.post("/illust/poly/list", illustList, {
       params: {
-        byMatch: true,
+        byMatch: 1,
         type: type,
         parent: parent,
         name: name,
+      },
+    });
+    return resp.data;
+  }
+  static async addPolyById(type, parent, name, illustList) {
+    const resp = await ax.post("/illust/poly/list", illustList, {
+      params: {
+        type: type,
+        parent: parent,
+        name: name,
+      },
+    });
+    return resp.data;
+  }
+  static async addPolyByCondition(type, parent, name, conditionObj) {
+    const resp = await ax.post("/illust/poly/list", null, {
+      params: {
+        byCondition: 1,
+        type: type,
+        parent: parent,
+        name: name,
+        conditionJson: conditionObj,
       },
     });
     return resp.data;
@@ -132,6 +173,15 @@ export class API {
     const resp = await ax.get("/pixiv-api/pixiv-json/latest", {
       params: {
         private: isPrivate,
+      },
+    });
+    return resp.data;
+  }
+  static async getThumUrl(pid, page) {
+    const resp = await ax.get("/pixiv-api/url/square", {
+      params: {
+        pid: pid,
+        page: page,
       },
     });
     return resp.data;

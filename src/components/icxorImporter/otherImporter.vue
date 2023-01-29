@@ -94,11 +94,12 @@
       ></el-button>
     </div>
   </div>
-  <BaseForm
+  <MetaForm
     v-model="showDialog"
     @confirm="updateInfo"
     ref="metaForm"
-  ></BaseForm>
+    type="other"
+  ></MetaForm>
   <RemoteForm
     v-model="showDialog2"
     @confirm="updateInfo"
@@ -110,8 +111,8 @@ import { Check, Remove, Download } from "@element-plus/icons-vue";
 import { ElMessage } from "element-plus";
 import { FilenameAdapter } from "@/js/util/filename";
 import { reactive, ref, onMounted } from "vue";
-import BaseForm from "./reusable/baseForm.vue";
-import RemoteForm from "./reusable/remoteForm.vue";
+import MetaForm from "../reusable/metaForm.vue";
+import RemoteForm from "../reusable/remoteForm.vue";
 import FilterTable from "./reusable/filterTable.vue";
 import { API } from "@/api/api";
 
@@ -220,10 +221,8 @@ const handleUpload = () => {
     }
   });
 };
-const updateInfo = (data) => {
-  Object.keys(data).forEach((key) => {
-    importOption.addition[key] = data[key];
-  });
+const updateInfo = ({ data }) => {
+  importOption.addition = { ...importOption.addition, ...data };
 };
 </script>
 <style lang="scss" scoped>
