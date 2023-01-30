@@ -11,12 +11,8 @@
           <div class="expo"></div>
           <el-image
             class="viewer-img"
-            :src="
-              obj.err
-                ? UrlGenerator.getBlobThumUrlWhenErr(obj)
-                : UrlGenerator.getBlobThumUrl(obj)
-            "
-            :preview-src-list="[UrlGenerator.getBlobOriginUrl(obj)]"
+            :src="UrlGenerator.getBlobUrl(obj, 'square_medium')"
+            :preview-src-list="[UrlGenerator.getBlobUrl(obj, 'original')]"
             fit="cover"
             @click="openLoading()"
             @contextmenu.prevent="handleRightClick($event, obj)"

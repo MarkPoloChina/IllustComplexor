@@ -4,13 +4,9 @@
       <el-image
         class="viewer-img"
         :class="checkIfInSelected(tableData[currentIndex]) ? 'with-border' : ''"
-        :src="
-          tableData[currentIndex].err
-            ? UrlGenerator.getBlobThumUrlWhenErr(tableData[currentIndex], true)
-            : UrlGenerator.getBlobThumUrl(tableData[currentIndex], true)
-        "
+        :src="UrlGenerator.getBlobUrl(tableData[currentIndex], 'medium')"
         :preview-src-list="[
-          UrlGenerator.getBlobOriginUrl(tableData[currentIndex]),
+          UrlGenerator.getBlobUrl(tableData[currentIndex], 'original'),
         ]"
         fit="contain"
         @click="openLoading()"
@@ -32,11 +28,7 @@
         <el-image
           class="viewer-img"
           :class="checkIfInSelected(obj) ? 'with-border' : ''"
-          :src="
-            obj.err
-              ? UrlGenerator.getBlobThumUrlWhenErr(obj)
-              : UrlGenerator.getBlobThumUrl(obj)
-          "
+          :src="UrlGenerator.getBlobUrl(obj, 'square_medium')"
           fit="cover"
           @click="handleSelect(obj, index)"
           @contextmenu.prevent="handleRightClick($event, obj)"

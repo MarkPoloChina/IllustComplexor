@@ -103,11 +103,11 @@ const handleConfirm = () => {
     Object.keys(autoKeys).forEach((key) => {
       if (autoKeys[key]) controller.push(key);
     });
-    data = { ...baseInfo, star: baseInfo.star || null };
+    data = { ...baseInfo };
   } else if (props.type == "other") {
-    data = { ...baseInfo, star: baseInfo.star || null, meta: null };
+    data = { ...baseInfo, meta: null };
   } else if (props.type == "viewer") {
-    data = { ...baseInfo, star: baseInfo.star || null };
+    data = { ...baseInfo };
     controller = updateAll.value;
   }
   emit("confirm", {

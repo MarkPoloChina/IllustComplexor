@@ -3,6 +3,7 @@ import { app } from "electron";
 import config from "@/api/config";
 import store from "@/store/index";
 import { FilenameResolver } from "./filename";
+import { API, PixivProxy } from "@/api/api";
 
 const remote = require("@electron/remote");
 
@@ -16,14 +17,11 @@ export class PathHelper {
 }
 
 export class UrlGenerator {
-  static getBlobThumUrl(obj, noSquare = false) {
+  static getBlobUrl(obj, type) {
+    if (type == "original") return this.getBlobOriginUrl(obj);
     let base_url;
     if (obj.type == "pixiv") {
-      if (!store.state.useIhsForPixiv)
-        return noSquare
-          ? this.getPixivBlobThumUrl(obj.meta.pid, obj.meta.page)
-          : this.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page);
-      else
+      if (store.state.useIhsForPixiv ^ obj.err)
         return `${
           config.ihs_pixiv_base
         }/${FilenameResolver.generatePixivWebFilename(
@@ -31,30 +29,7 @@ export class UrlGenerator {
           obj.meta.page,
           "jpg"
         )}`;
-    } else if (obj.remote_type == "mpihs") base_url = config.ihs_base;
-    else if (obj.remote_type == "cos") base_url = config.cos_base;
-    if (obj.thum_base) {
-      return `${base_url}${obj.thum_base.url}/${encodeURIComponent(
-        obj.thum_endpoint
-      )}`;
-    } else return "";
-  }
-
-  static getBlobThumUrlWhenErr(obj, noSquare = false) {
-    let base_url;
-    if (obj.type == "pixiv") {
-      if (store.state.useIhsForPixiv)
-        return noSquare
-          ? this.getPixivBlobThumUrl(obj.meta.pid, obj.meta.page)
-          : this.getPixivBlobSquareUrl(obj.meta.pid, obj.meta.page);
-      else
-        return `${
-          config.ihs_pixiv_base
-        }/${FilenameResolver.generatePixivWebFilename(
-          obj.meta.pid,
-          obj.meta.page,
-          "jpg"
-        )}`;
+      else return this.getPixivBlobUrl(obj.meta.pid, obj.meta.page, type);
     } else if (obj.remote_type == "mpihs") base_url = config.ihs_base;
     else if (obj.remote_type == "cos") base_url = config.cos_base;
     if (obj.thum_base) {
@@ -67,7 +42,8 @@ export class UrlGenerator {
   static getBlobOriginUrl(obj) {
     let base_url;
     if (obj.type == "pixiv")
-      return this.getPixivBlobOriginUrl(obj.meta.pid, obj.meta.page);
+      return this.getPixivBlobUrl(obj.meta.pid, obj.meta.page, "original");
+    // return await this.getPixivBlobOriginLocalUrl(obj.meta.pid, obj.meta.page);
     else if (obj.remote_type == "mpihs") base_url = config.ihs_base;
     else if (obj.remote_type == "cos") base_url = config.cos_base;
     if (obj.remote_base)
@@ -77,35 +53,19 @@ export class UrlGenerator {
     else return "";
   }
 
-  static getPixivBlobThumUrl(pid, page) {
+  static getPixivBlobUrl(pid, page, type) {
     let url = new URL(
       `${
         store.state.localApi ? config.baseURL : config.baseURL_mpi3s
-      }/pixiv-api/blob/thum`
+      }/pixiv-api/${type == "original" ? "blob-s" : "blob"}`
     );
     url.searchParams.append("pid", pid);
     url.searchParams.append("page", page);
+    url.searchParams.append("type", type);
     return url.href;
   }
-  static getPixivBlobOriginUrl(pid, page) {
-    let url = new URL(
-      `${
-        store.state.localApi ? config.baseURL : config.baseURL_mpi3s
-      }/pixiv-api/blob/origin`
-    );
-    url.searchParams.append("pid", pid);
-    url.searchParams.append("page", page);
-    return url.href;
-  }
-  static getPixivBlobSquareUrl(pid, page) {
-    let url = new URL(
-      `${
-        store.state.localApi ? config.baseURL : config.baseURL_mpi3s
-      }/pixiv-api/blob/square`
-    );
-    url.searchParams.append("pid", pid);
-    url.searchParams.append("page", page);
-    return url.href;
-    // return await API.getThumUrl(pid, page);
+  static async getPixivBlobOriginLocalUrl(pid, page) {
+    const url = await API.getOriginUrl(pid, page);
+    return PixivProxy.getLocalUrlFromUrl(url);
   }
 }

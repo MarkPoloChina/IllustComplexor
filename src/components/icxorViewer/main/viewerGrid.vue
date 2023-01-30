@@ -11,12 +11,8 @@
         <el-image
           class="viewer-img"
           :class="checkIfInSelected(obj) ? 'with-border' : ''"
-          :src="
-            obj.err
-              ? UrlGenerator.getBlobThumUrlWhenErr(obj)
-              : UrlGenerator.getBlobThumUrl(obj)
-          "
-          :preview-src-list="[UrlGenerator.getBlobOriginUrl(obj)]"
+          :src="UrlGenerator.getBlobUrl(obj, 'square_medium')"
+          :preview-src-list="[UrlGenerator.getBlobUrl(obj, 'original')]"
           fit="cover"
           @click="openLoading()"
           @contextmenu.prevent="handleRightClick($event, obj)"

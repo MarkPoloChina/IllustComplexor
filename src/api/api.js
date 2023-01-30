@@ -4,6 +4,11 @@ import store from "@/store";
 const ax = axios.create({
   baseURL: store.state.localApi ? config.baseURL : config.baseURL_mpi3s,
 });
+const ax_pixiv_proxy = axios.create({
+  headers: {
+    Referer: "https://www.pixiv.net/",
+  },
+});
 
 /**
  * API Class
@@ -180,11 +185,12 @@ export class API {
     });
     return resp.data;
   }
-  static async getThumUrl(pid, page) {
-    const resp = await ax.get("/pixiv-api/url/square", {
+  static async getOriginUrl(pid, page) {
+    const resp = await ax.get("/pixiv-api/url", {
       params: {
         pid: pid,
         page: page,
+        type: "original",
       },
     });
     return resp.data;
@@ -196,5 +202,12 @@ export class API {
       },
     });
     return resp.data;
+  }
+}
+
+export class PixivProxy {
+  static async getLocalUrlFromUrl(url) {
+    const resp = await ax_pixiv_proxy.get(url);
+    return URL.createObjectUrl(resp.data);
   }
 }
