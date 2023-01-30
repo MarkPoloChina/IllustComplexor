@@ -61,6 +61,7 @@
         ref="table"
         :list="log.list"
         v-model:selected="selectedList"
+        :loading="loading"
       ></FilterTable>
     </div>
     <div class="btn-block">
@@ -95,7 +96,7 @@
 </template>
 <script setup>
 import { Check, Remove, Download } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { FilenameAdapter } from "@/js/util/filename";
 import { reactive, ref } from "vue";
 import { API } from "@/api/api";
@@ -104,12 +105,12 @@ import FilterTable from "./reusable/filterTable.vue";
 
 const remote = require("@electron/remote");
 const log = reactive({ message: "", list: [] });
-const idto = ref([]);
 const selectedList = ref([]);
 const showDialog = ref(false);
 const autoKeys = ref([]);
 const metaForm = ref();
 const table = ref();
+const loading = ref(false);
 const initTab = () => {
   importOption.importType = "directory";
   importOption.importPolicy = "add";
@@ -119,7 +120,6 @@ const initTab = () => {
   log.list.length = 0;
   log.message = "";
   selectedList.value.length = 0;
-  idto.value.length = 0;
   autoKeys.value.length = 0;
   metaForm.value.initForm();
 };
@@ -151,7 +151,7 @@ const getFile = async () => {
   if (_path.length == 0) return;
   else importOption.paths = _path;
 };
-const startAction = async () => {
+const startAction = () => {
   if (
     (importOption.importType == "directory" && importOption.pathDir == "") ||
     (importOption.importType == "files" && importOption.paths.length == 0)
@@ -159,27 +159,27 @@ const startAction = async () => {
     ElMessage.error("路径非法");
     return;
   }
-  const paths =
-    importOption.importType == "directory"
-      ? FilenameAdapter.parseBaseFilenamesFromDirectory(importOption.pathDir)
-      : importOption.paths;
   ElMessage.info("开始收集信息");
-  const resp = await FilenameAdapter.getPixivDtoList(paths, autoKeys.value);
-  ElMessage.info(`信息收集完成，共${resp.dto.length}条有效数据`);
-  log.list = resp.log;
-  idto.value = resp.dto;
+  loading.value = true;
+  const process = async (paths) => {
+    const resp = await FilenameAdapter.getPixivDtoList(paths, autoKeys.value);
+    ElMessage.info(`信息收集完成，共${resp.length}条数据`);
+    loading.value = false;
+    log.list = resp;
+  };
+  if (importOption.importType == "directory") {
+    FilenameAdapter.parseBaseFilenamesFromDirectoryAsync(
+      importOption.pathDir
+    ).then((paths) => {
+      process(paths);
+    });
+  } else process(importOption.paths);
 };
 const checkIfNoConflict = () => {
   for (let idx of selectedList.value) {
-    const ti = log.list.findIndex((value) => {
-      return value.bid == idx;
-    });
     if (
-      ti !== -1 &&
-      log.list[ti].status == "conflict" &&
-      selectedList.value.findIndex((value) => {
-        return value == log.list[ti].compareBid;
-      }) != -1
+      log.list[idx].status == "conflict" &&
+      selectedList.value.includes(log.list[idx].compareId)
     )
       return false;
   }
@@ -190,54 +190,57 @@ const handleUpload = () => {
     ElMessage.error("尚有冲突未解决");
     return;
   }
-  let dto = [];
-  selectedList.value.forEach((ele) => {
-    const i = idto.value.find((value) => {
-      return value.bid == ele;
-    });
-    if (i)
-      dto.push({
-        bid: i.bid,
-        type: "pixiv",
-        ...importOption.addition,
-        meta: { ...importOption.addition.meta, ...i.meta },
+  ElMessageBox.confirm(
+    `将${selectedList.value.length}个项目进行上传，确认？`,
+    "Warning",
+    {
+      confirmButtonText: "OK",
+      cancelButtonText: "Cancel",
+      type: "warning",
+    }
+  )
+    .then(() => {
+      let dto = [];
+      selectedList.value.forEach((idx) => {
+        dto.push({
+          bid: idx,
+          type: "pixiv",
+          ...importOption.addition,
+          meta: { ...importOption.addition.meta, ...log.list[idx].dto.meta },
+        });
       });
-  });
+      switch (importOption.importPolicy) {
+        case "add":
+          API.newIllusts(dto).then((data) => {
+            finAction(data);
+          });
+          break;
+        case "modify":
+          API.updateIllustsByMatch(dto).then((data) => {
+            finAction(data);
+          });
+          break;
+        case "cover":
+          API.coverIllustsByMatch(dto).then((data) => {
+            finAction(data);
+          });
+          break;
+        default:
+          break;
+      }
+    })
+    .catch(() => {});
   const finAction = (data) => {
     if (data.code == 200000) {
       ElMessage.info("处理完成");
       data.data.forEach((item) => {
-        const f = log.list.find((_item) => {
-          return _item.bid == item.bid;
-        });
-        if (f) {
-          f.status = item.status;
-          f.message = item.message;
-        }
+        log.list[item.bid].status = item.status;
+        log.list[item.bid].message = item.message;
       });
       selectedList.value.length = 0;
       table.value.clearSelection();
     }
   };
-  switch (importOption.importPolicy) {
-    case "add":
-      API.newIllusts(dto).then((data) => {
-        finAction(data);
-      });
-      break;
-    case "modify":
-      API.updateIllustsByMatch(dto).then((data) => {
-        finAction(data);
-      });
-      break;
-    case "cover":
-      API.coverIllustsByMatch(dto).then((data) => {
-        finAction(data);
-      });
-      break;
-    default:
-      break;
-  }
 };
 const updateInfo = ({ data, controller }) => {
   importOption.addition = { ...importOption.addition, ...data };

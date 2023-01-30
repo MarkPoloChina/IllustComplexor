@@ -91,13 +91,18 @@ export class FilenameAdapter {
    * @param {Array<string} [autoList] 请求注入字段
    */
   static getPixivDtoList = async (paths, autoList) => {
-    let list = [];
     let logs = [];
     let index = 0;
     for (const item of paths) {
       const filename = path.basename(item);
-      index++;
-      let log = { filename: filename, status: "ready", bid: index };
+
+      let log = {
+        oriIdx: index,
+        filename: filename,
+        status: "ready",
+        dto: null,
+        message: "OK",
+      };
       const reso = FilenameResolver.getObjFromFilename(filename);
       if (reso) {
         const dto = {
@@ -106,39 +111,38 @@ export class FilenameAdapter {
             page: reso.page,
             title: autoList.includes("meta.title") ? reso.title : null,
           },
-          bid: index,
         };
-        const ti = list.findIndex((value) => {
+        const ti = logs.findIndex((value) => {
+          if (!value.dto) return false;
           return (
-            value.meta.pid == dto.meta.pid && value.meta.page == dto.meta.page
+            value.dto.meta.pid == dto.meta.pid &&
+            value.dto.meta.page == dto.meta.page
           );
         });
         if (ti != -1) {
-          const fi = logs.findIndex((value) => {
-            return value.bid == list[ti].bid;
-          });
           if (autoList.includes("meta.title")) {
             // 需要扩展时修改这里
-            logs[fi].status = "conflict";
-            logs[fi].message = `与文件${log.filename}发生冲突`;
-            logs[fi].compareBid = log.bid;
+            logs[ti].status = "conflict";
+            logs[ti].message = `与文件${log.filename}发生冲突`;
+            logs[ti].compareId = index;
             log.status = "conflict";
-            log.message = `与文件${logs[fi].filename}发生冲突`;
-            log.compareBid = logs[fi].bid;
-            list.push(dto);
+            log.message = `与文件${logs[ti].filename}发生冲突`;
+            log.compareId = ti;
+            log.dto = dto;
           } else {
             log.status = "ignore";
             log.message = "重复识别";
           }
-        } else list.push(dto);
+        } else log.dto = dto;
       } else {
         log.status = "ignore";
         log.message = "不可识别的文件";
       }
       logs.push(log);
+      index++;
       // await sleep();
     }
-    return { dto: list, log: logs };
+    return logs;
   };
 
   /**
@@ -147,6 +151,14 @@ export class FilenameAdapter {
    */
   static parseBaseFilenamesFromDirectory = (path) => {
     return fs.readdirSync(path);
+  };
+
+  /**
+   * @summary 从指定目录异步解析文件
+   * @param {string} [path] 文件路径
+   */
+  static parseBaseFilenamesFromDirectoryAsync = (path) => {
+    return fs.readdir(path);
   };
 
   /**
