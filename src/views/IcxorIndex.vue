@@ -99,8 +99,7 @@ const initContext = () => {
 </script>
 <style lang="scss" scoped>
 .index-container {
-  display: flex;
-  flex-direction: row;
+  @include Flex-R;
   width: 100%;
   height: 100%;
   // background-image: url("@/assets/img/avatar.jpg");
@@ -110,6 +109,7 @@ const initContext = () => {
   .index-menu-container {
     height: 100%;
     background-color: $color-stdblue-1;
+    flex: none;
     .index-menu {
       @include Flex-C;
       height: 100%;
@@ -127,7 +127,8 @@ const initContext = () => {
     }
   }
   .index-main {
-    width: 100%;
+    flex: auto;
+    overflow: hidden;
     // background-color: var(--color-bg-alpha);
   }
 }

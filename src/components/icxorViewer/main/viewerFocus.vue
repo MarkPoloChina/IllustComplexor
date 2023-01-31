@@ -31,7 +31,7 @@
           :src="UrlGenerator.getBlobUrl(obj, 'square_medium')"
           fit="cover"
           @click="handleSelect(obj, index)"
-          @contextmenu.prevent="handleRightClick($event, obj)"
+          @contextmenu.prevent="handleRightClick($event, obj, index)"
           loading="lazy"
           @error="obj.err = true"
         >
@@ -55,7 +55,6 @@ const remote = require("@electron/remote");
 const { Menu, MenuItem } = remote;
 
 const currentSelected = ref([]);
-const currentRow = ref();
 const currentIndex = ref(0);
 // eslint-disable-next-line no-undef
 const emit = defineEmits(["select-change", "selects-change"]);
@@ -122,7 +121,6 @@ const checkIfInSelected = (obj) => {
 };
 const handleSelect = (obj, index) => {
   currentIndex.value = index;
-  currentRow.value = obj;
   emit("select-change", obj);
 };
 const handleIndexChange = (action) => {

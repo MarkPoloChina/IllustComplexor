@@ -66,10 +66,11 @@ const viewerTypeChange = (val) => {
 </script>
 <style lang="scss" scoped>
 .viewer-func {
+  padding-top: 15px;
   width: 100%;
+  height: calc(100% - 15px);
   .viewer-controller {
     width: 100%;
-    margin-bottom: 10px;
     display: flex;
     flex-direction: row;
     justify-content: space-between;

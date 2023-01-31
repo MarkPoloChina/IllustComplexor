@@ -20,10 +20,6 @@
         <div class="func-row">
           <ViewerFunctions
             :illust-count="illustCount"
-            :hasSelected="
-              currentSelected.value != null &&
-              currentSelected.value != undefined
-            "
             @page-change="
               viewerMain.handleResetScroll();
               getIllusts($event);
@@ -38,6 +34,7 @@
         <ViewerInfo
           :info="currentSelected.value"
           @update:info="handleSingleIllustChange"
+          @close="currentSelected.value = null"
         ></ViewerInfo>
       </div>
     </div>
@@ -246,10 +243,11 @@ const handlePoly = ({ data, controller }) => {
   overflow: auto;
   .title {
     @include Uni-Main-Title;
+    flex: none;
   }
   .main {
     padding: 0;
-    flex-basis: calc(100% - 52px);
+    flex: auto;
     position: relative;
     display: flex;
     flex-direction: row;
@@ -263,34 +261,30 @@ const handlePoly = ({ data, controller }) => {
       height: calc(100% - 20px);
       &.selector-col {
         margin-left: 0;
-        flex-grow: 0;
-        flex-shrink: 0;
+        flex: none;
       }
       &.main-and-func-col {
-        flex-grow: 2;
-        flex-shrink: 2;
+        flex: auto;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
         align-items: stretch;
-        flex-basis: 400px;
-        overflow: auto;
+        overflow: hidden;
         .main-row {
-          max-height: calc(100% - 100px);
-          flex-grow: 1;
+          flex: auto;
+          overflow: hidden;
         }
         .func-row {
           align-self: center;
-          flex-shrink: 0;
+          flex: none;
           width: 100%;
         }
       }
       &.info-col {
         margin-right: 0;
-        flex-grow: 1;
-        flex-shrink: 1;
-        max-width: 240px;
-        flex-basis: 150px;
+        flex: none;
+        padding: 0;
+        height: 100%;
       }
     }
   }

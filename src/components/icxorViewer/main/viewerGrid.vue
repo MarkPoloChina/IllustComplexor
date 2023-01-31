@@ -39,7 +39,6 @@ const remote = require("@electron/remote");
 const { Menu, MenuItem } = remote;
 
 const currentSelected = ref([]);
-const currentRow = ref();
 // eslint-disable-next-line no-undef
 const emit = defineEmits(["select-change", "update:selections"]);
 const table = ref();
@@ -51,14 +50,6 @@ const props = defineProps({
 const resetScroll = () => {
   table.value.setScrollTop(0);
 };
-// watch(props.selections, (val, oval) => {
-//   val.forEach((ele) => {
-//     if (!oval.includes(ele)) handleToggle(ele);
-//   });
-//   oval.forEach((ele) => {
-//     if (!val.includes(ele)) handleToggle(ele);
-//   });
-// });
 onMounted(() => {
   props.selections.forEach((ele) => {
     currentSelected.value.push(ele);
@@ -83,7 +74,6 @@ const handleRightClick = (event, obj) => {
     new MenuItem({
       label: "详情",
       click: () => {
-        currentRow.value = obj;
         emit("select-change", obj);
       },
     })

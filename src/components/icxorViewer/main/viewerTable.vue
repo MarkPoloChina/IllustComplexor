@@ -27,21 +27,12 @@
 <script setup>
 import { onMounted, ref } from "vue";
 
-const currentRow = ref();
 const table = ref();
 // eslint-disable-next-line no-undef
 const props = defineProps({
   tableData: Array,
   selections: Array,
 });
-// watch(props.selections, (val, oval) => {
-//   val.forEach((ele) => {
-//     if (!oval.includes(ele)) table.value.toggleRowSelection(ele);
-//   });
-//   oval.forEach((ele) => {
-//     if (!val.includes(ele)) table.value.toggleRowSelection(ele);
-//   });
-// });
 // eslint-disable-next-line no-undef
 const emits = defineEmits(["select-change", "update:selections"]);
 const resetScroll = () => {
@@ -56,7 +47,6 @@ const handleSelectionChange = (val) => {
   emits("update:selections", val);
 };
 const handleCurrentChange = (val) => {
-  currentRow.value = val;
   emits("select-change", val);
 };
 // eslint-disable-next-line no-undef
