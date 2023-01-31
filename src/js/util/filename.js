@@ -95,7 +95,6 @@ export class FilenameAdapter {
     let index = 0;
     for (const item of paths) {
       const filename = path.basename(item);
-
       let log = {
         oriIdx: index,
         filename: filename,
@@ -166,13 +165,17 @@ export class FilenameAdapter {
    * @param {Array<string>} [paths] 文件路径
    */
   static getPixivDtoSet = async (paths) => {
-    let list = [];
     let logs = [];
     let index = 0;
     for (const item of paths) {
       const filename = path.basename(item);
-      index++;
-      let log = { filename: filename, status: "ready", bid: index };
+      let log = {
+        oriIdx: index,
+        filename: filename,
+        status: "ready",
+        dto: null,
+        message: "OK",
+      };
       const reso = FilenameResolver.getObjFromFilename(filename);
       if (reso) {
         const dto = {
@@ -180,25 +183,27 @@ export class FilenameAdapter {
             pid: reso.pid,
             page: reso.page,
           },
-          bid: index,
         };
-        const ti = list.findIndex((value) => {
+        const ti = logs.findIndex((value) => {
+          if (!value.dto) return false;
           return (
-            value.meta.pid == dto.meta.pid && value.meta.page == dto.meta.page
+            value.dto.meta.pid == dto.meta.pid &&
+            value.dto.meta.page == dto.meta.page
           );
         });
         if (ti != -1) {
           log.status = "ignore";
           log.message = "重复识别";
-        } else list.push(dto);
+        } else log.dto = dto;
       } else {
         log.status = "ignore";
         log.message = "不可识别的文件";
       }
       logs.push(log);
+      index++;
       // await sleep();
     }
-    return { dto: list, log: logs };
+    return logs;
   };
 
   /**
@@ -206,29 +211,32 @@ export class FilenameAdapter {
    * @param {Array<string>} [paths] 文件路径
    */
   static getOtherDtoSet = async (paths) => {
-    let list = [];
     let logs = [];
     let index = 0;
     for (const item of paths) {
       const filename = path.basename(item);
-      index++;
-      let log = { filename: filename, status: "ready", bid: index };
+      let log = {
+        oriIdx: index,
+        filename: filename,
+        status: "ready",
+        dto: null,
+        message: "OK",
+      };
       if ([".jpg", ".png", ".gif"].includes(path.extname(filename))) {
-        const dto = {
+        log.dto = {
           remote_info: {
             remote_endpoint: filename,
             thum_endpoint: filename.replace(path.extname(filename), ".jpg"),
           },
-          bid: index,
         };
-        list.push(dto);
       } else {
         log.status = "ignore";
         log.message = "不可识别的文件";
       }
       logs.push(log);
+      index++;
       // await sleep();
     }
-    return { dto: list, log: logs };
+    return logs;
   };
 }

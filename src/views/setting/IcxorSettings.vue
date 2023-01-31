@@ -29,7 +29,7 @@ import IcxorLocal from "@/components/IcxorSettings/IcxorLocal.vue";
   height: calc(100% - 10px);
   padding: 10px 10px 0 10px;
   overflow: hidden;
-  @include Flex-C-CT;
+  @include Flex-C;
   .title {
     padding: 10px;
     font-size: 24px;

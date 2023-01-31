@@ -3,7 +3,6 @@ import { app } from "electron";
 import config from "@/api/config";
 import store from "@/store/index";
 import { FilenameResolver } from "./filename";
-import { API, PixivProxy } from "@/api/api";
 
 const remote = require("@electron/remote");
 
@@ -43,7 +42,6 @@ export class UrlGenerator {
     let base_url;
     if (obj.type == "pixiv")
       return this.getPixivBlobUrl(obj.meta.pid, obj.meta.page, "original");
-    // return await this.getPixivBlobOriginLocalUrl(obj.meta.pid, obj.meta.page);
     else if (obj.remote_type == "mpihs") base_url = config.ihs_base;
     else if (obj.remote_type == "cos") base_url = config.cos_base;
     if (obj.remote_base)
@@ -57,15 +55,11 @@ export class UrlGenerator {
     let url = new URL(
       `${
         store.state.localApi ? config.baseURL : config.baseURL_mpi3s
-      }/pixiv-api/${type == "original" ? "blob-s" : "blob"}`
+      }/pixiv-api/blob`
     );
     url.searchParams.append("pid", pid);
     url.searchParams.append("page", page);
     url.searchParams.append("type", type);
     return url.href;
-  }
-  static async getPixivBlobOriginLocalUrl(pid, page) {
-    const url = await API.getOriginUrl(pid, page);
-    return PixivProxy.getLocalUrlFromUrl(url);
   }
 }

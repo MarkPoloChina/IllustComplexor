@@ -83,7 +83,7 @@ const revoke = () => {
 </script>
 <style lang="scss" scoped>
 .config {
-  @include Flex-C-CT;
+  @include Flex-C;
   height: calc(100% - 20px);
   .title-block {
     padding: 10px 0 10px 0;
@@ -94,7 +94,7 @@ const revoke = () => {
     @include Flex-C-AC;
   }
   .btn-block {
-    @include Flex-R-AC;
+    @include Flex-R-JC;
     margin-top: auto;
   }
 }

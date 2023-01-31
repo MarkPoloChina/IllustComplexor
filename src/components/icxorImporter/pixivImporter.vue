@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-alert type="info" show-icon :closable="false">
+  <div class="importer-main">
+    <el-alert type="info" show-icon :closable="false" style="flex: none">
       <template #title>
         识别Pixiv规则的文件名, 匹配对应的PID和Page,
         然后导入或更新对应Illust。同时注入标题等元数据, 也可附加元数据。
@@ -60,8 +60,8 @@
       <FilterTable
         ref="table"
         :list="log.list"
-        v-model:selected="selectedList"
         :loading="loading"
+        class="fliter-table"
       ></FilterTable>
     </div>
     <div class="btn-block">
@@ -72,7 +72,6 @@
         circle
       ></el-button>
       <el-button
-        v-if="selectedList.length != 0"
         @click="handleUpload"
         type="success"
         :icon="Check"
@@ -105,7 +104,6 @@ import FilterTable from "./reusable/filterTable.vue";
 
 const remote = require("@electron/remote");
 const log = reactive({ message: "", list: [] });
-const selectedList = ref([]);
 const showDialog = ref(false);
 const autoKeys = ref([]);
 const metaForm = ref();
@@ -119,7 +117,6 @@ const initTab = () => {
   importOption.addition = { meta: {} };
   log.list.length = 0;
   log.message = "";
-  selectedList.value.length = 0;
   autoKeys.value.length = 0;
   metaForm.value.initForm();
 };
@@ -175,23 +172,31 @@ const startAction = () => {
     });
   } else process(importOption.paths);
 };
-const checkIfNoConflict = () => {
-  for (let idx of selectedList.value) {
+const checkIfNoConflict = (selectedList) => {
+  for (let idx of selectedList) {
     if (
       log.list[idx].status == "conflict" &&
-      selectedList.value.includes(log.list[idx].compareId)
+      selectedList.includes(log.list[idx].compareId)
     )
       return false;
   }
   return true;
 };
 const handleUpload = () => {
-  if (!checkIfNoConflict()) {
+  let selectedList = [];
+  log.list.forEach((ele) => {
+    if (ele.checked) selectedList.push(ele.oriIdx);
+  });
+  if (selectedList.length == 0) {
+    ElMessage.error("未选择任何数据");
+    return;
+  }
+  if (!checkIfNoConflict(selectedList)) {
     ElMessage.error("尚有冲突未解决");
     return;
   }
   ElMessageBox.confirm(
-    `将${selectedList.value.length}个项目进行上传，确认？`,
+    `将${selectedList.length}个项目进行上传，确认？`,
     "Warning",
     {
       confirmButtonText: "OK",
@@ -201,7 +206,7 @@ const handleUpload = () => {
   )
     .then(() => {
       let dto = [];
-      selectedList.value.forEach((idx) => {
+      selectedList.forEach((idx) => {
         dto.push({
           bid: idx,
           type: "pixiv",
@@ -237,8 +242,10 @@ const handleUpload = () => {
         log.list[item.bid].status = item.status;
         log.list[item.bid].message = item.message;
       });
-      selectedList.value.length = 0;
-      table.value.clearSelection();
+      log.list.forEach((ele) => {
+        ele.checked = false;
+      });
+      table.value.onReset()
     }
   };
 };
@@ -248,24 +255,33 @@ const updateInfo = ({ data, controller }) => {
 };
 </script>
 <style lang="scss" scoped>
+.importer-main {
+  height: 100%;
+  @include Flex-C;
+}
 .import-area {
   padding: 0 10px 0 10px;
+  flex: none;
   .form-block {
     @include Flex-C-AC;
   }
 }
 .result-area {
   padding: 0 10px 0 10px;
-  .warning-row {
-    background-color: var(--el-color-warning-light-9);
-  }
-  .success-row {
-    background-color: var(--el-color-success-light-9);
+  flex: auto;
+  overflow: hidden;
+  .fliter-table {
+    height: calc(100% - 45px) !important;
+    width: 100%;
   }
 }
 .btn-block {
-  margin-top: 20px;
-  @include Flex-R-AC;
+  margin: 10px 0 5px 0;
+  flex: none;
+  @include Flex-R-JC;
+  .el-button + .el-button {
+    margin-left: 30px;
+  }
 }
 .title-block {
   padding: 10px 0 10px 0;

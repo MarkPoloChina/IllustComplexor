@@ -159,7 +159,7 @@ const linkClick = (url) => {
         font-size: 16px;
       }
       .single-info {
-        @include Flex-RCT;
+        @include Flex-R-JC-AC;
       }
     }
     .title {

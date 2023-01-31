@@ -1,12 +1,11 @@
 <template>
-  <el-auto-resizer style="height: 350px">
+  <el-auto-resizer>
     <template #default="{ height, width }">
       <el-table-v2
         :columns="columns"
         :data="writableList"
         :height="height"
         :width="width"
-        :sort-by="sortState"
         :row-class="
           ({ rowIndex }) => {
             switch (writableList[rowIndex].status) {
@@ -25,7 +24,6 @@
             }
           }
         "
-        @column-sort="onSort"
       >
         <template #overlay v-if="loading">
           <div
@@ -41,14 +39,17 @@
             </el-icon>
           </div>
         </template>
+        <template #empty>
+          <el-empty :image-size="120" />
+        </template>
       </el-table-v2>
     </template>
   </el-auto-resizer>
 </template>
 <script setup>
-import { Loading as LoadingIcon } from "@element-plus/icons-vue";
-import { ref, computed } from "vue";
-import { ElCheckbox, TableV2SortOrder } from "element-plus";
+import { Loading as LoadingIcon, Filter } from "@element-plus/icons-vue";
+import { ref, computed, reactive } from "vue";
+import { ElCheckbox, ElButton, ElIcon, ElPopover } from "element-plus";
 
 // eslint-disable-next-line no-undef
 const props = defineProps({
@@ -59,23 +60,24 @@ const props = defineProps({
 const writableList = computed({
   get: () => {
     let l = [];
-    l.push(...props.list);
+    let f = [];
+    Object.keys(shouldFilter).forEach((key) => {
+      if (shouldFilter[key]) f.push(key);
+    });
+    props.list.forEach((ele) => {
+      if (f.includes(ele.status)) l.push(ele);
+    });
     return l;
   },
   set: () => {},
 });
-const selections = ref([]);
-// eslint-disable-next-line no-undef
-const emit = defineEmits(["update:selected"]);
-const handleSelectionChange = () => {
-  emit("update:selected", selections.value);
-};
-const clearSelection = () => {
-  writableList.value.forEach((log) => {
-    log.checked = false;
-  });
-  selections.value.length = 0;
-};
+const shouldFilter = reactive({
+  ready: true,
+  conflict: true,
+  ignore: true,
+  success: true,
+  fault: true,
+});
 
 const SelectionCell = ({ value, intermediate = false, onChange, disabled }) => {
   return (
@@ -95,14 +97,7 @@ const columns = [
     cellRenderer: ({ rowData }) => {
       const onChange = (value) => {
         if (rowData.status == "ready" || rowData.status == "conflict") {
-          if (value) selections.value.push(rowData.oriIdx);
-          else
-            selections.value.splice(
-              selections.value.indexOf(rowData.oriIdx),
-              1
-            );
           rowData.checked = value;
-          handleSelectionChange();
         }
       };
       return (
@@ -116,23 +111,24 @@ const columns = [
 
     headerCellRenderer: () => {
       const onChange = (value) => {
-        selections.value.length = 0;
         writableList.value.forEach((log) => {
           if (log.status == "ready" || log.status == "conflict") {
             log.checked = value;
-            if (value) selections.value.push(log.oriIdx);
           }
         });
-        handleSelectionChange();
       };
-      const allSelected = writableList.value.every((row) => row.checked);
+      const allSelected =
+        writableList.value.every((row) => row.checked) &&
+        writableList.value.length != 0;
       const containsChecked = writableList.value.some((row) => row.checked);
+      const isDisabled = writableList.value.length == 0;
 
       return (
         <SelectionCell
           value={allSelected}
           intermediate={containsChecked && !allSelected}
           onChange={onChange}
+          disabled={isDisabled}
         />
       );
     },
@@ -148,7 +144,46 @@ const columns = [
     title: "状态",
     width: 100,
     dataKey: "status",
-    sortable: true,
+    headerCellRenderer: (props) => {
+      return (
+        <div style="display:flex;align-items:center;justify-content:center;">
+          <span style="margin-right:0.5rem;font-size:0.75rem;line-height:1rem;">
+            {props.column.title}
+          </span>
+          <ElPopover ref={popoverRef} trigger="click" {...{ width: 150 }}>
+            {{
+              default: () => (
+                <div class="filter-wrapper">
+                  <div class="filter-group">
+                    <ElCheckbox v-model={shouldFilter.ready}>Ready</ElCheckbox>
+                    <ElCheckbox v-model={shouldFilter.conflict}>
+                      Conflict
+                    </ElCheckbox>
+                    <ElCheckbox v-model={shouldFilter.ignore}>
+                      Ignore
+                    </ElCheckbox>
+                    <ElCheckbox v-model={shouldFilter.success}>
+                      Success
+                    </ElCheckbox>
+                    <ElCheckbox v-model={shouldFilter.fault}>Fault</ElCheckbox>
+                  </div>
+                  <div style="border-top: 1px solid #4C4D4F;margin: 12px -12px -12px;padding: 0 12px;display: flex;justify-content: center;">
+                    <ElButton text onClick={onReset}>
+                      Reset
+                    </ElButton>
+                  </div>
+                </div>
+              ),
+              reference: () => (
+                <ElIcon style="cursor:pointer;">
+                  <Filter />
+                </ElIcon>
+              ),
+            }}
+          </ElPopover>
+        </div>
+      );
+    },
   },
   {
     key: "message",
@@ -157,20 +192,16 @@ const columns = [
     dataKey: "message",
   },
 ];
-const sortState = ref({
-  key: "status",
-  order: TableV2SortOrder.ASC,
-});
-const onSort = (sortBy) => {
-  writableList.value.sort((a, b) => {
-    return sortBy.order == TableV2SortOrder.ASC
-      ? a[sortBy.key].localeCompare(b[sortBy.key])
-      : b[sortBy.key].localeCompare(a[sortBy.key]);
+const popoverRef = ref();
+
+const onReset = () => {
+  Object.keys(shouldFilter).forEach((key) => {
+    shouldFilter[key] = true;
   });
-  sortState.value = sortBy;
 };
+
 // eslint-disable-next-line no-undef
-defineExpose({ clearSelection });
+defineExpose({ onReset });
 </script>
 <style lang="scss" scoped>
 :deep(.warning-row) {

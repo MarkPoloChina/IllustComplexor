@@ -192,7 +192,7 @@ const emit = defineEmits([
 <style lang="scss" scoped>
 .container {
   height: 100%;
-  @include Flex-C-SB;
+  @include Flex-C-JSB;
 }
 .item-bottom {
   margin-bottom: 10px;

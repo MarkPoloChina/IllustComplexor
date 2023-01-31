@@ -34,6 +34,13 @@ const currentTab = ref("pixiv");
   }
   .tabs {
     padding: 0 10px 0 10px;
+    height: 100%;
+    :deep(.el-tabs__content) {
+      height: calc(100% - 55px);
+    }
+    :deep(.el-tab-pane) {
+      height: 100%;
+    }
   }
 }
 </style>

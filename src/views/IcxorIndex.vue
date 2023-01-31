@@ -111,7 +111,7 @@ const initContext = () => {
     height: 100%;
     background-color: $color-stdblue-1;
     .index-menu {
-      @include Flex-C-CT;
+      @include Flex-C;
       height: 100%;
       border-right: none;
       --el-menu-bg-color: transparent;

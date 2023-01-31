@@ -26,7 +26,7 @@ const username = computed(() => {
     @include Uni-Main-Title;
   }
   .home-main {
-    @include Flex-CT;
+    @include Flex-C-JC-AC;
     height: 100%;
     .home-welcome {
       font-size: 40px;

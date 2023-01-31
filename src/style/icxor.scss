@@ -40,7 +40,7 @@ $color-greengray-4: var(--color-greengray-4);
   height: calc(100% - 15px);
   padding: 10px 10px 5px 10px;
   overflow: hidden;
-  @include Flex-C-CT;
+  @include Flex-C;
 }
 
 @mixin Uni-Main-Title {

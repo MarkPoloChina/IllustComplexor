@@ -85,7 +85,7 @@ const handleRightClick = (event, obj) => {
 <style lang="scss" scoped>
 .viewer-main {
   height: 100%;
-  @include Flex-C-CT;
+  @include Flex-C;
   .viewer-img-container {
     position: relative;
     .expo {
@@ -116,7 +116,7 @@ const handleRightClick = (event, obj) => {
   }
   .viewer-info {
     height: 50px;
-    @include Flex-R-CT;
+    @include Flex-R-AC;
     color: $color-greengray-2;
     margin-left: 10px;
   }

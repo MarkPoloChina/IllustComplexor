@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <el-alert type="info" show-icon :closable="false">
+  <div class="importer-main">
+    <el-alert type="info" show-icon :closable="false" style="flex: none">
       <template #title>
         利用文件名人工创建Illust信息, 指向对应的Remote, 或者上传图片,
         也可附加元数据。
@@ -69,7 +69,8 @@
       <FilterTable
         ref="table"
         :list="log.list"
-        v-model:selected="selectedList"
+        :loading="loading"
+        class="fliter-table"
       ></FilterTable>
     </div>
     <div class="btn-block">
@@ -80,7 +81,6 @@
         circle
       ></el-button>
       <el-button
-        v-if="selectedList.length != 0"
         @click="handleUpload"
         type="success"
         :icon="Check"
@@ -108,7 +108,7 @@
 </template>
 <script setup>
 import { Check, Remove, Download } from "@element-plus/icons-vue";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
 import { FilenameAdapter } from "@/js/util/filename";
 import { reactive, ref, onMounted } from "vue";
 import MetaForm from "../reusable/metaForm.vue";
@@ -119,13 +119,12 @@ import { API } from "@/api/api";
 const remote = require("@electron/remote");
 const typeEnum = ref([]);
 const log = reactive({ message: "", list: [] });
-const idto = ref([]);
-const selectedList = ref([]);
 const showDialog = ref(false);
 const showDialog2 = ref(false);
 const metaForm = ref();
 const remoteForm = ref();
 const table = ref();
+const loading = ref(false);
 const initTab = () => {
   importOption.importType = "directory";
   importOption.paths = [];
@@ -133,8 +132,6 @@ const initTab = () => {
   importOption.addition = { type: "" };
   log.list.length = 0;
   log.message = "";
-  selectedList.value.length = 0;
-  idto.value.length = 0;
   metaForm.value.initForm();
   remoteForm.value.initForm();
 };
@@ -180,70 +177,104 @@ const startAction = async () => {
     ElMessage.error("路径非法");
     return;
   }
-  const paths =
-    importOption.importType == "directory"
-      ? FilenameAdapter.parseBaseFilenamesFromDirectory(importOption.pathDir)
-      : importOption.paths;
   ElMessage.info("开始收集信息");
-  const resp = await FilenameAdapter.getOtherDtoSet(paths);
-  ElMessage.info(`信息收集完成，共${resp.dto.length}条有效数据`);
-  log.list = resp.log;
-  idto.value = resp.dto;
+  loading.value = true;
+  const process = async (paths) => {
+    const resp = await FilenameAdapter.getOtherDtoSet(paths);
+    ElMessage.info(`信息收集完成，共${resp.length}条数据`);
+    loading.value = false;
+    log.list = resp;
+  };
+  if (importOption.importType == "directory") {
+    FilenameAdapter.parseBaseFilenamesFromDirectoryAsync(
+      importOption.pathDir
+    ).then((paths) => {
+      process(paths);
+    });
+  } else process(importOption.paths);
 };
 const handleUpload = () => {
-  let dto = [];
-  selectedList.value.forEach((ele) => {
-    const i = idto.value.find((value) => {
-      return value.bid == ele;
-    });
-    if (i)
-      dto.push({
-        bid: i.bid,
-        ...importOption.addition,
-        remote_info: { ...importOption.addition.remote_info, ...i.remote_info },
-      });
+  if (!importOption.addition.type || importOption.addition.type == "") {
+    ElMessage.error("必须选择或填写类型");
+    return;
+  }
+  let selectedList = [];
+  log.list.forEach((ele) => {
+    if (ele.checked) selectedList.push(ele.oriIdx);
   });
-
-  API.newIllusts(dto).then((data) => {
-    if (data.code == 200000) {
-      ElMessage.info("处理完成");
-      data.data.forEach((item) => {
-        const f = log.list.find((_item) => {
-          return _item.bid == item.bid;
+  if (selectedList.length == 0) {
+    ElMessage.error("未选择任何数据");
+    return;
+  }
+  ElMessageBox.confirm(
+    `将${selectedList.length}个项目进行上传，确认？`,
+    "Warning",
+    {
+      confirmButtonText: "OK",
+      cancelButtonText: "Cancel",
+      type: "warning",
+    }
+  )
+    .then(() => {
+      let dto = [];
+      selectedList.forEach((idx) => {
+        dto.push({
+          bid: idx,
+          ...importOption.addition,
+          remote_info: {
+            ...importOption.addition.remote_info,
+            ...log.list[idx].dto.remote_info,
+          },
         });
-        if (f) {
-          f.status = item.status;
-          f.message = item.message;
+      });
+      API.newIllusts(dto).then((data) => {
+        if (data.code == 200000) {
+          ElMessage.info("处理完成");
+          data.data.forEach((item) => {
+            log.list[item.bid].status = item.status;
+            log.list[item.bid].message = item.message;
+          });
+          log.list.forEach((ele) => {
+            ele.checked = false;
+          });
+          table.value.onReset();
         }
       });
-      selectedList.value.length = 0;
-      table.value.clearSelection();
-    }
-  });
+    })
+    .catch(() => {});
 };
 const updateInfo = ({ data }) => {
   importOption.addition = { ...importOption.addition, ...data };
 };
 </script>
 <style lang="scss" scoped>
+.importer-main {
+  height: 100%;
+  @include Flex-C;
+}
 .import-area {
   padding: 0 10px 0 10px;
+  flex: none;
   .form-block {
     @include Flex-C-AC;
   }
 }
 .result-area {
   padding: 0 10px 0 10px;
-  .warning-row {
-    background-color: var(--el-color-warning-light-9);
-  }
-  .success-row {
-    background-color: var(--el-color-success-light-9);
+  flex: auto;
+  overflow: hidden;
+  .fliter-table {
+    height: calc(100% - 45px) !important;
+    width: 100%;
   }
 }
 .btn-block {
-  margin-top: 20px;
-  @include Flex-R-AC;
+  margin: 10px 0 5px 0;
+  flex: none;
+  @include Flex-R-JC;
+  .el-button + .el-button {
+    margin-left: 30px;
+  }
 }
 .title-block {
   padding: 10px 0 10px 0;
