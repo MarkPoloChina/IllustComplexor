@@ -34,7 +34,15 @@
         class="fliter-table"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column type="selection" width="55" />
+        <el-table-column
+          type="selection"
+          width="55"
+          :selectable="
+            (row) => {
+              return row.visible;
+            }
+          "
+        />
         <el-table-column
           prop="id"
           label="PID"

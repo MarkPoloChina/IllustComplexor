@@ -175,7 +175,7 @@ export class API {
   static async getBookmark(isPrivate) {
     const resp = await ax.get("/pixiv-api/pixiv-json/latest", {
       params: {
-        private: isPrivate,
+        private: isPrivate ? 1 : 0,
       },
     });
     return resp.data;

@@ -11,7 +11,12 @@
       :key="index"
       lazy
     >
-      <GridViewer @showInfo="getInfo" :list="item.list"></GridViewer>
+      <GridLargeViewer
+        @showInfo="getInfo"
+        :list="item.list"
+        :totalCnt="item.cnt"
+        @loadMore="handleLoadMore"
+      ></GridLargeViewer>
     </el-tab-pane>
   </el-tabs>
   <el-empty description="无插图" v-else />
@@ -21,7 +26,7 @@
 import InfoViewer from "./reusable/InfoViewer.vue";
 import { onMounted, reactive, ref, watch } from "vue";
 import { API } from "@/api/api";
-import GridViewer from "./reusable/gridViewer.vue";
+import GridLargeViewer from "./reusable/gridLargeViewer.vue";
 
 const source = reactive([]);
 const dialogVisible = ref(false);
@@ -41,16 +46,18 @@ const getEnum = async () => {
   data.forEach((ele) => {
     source.push({
       type: ele.type,
+      cnt: ele.count,
+      page: 0,
       list: [],
     });
   });
   if (source[0]) source[0].list = await getIllusts(source[0].type);
 };
-const getIllusts = async (type) => {
+const getIllusts = async (type, page = 0) => {
   let list = await API.getIllusts(
-    { 'illust.type': [type] },
+    { "illust.type": [type] },
     100,
-    null,
+    page * 100,
     "meta.pid",
     true
   );
@@ -59,6 +66,18 @@ const getIllusts = async (type) => {
 const getInfo = (obj) => {
   currentInfo.value = obj;
   if (currentInfo.value) dialogVisible.value = true;
+};
+const handleLoadMore = async () => {
+  if (source[curTab.value].page >= 10) {
+    console.log("!!");
+    return;
+  }
+  source[curTab.value].list.push(
+    ...(await getIllusts(
+      source[curTab.value].type,
+      ++source[curTab.value].page
+    ))
+  );
 };
 </script>
 <style lang="scss" scoped>
