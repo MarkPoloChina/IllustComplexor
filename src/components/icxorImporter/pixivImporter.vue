@@ -150,7 +150,7 @@ const getFile = async () => {
 };
 const startAction = () => {
   if (
-    (importOption.importType == "directory" && importOption.pathDir == "") ||
+    (importOption.importType == "directory" && !importOption.pathDir) ||
     (importOption.importType == "files" && importOption.paths.length == 0)
   ) {
     ElMessage.error("路径非法");

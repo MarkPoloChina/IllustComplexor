@@ -136,7 +136,7 @@ const getFile = async () => {
 };
 const startAction = async () => {
   if (
-    (importOption.importType == "directory" && importOption.pathDir == "") ||
+    (importOption.importType == "directory" && !importOption.pathDir) ||
     (importOption.importType == "files" && importOption.paths.length == 0)
   ) {
     ElMessage.error("路径非法");
@@ -159,7 +159,7 @@ const startAction = async () => {
   } else process(importOption.paths);
 };
 const handleUpload = () => {
-  if (importOption.poly.name == "") {
+  if (!importOption.poly.name) {
     ElMessage.error("至少应当填写聚合名");
     return;
   }

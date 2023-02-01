@@ -119,7 +119,7 @@ const handleUpload = () => {
     ElMessage.error("未选择任何项目");
     return;
   }
-  if (!importOption.illust.date || importOption.illust.date == "") {
+  if (!importOption.addition.date) {
     ElMessage.error("必须填写入库时间, 否则无法跟踪导入");
     return;
   }

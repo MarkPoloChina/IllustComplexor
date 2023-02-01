@@ -118,7 +118,7 @@ onMounted(() => {
   getPolyParentEnum(polyInfo.type);
 });
 const getPolyParentEnum = (type) => {
-  if (type && type != "") {
+  if (type) {
     API.getEnumPolyParent(type).then((data) => {
       polyParentEnum.value = data;
     });

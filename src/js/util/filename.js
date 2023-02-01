@@ -64,17 +64,16 @@ export class FilenameResolver {
     return null;
   }
   static generatePxderSingleFilename(pid, title, ext) {
-    if (pid && pid != "" && ext && ext != "")
-      return `(${pid})${title || ""}.${ext}`;
+    if (pid && ext) return `(${pid})${title || ""}.${ext}`;
     else return null;
   }
   static generatePxderMultipleFilename(pid, page, title, ext) {
-    if (pid && pid != "" && page !== null && page !== "" && ext && ext != "")
+    if (pid && page !== null && page !== "" && ext)
       return `(${pid})${title || ""}_p${page}.${ext}`;
     else return null;
   }
   static generatePixivWebFilename(pid, page, ext) {
-    if (pid && pid != "" && page !== null && page !== "" && ext && ext != "")
+    if (pid && page !== null && page !== "" && ext)
       return `${pid}_p${page}.${ext}`;
     else return null;
   }
