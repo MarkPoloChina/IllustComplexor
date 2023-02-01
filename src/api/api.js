@@ -136,6 +136,7 @@ export class API {
   static async addPolyById(type, parent, name, illustList) {
     const resp = await ax.post("/illust/poly/list", illustList, {
       params: {
+        byMatch: 0,
         type: type,
         parent: parent,
         name: name,

@@ -208,8 +208,9 @@ export class FilenameAdapter {
   /**
    * @summary 从指定文件列表解析DTO, 但只用于确定文件名
    * @param {Array<string>} [paths] 文件路径
+   * @param {string | null | undefined} [thumExt] 缩略图末端的扩展名
    */
-  static getOtherDtoSet = async (paths) => {
+  static getOtherDtoSet = async (paths, thumExt) => {
     let logs = [];
     let index = 0;
     for (const item of paths) {
@@ -225,7 +226,9 @@ export class FilenameAdapter {
         log.dto = {
           remote_info: {
             remote_endpoint: filename,
-            thum_endpoint: filename.replace(path.extname(filename), ".jpg"),
+            thum_endpoint: thumExt
+              ? filename.replace(path.extname(filename), thumExt)
+              : filename,
           },
         };
       } else {

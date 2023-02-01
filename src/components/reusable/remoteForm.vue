@@ -17,14 +17,14 @@
         </el-form-item>
         <el-form-item label="远程基">
           <el-select
-            v-model="baseInfo.remote_base"
+            v-model="baseInfo.remote_base_id"
             placeholder="选择或填写类型"
           >
             <el-option
               v-for="item in remoteBaseList"
               :key="item.id"
               :label="item.name"
-              :value="item"
+              :value="item.id"
             />
           </el-select>
         </el-form-item>
@@ -35,12 +35,15 @@
           <el-input v-model="baseInfo.remote_endpoint" />
         </el-form-item>
         <el-form-item label="缩略图基">
-          <el-select v-model="baseInfo.thum_base" placeholder="选择或填写类型">
+          <el-select
+            v-model="baseInfo.thum_base_id"
+            placeholder="选择或填写类型"
+          >
             <el-option
               v-for="item in remoteBaseList"
               :key="item.id"
               :label="item.name"
-              :value="item"
+              :value="item.id"
             />
           </el-select>
         </el-form-item>
@@ -49,6 +52,20 @@
         </el-form-item>
         <el-form-item label="缩略图末端" v-if="!useFilenameThum">
           <el-input v-model="baseInfo.thum_endpoint" />
+        </el-form-item>
+        <el-form-item label="缩略图末端扩展名">
+          <el-select v-model="thumExt" placeholder="选择扩展名">
+            <el-option
+              v-for="item in [
+                { name: '与原文件一致', value: '' },
+                { name: 'PNG', value: '.png' },
+                { name: 'JPG', value: '.jpg' },
+              ]"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -66,14 +83,15 @@ import { reactive, computed, ref, onMounted } from "vue";
 
 const baseInfo = reactive({
   remote_type: null,
-  remote_base: null,
+  remote_base_id: null,
   remote_endpoint: null,
-  thum_base: null,
+  thum_base_id: null,
   thum_endpoint: null,
 });
 const remoteBaseList = ref([]);
 const useFilename = ref(true);
 const useFilenameThum = ref(true);
+const thumExt = ref("");
 // eslint-disable-next-line no-undef
 const props = defineProps({
   modelValue: Boolean,
@@ -97,15 +115,22 @@ const getRemoteBaseList = () => {
   });
 };
 const initForm = () => {
-  baseInfo.remote_base = null;
+  baseInfo.remote_base_id = null;
   baseInfo.remote_endpoint = null;
   baseInfo.remote_type = null;
-  baseInfo.thum_base = null;
+  baseInfo.thum_base_id = null;
   baseInfo.thum_endpoint = null;
 };
 const handleConfirm = () => {
   dialogVisible.value = false;
-  emit("confirm", { data: { remote_info: baseInfo } });
+  emit("confirm", {
+    data: {
+      remote_info: {
+        ...baseInfo,
+      },
+    },
+    controller: thumExt.value,
+  });
 };
 // eslint-disable-next-line no-undef
 defineExpose({ initForm });

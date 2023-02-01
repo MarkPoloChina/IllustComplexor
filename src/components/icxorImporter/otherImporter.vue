@@ -142,6 +142,7 @@ const importOption = reactive({
   paths: [],
   pathDir: "",
   importType: "directory",
+  thumExt: "",
   addition: { type: "" },
 });
 const getEnumType = async () => {
@@ -180,7 +181,10 @@ const startAction = async () => {
   ElMessage.info("开始收集信息");
   loading.value = true;
   const process = async (paths) => {
-    const resp = await FilenameAdapter.getOtherDtoSet(paths);
+    const resp = await FilenameAdapter.getOtherDtoSet(
+      paths,
+      importOption.thumExt
+    );
     ElMessage.info(`信息收集完成，共${resp.length}条数据`);
     loading.value = false;
     log.list = resp;
@@ -243,8 +247,10 @@ const handleUpload = () => {
     })
     .catch(() => {});
 };
-const updateInfo = ({ data }) => {
+const updateInfo = ({ data, controller }) => {
   importOption.addition = { ...importOption.addition, ...data };
+  if (["", ".jpg", ".png"].includes(controller))
+    importOption.thumExt = controller;
 };
 </script>
 <style lang="scss" scoped>
