@@ -20,10 +20,7 @@
         <div class="func-row">
           <ViewerFunctions
             :illust-count="illustCount"
-            @page-change="
-              viewerMain.handleResetScroll();
-              getIllusts($event);
-            "
+            @page-change="handlePageChange"
             @viewer-type-change="viewerMain && viewerMain.handleSetType($event)"
             @focus-up="viewerMain.handleFocusIndexChange('up')"
             @focus-down="viewerMain.handleFocusIndexChange('down')"
@@ -70,6 +67,7 @@ const show = reactive({
 const illustList = ref([]);
 const illustCount = ref(1000);
 const currentSelected = reactive({ value: null });
+const currentPage = ref(1);
 const viewerMain = ref();
 const filter = reactive({
   filterObj: {},
@@ -78,11 +76,11 @@ onMounted(() => {
   getIllusts();
   getIllustsCount();
 });
-const getIllusts = async (page = 1, condition = {}) => {
+const getIllusts = async () => {
   let list = await API.getIllusts(
-    condition,
+    filter.filterObj,
     100,
-    (page - 1) * 100,
+    (currentPage.value - 1) * 100,
     "meta.pid",
     1
   );
@@ -91,15 +89,21 @@ const getIllusts = async (page = 1, condition = {}) => {
   }
   return list;
 };
-const getIllustsCount = async (condition = {}) => {
-  let { count } = await API.getIllustsCount(condition);
+const getIllustsCount = async () => {
+  let { count } = await API.getIllustsCount(filter.filterObj);
   illustCount.value = parseInt(count);
   return count;
 };
 const handleFilterChange = (_filter) => {
-  getIllusts(1, _filter);
-  getIllustsCount(_filter);
+  currentPage.value = 1;
   filter.filterObj = _filter;
+  getIllusts();
+  getIllustsCount();
+};
+const handlePageChange = (_page) => {
+  viewerMain.value.handleResetScroll();
+  currentPage.value = _page;
+  getIllusts();
 };
 const handleSingleIllustChange = (obj) => {
   API.updateIllustsById([obj])
