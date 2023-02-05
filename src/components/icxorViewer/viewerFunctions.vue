@@ -29,6 +29,7 @@
       <el-pagination
         background
         layout="total, prev, pager, next"
+        v-model:current-page="curPage"
         :total="illustCount"
         :page-size="100"
         :pager-count="5"
@@ -41,7 +42,7 @@
 </template>
 <script setup>
 import { ArrowLeftBold, ArrowRightBold } from "@element-plus/icons-vue";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 
 const viewerController = reactive({
   type: "table",
@@ -57,12 +58,18 @@ const emit = defineEmits([
 defineProps({
   illustCount: Number,
 });
+const curPage = ref(1);
 const handlePageChange = (val) => {
   emit("pageChange", val);
 };
 const viewerTypeChange = (val) => {
   emit("viewerTypeChange", val);
 };
+const initPage = () => {
+  curPage.value = 1;
+};
+// eslint-disable-next-line no-undef
+defineExpose({ initPage });
 </script>
 <style lang="scss" scoped>
 .viewer-func {

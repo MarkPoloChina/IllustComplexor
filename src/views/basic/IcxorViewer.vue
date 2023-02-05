@@ -24,6 +24,7 @@
             @viewer-type-change="viewerMain && viewerMain.handleSetType($event)"
             @focus-up="viewerMain.handleFocusIndexChange('up')"
             @focus-down="viewerMain.handleFocusIndexChange('down')"
+            ref="pagination"
           ></ViewerFunctions>
         </div>
       </div>
@@ -69,6 +70,7 @@ const illustCount = ref(1000);
 const currentSelected = reactive({ value: null });
 const currentPage = ref(1);
 const viewerMain = ref();
+const pagination = ref();
 const filter = reactive({
   filterObj: {},
 });
@@ -95,7 +97,9 @@ const getIllustsCount = async () => {
   return count;
 };
 const handleFilterChange = (_filter) => {
+  viewerMain.value.handleResetScroll();
   currentPage.value = 1;
+  pagination.value.initPage();
   filter.filterObj = _filter;
   getIllusts();
   getIllustsCount();
@@ -106,7 +110,7 @@ const handlePageChange = (_page) => {
   getIllusts();
 };
 const handleSingleIllustChange = (obj) => {
-  API.updateIllustsById([obj])
+  API.updateIllustsByMatch([obj])
     .then((data) => {
       if (data.code === 200000) {
         if (data.data[0].status == "success") {
@@ -144,7 +148,7 @@ const handleUpdate = ({ data, controller }) => {
               ...data,
             });
           });
-          API.updateIllustsById(dto).then((data) => {
+          API.updateIllustsByMatch(dto).then((data) => {
             if (data.code == 200000) {
               ElMessage.success("操作成功");
               getIllusts();
@@ -197,7 +201,7 @@ const handlePoly = ({ data, controller }) => {
         }
       )
         .then(() => {
-          API.addPolyById(data.type, data.parent, data.name, dto).then(
+          API.addPolyByMatch(data.type, data.parent, data.name, dto).then(
             (data) => {
               if (data.code == 200000) {
                 ElMessage.success("操作成功");

@@ -42,7 +42,12 @@
             placeholder="Pick a day"
             :disabled="!editable"
         /></el-descriptions-item>
-        <el-descriptions-item label="标签"></el-descriptions-item>
+        <el-descriptions-item label="标签">
+          <el-tag v-for="tag in writableInfo.tag" :key="tag.id">{{
+            tag.name
+          }}</el-tag>
+          {{ !writableInfo.tag || writableInfo.tag.length == 0 ? "-" : "" }}
+        </el-descriptions-item>
       </el-descriptions>
       <el-descriptions
         v-if="writableInfo && writableInfo.meta"
@@ -74,7 +79,6 @@
         <el-descriptions-item label="标题">
           {{ writableInfo.meta.title ?? "-" }}</el-descriptions-item
         >
-        <el-descriptions-item label="标签"></el-descriptions-item>
       </el-descriptions>
       <el-descriptions
         v-if="writableInfo && writableInfo.poly"

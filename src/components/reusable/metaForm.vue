@@ -23,6 +23,15 @@
         <el-form-item label="评级">
           <el-rate v-model="baseInfo.star" />
         </el-form-item>
+        <el-form-item>
+          <el-select
+            v-model="baseInfo.tag"
+            multiple
+            filterable
+            allow-create
+            placeholder="填写标签"
+          />
+        </el-form-item>
         <el-form-item label="分级" v-if="type != 'other'">
           <el-select v-model="baseInfo.meta.limit" placeholder="Select">
             <el-option
@@ -49,6 +58,7 @@ import { reactive, computed, ref } from "vue";
 const baseInfo = reactive({
   date: null,
   star: 0,
+  tag: [],
   meta: {
     limit: null,
   },

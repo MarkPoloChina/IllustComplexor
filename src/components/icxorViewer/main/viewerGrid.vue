@@ -141,8 +141,6 @@ defineExpose({ resetScroll });
       }
       &.with-border {
         border: 3px solid $color-stdblue-1;
-        width: calc(100% - 6px);
-        height: calc(100% - 6px);
       }
     }
   }

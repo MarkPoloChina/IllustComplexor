@@ -50,11 +50,26 @@
             />
           </div>
           <div>
-            <el-date-picker
-              v-model="illustDateAdapter"
-              value-format="YYYY-MM-DD"
-              type="date"
+            <el-select
+              v-model="values.value['illust.date']"
               placeholder="选择入库时间"
+              multiple
+            >
+              <el-option
+                v-for="item in options['illust.date']"
+                :key="item.date"
+                :label="item.date"
+                :value="item.date"
+              />
+            </el-select>
+          </div>
+          <div>
+            <el-select
+              v-model="values.value['tag.name']"
+              multiple
+              filterable
+              allow-create
+              placeholder="填写筛选标签"
             />
           </div>
           <div>
@@ -68,7 +83,9 @@
                 :key="item - 1"
                 :label="`${item - 1}星`"
                 :value="item - 1"
-              />
+              >
+                <el-rate :model-value="item - 1" disabled />
+              </el-option>
             </el-select>
           </div>
         </div>
@@ -89,6 +106,7 @@
 </template>
 <script setup>
 import { API } from "@/api/api";
+import { UtilDate } from "@/js/util/date";
 import {
   ArrowLeftBold,
   ArrowRightBold,
@@ -97,21 +115,23 @@ import {
   MessageBox,
 } from "@element-plus/icons-vue";
 
-import { onMounted, reactive, ref, watch, computed } from "vue";
+import { onMounted, reactive, ref, watch } from "vue";
 
 const show = ref(false);
 const values = reactive({
   value: {
     "illust.type": [],
+    "illust.date": [],
+    "illust.star": [],
     "poly.type": [],
     "poly.parent": [],
     "poly.name": [],
-    "illust.date": [],
-    "illust.star": [],
+    "tag.name": [],
   },
 });
 const options = {
   "illust.type": [],
+  "illust.date": [],
   "poly.type": [
     {
       value: "picolt",
@@ -134,19 +154,19 @@ watch(values, (val) => {
 });
 onMounted(() => {
   getTypeOptions();
-});
-const illustDateAdapter = computed({
-  get: () => {
-    return values.value["illust.date"][0];
-  },
-  set: (value) => {
-    if (value) values.value["illust.date"][0] = value;
-    else values.value["illust.date"].length = 0;
-  },
+  getDateOptions();
 });
 const getTypeOptions = async () => {
   const data = await API.getEnumSource();
   options["illust.type"] = data;
+};
+const getDateOptions = async () => {
+  const data = await API.getEnumTimeline();
+  data.forEach((ele) => {
+    options["illust.date"].push({
+      date: UtilDate.getDateCST(new Date(ele.date), "-"),
+    });
+  });
 };
 const getPolyOptions = async (val) => {
   polyOptions.value.length = 0;

@@ -70,25 +70,6 @@ export class API {
   static async updateIllustsByMatch(illustList) {
     const resp = await ax.put("/illust/list", illustList, {
       params: {
-        byMatch: 1,
-        addIfNotFound: 0,
-      },
-    });
-    return resp.data;
-  }
-  static async coverIllustsByMatch(illustList) {
-    const resp = await ax.put("/illust/list", illustList, {
-      params: {
-        byMatch: 1,
-        addIfNotFound: 0,
-      },
-    });
-    return resp.data;
-  }
-  static async updateIllustsById(illustList) {
-    const resp = await ax.put("/illust/list", illustList, {
-      params: {
-        byMatch: 0,
         addIfNotFound: 0,
       },
     });
@@ -100,6 +81,14 @@ export class API {
         addIfNotFound: 0,
         byCondition: 1,
         conditionJson: conditionObj,
+      },
+    });
+    return resp.data;
+  }
+  static async coverIllustsByMatch(illustList) {
+    const resp = await ax.put("/illust/list", illustList, {
+      params: {
+        addIfNotFound: 1,
       },
     });
     return resp.data;
@@ -125,18 +114,6 @@ export class API {
   static async addPolyByMatch(type, parent, name, illustList) {
     const resp = await ax.post("/illust/poly/list", illustList, {
       params: {
-        byMatch: 1,
-        type: type,
-        parent: parent,
-        name: name,
-      },
-    });
-    return resp.data;
-  }
-  static async addPolyById(type, parent, name, illustList) {
-    const resp = await ax.post("/illust/poly/list", illustList, {
-      params: {
-        byMatch: 0,
         type: type,
         parent: parent,
         name: name,

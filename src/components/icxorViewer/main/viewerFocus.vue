@@ -67,6 +67,7 @@ const props = defineProps({
 // const emits = defineEmits(["select-change", "selects-change"]);
 const resetScroll = () => {
   table.value.setScrollTop(0);
+  currentIndex.value = 0;
 };
 onMounted(() => {});
 const openLoading = () => {
@@ -127,6 +128,7 @@ const handleIndexChange = (action) => {
   if (action == "up") {
     if (currentIndex.value < props.tableData.length - 1) currentIndex.value++;
   } else if (action == "down") if (currentIndex.value > 0) currentIndex.value--;
+  emit("select-change", props.tableData[currentIndex.value]);
 };
 // const handleSelectionChange = (val) => {
 //   currentSelected.value = val;

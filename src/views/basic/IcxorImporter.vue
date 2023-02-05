@@ -8,7 +8,7 @@
       <el-tab-pane label="其他导入" name="oth">
         <OtherImporter></OtherImporter>
       </el-tab-pane>
-      <el-tab-pane label="Pixiv聚合" name="poly">
+      <el-tab-pane label="聚合" name="poly">
         <PolyImporter></PolyImporter>
       </el-tab-pane>
       <el-tab-pane label="Pixiv收藏" name="bookmark">

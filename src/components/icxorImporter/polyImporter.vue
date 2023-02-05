@@ -2,7 +2,7 @@
   <div class="importer-main">
     <el-alert type="info" show-icon :closable="false" style="flex: none">
       <template #title>
-        识别Pixiv规则的文件名, 匹配对应的PID和Page, 然后生成聚合。
+        识别Pixiv规则的文件名, 匹配对应的PID和Page, 或者仅尝试匹配末端，然后生成聚合。
       </template>
     </el-alert>
     <div class="import-area">
@@ -42,7 +42,18 @@
             </el-row>
           </el-form-item>
           <el-form-item>
-            <el-button @click="showDialog = true">聚合设置</el-button>
+            <el-row :gutter="20" style="width: 100%">
+              <el-col :span="6"
+                ><el-button @click="showDialog = true">聚合设置</el-button>
+              </el-col>
+              <el-col :span="12">
+                <el-switch
+                  v-model="importOption.isTryAny"
+                  active-text="全部图片"
+                  inactive-text="仅Pixiv"
+                />
+              </el-col>
+            </el-row>
           </el-form-item>
         </el-form>
       </div>
@@ -103,6 +114,7 @@ const initTab = () => {
   importOption.importType = "directory";
   importOption.paths = [];
   importOption.pathDir = "";
+  importOption.isTryAny = false;
   log.list.length = 0;
   log.message = "";
   polyForm.value.initForm();
@@ -111,6 +123,7 @@ const importOption = reactive({
   paths: [""],
   pathDir: "",
   importType: "directory",
+  isTryAny: false,
   poly: {},
 });
 const getDirectory = async () => {
@@ -145,7 +158,9 @@ const startAction = async () => {
   ElMessage.info("开始收集信息");
   loading.value = true;
   const process = async (paths) => {
-    const resp = await FilenameAdapter.getPixivDtoSet(paths);
+    let resp;
+    if (importOption.isTryAny) resp = await FilenameAdapter.getAnyDtoSet(paths);
+    else resp = await FilenameAdapter.getPixivDtoSet(paths);
     ElMessage.info(`信息收集完成，共${resp.length}条数据`);
     loading.value = false;
     log.list = resp;

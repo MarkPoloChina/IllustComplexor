@@ -85,7 +85,7 @@ export class FilenameResolver {
  */
 export class FilenameAdapter {
   /**
-   * @summary 从指定文件列表解析DTO
+   * @summary 从指定文件列表解析DTO, 用于Pixiv导入或更新
    * @param {Array<string>} [paths] 文件路径
    * @param {Array<string} [autoList] 请求注入字段
    */
@@ -160,7 +160,7 @@ export class FilenameAdapter {
   };
 
   /**
-   * @summary 从指定文件列表解析DTO, 但只用于确定Illust
+   * @summary 从指定文件列表解析DTO, 但只用于确定Illust, 用于仅需识别pid和page的Pixiv导入或更新
    * @param {Array<string>} [paths] 文件路径
    */
   static getPixivDtoSet = async (paths) => {
@@ -209,8 +209,9 @@ export class FilenameAdapter {
    * @summary 从指定文件列表解析DTO, 但只用于确定文件名
    * @param {Array<string>} [paths] 文件路径
    * @param {string | null | undefined} [thumExt] 缩略图末端的扩展名
+   * @param {boolean | undefined} [noThum] 是否不需要缩略图末端
    */
-  static getOtherDtoSet = async (paths, thumExt) => {
+  static getOtherDtoSet = async (paths, thumExt, noThum) => {
     let logs = [];
     let index = 0;
     for (const item of paths) {
@@ -224,13 +225,70 @@ export class FilenameAdapter {
       };
       if ([".jpg", ".png", ".gif"].includes(path.extname(filename))) {
         log.dto = {
-          remote_info: {
-            remote_endpoint: filename,
-            thum_endpoint: thumExt
-              ? filename.replace(path.extname(filename), thumExt)
-              : filename,
+          remote_info: !noThum
+            ? {
+                remote_endpoint: filename,
+                thum_endpoint: thumExt
+                  ? filename.replace(path.extname(filename), thumExt)
+                  : filename,
+              }
+            : {
+                remote_endpoint: filename,
+              },
+        };
+      } else {
+        log.status = "ignore";
+        log.message = "不可识别的文件";
+      }
+      logs.push(log);
+      index++;
+      // await sleep();
+    }
+    return logs;
+  };
+
+  /**
+   * @summary 从指定文件列表解析DTO, 但识别全部图片，当符合Pixiv返回对应元，否则返回末端（不含缩略图）
+   * @param {Array<string>} [paths] 文件路径
+   */
+  static getAnyDtoSet = async (paths) => {
+    let logs = [];
+    let index = 0;
+    for (const item of paths) {
+      const filename = path.basename(item);
+      let log = {
+        oriIdx: index,
+        filename: filename,
+        status: "ready",
+        dto: null,
+        message: "OK, For Pixiv",
+      };
+      const reso = FilenameResolver.getObjFromFilename(filename);
+      if (reso) {
+        const dto = {
+          meta: {
+            pid: reso.pid,
+            page: reso.page,
           },
         };
+        const ti = logs.findIndex((value) => {
+          if (!value.dto || !value.dto.meta) return false;
+          return (
+            value.dto.meta.pid == dto.meta.pid &&
+            value.dto.meta.page == dto.meta.page
+          );
+        });
+        if (ti != -1) {
+          log.status = "ignore";
+          log.message = "重复识别";
+        } else log.dto = dto;
+      } else if ([".jpg", ".png", ".gif"].includes(path.extname(filename))) {
+        log.dto = {
+          remote_info: {
+            remote_endpoint: filename,
+          },
+        };
+        log.message = "OK, For Other";
       } else {
         log.status = "ignore";
         log.message = "不可识别的文件";
