@@ -45,6 +45,24 @@ const possibleMatch = {
       };
     } else return null;
   },
+  webWithBookmark: (basename) => {
+    if (/^\d+ - \d+_p\d+$/.test(basename)) {
+      return {
+        title: null,
+        pid: /^\d+ - (\d+)_p\d+$/.exec(basename)[1],
+        page: /^\d+ - \d+_p(\d+)$/.exec(basename)[1],
+      };
+    } else return null;
+  },
+  webWithBookmarkRank: (basename) => {
+    if (/^\d+ - \d+ - \d+_p\d+$/.test(basename)) {
+      return {
+        title: null,
+        pid: /^\d+ - \d+ - (\d+)_p\d+$/.exec(basename)[1],
+        page: /^\d+ - \d+ - \d+_p(\d+)$/.exec(basename)[1],
+      };
+    } else return null;
+  },
 };
 
 export class FilenameResolver {
