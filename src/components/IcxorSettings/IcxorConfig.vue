@@ -18,6 +18,9 @@
             disabled
           />
         </el-form-item>
+        <el-form-item label="IHS路径">
+          <el-input v-model="configForm.localIHS" placeholder="请输入路径" />
+        </el-form-item>
       </el-form>
     </div>
     <div class="title-block">偏好信息</div>
@@ -60,6 +63,7 @@ import { PathHelper } from "@/js/util/path";
 
 const configForm = reactive({
   username: "",
+  localIHS: "",
   useIhsForPixiv: false,
   localApi: false,
 });
@@ -69,6 +73,7 @@ onMounted(() => {
 });
 const initForm = () => {
   configForm.username = store.state.username;
+  configForm.localIHS = store.state.localIHS;
   configForm.useIhsForPixiv = store.state.useIhsForPixiv;
   configForm.localApi = store.state.localApi;
 };

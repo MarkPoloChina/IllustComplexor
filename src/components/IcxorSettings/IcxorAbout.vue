@@ -5,7 +5,6 @@
       <div class="home-title">Illust Complexor</div>
       <div class="home-title-2">Powered by MPSTO</div>
       <div class="version">Ver. Beta {{ packageJson.version }}</div>
-      <div class="home-title-2">Now Full Remote Function Support!</div>
       <div class="about-info">
         <div class="title">Staff</div>
         <div class="info">

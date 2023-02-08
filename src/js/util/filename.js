@@ -83,11 +83,14 @@ export class FilenameResolver {
   }
   static generatePxderSingleFilename(pid, title, ext) {
     if (pid && ext) return `(${pid})${title || ""}.${ext}`;
+    else if (pid) return `(${pid})${title || ""}`;
     else return null;
   }
   static generatePxderMultipleFilename(pid, page, title, ext) {
     if (pid && page !== null && page !== "" && ext)
       return `(${pid})${title || ""}_p${page}.${ext}`;
+    else if (pid && page !== null && page !== "")
+      return `(${pid})${title || ""}_p${page}`;
     else return null;
   }
   static generatePixivWebFilename(pid, page, ext) {

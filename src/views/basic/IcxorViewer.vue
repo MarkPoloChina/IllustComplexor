@@ -7,6 +7,7 @@
           @filter-change="handleFilterChange"
           @openPolyDialog="show.poly = true"
           @openUpdateDialog="show.update = true"
+          @openDownloadDialog="handleOpenDownloadDialog"
         ></ViewerFilter>
       </div>
       <div class="col main-and-func-col">
@@ -48,6 +49,11 @@
       ref="polyForm"
       type="viewer"
     ></PolyForm>
+    <DownloadForm
+      v-model="show.download"
+      :download-list="downloadList"
+      ref="downloadForm"
+    ></DownloadForm>
   </div>
 </template>
 <script setup>
@@ -60,10 +66,12 @@ import { onMounted, ref, reactive } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import MetaForm from "@/components/reusable/metaForm.vue";
 import PolyForm from "@/components/reusable/polyForm.vue";
+import DownloadForm from "@/components/reusable/downloadForm.vue";
 
 const show = reactive({
   poly: false,
   update: false,
+  download: false,
 });
 const illustList = ref([]);
 const illustCount = ref(1000);
@@ -71,6 +79,7 @@ const currentSelected = reactive({ value: null });
 const currentPage = ref(1);
 const viewerMain = ref();
 const pagination = ref();
+const downloadList = ref();
 const filter = reactive({
   filterObj: {},
 });
@@ -243,6 +252,11 @@ const handlePoly = ({ data, controller }) => {
         .catch(() => {});
     }
   }
+};
+const handleOpenDownloadDialog = () => {
+  const dto = viewerMain.value.getSelections();
+  show.download = true;
+  downloadList.value = dto;
 };
 </script>
 <style lang="scss" scoped>

@@ -99,7 +99,7 @@
         <el-button :icon="EditPen" circle @click="emit('openUpdateDialog')" />
       </div>
       <div>
-        <el-button :icon="Download" circle />
+        <el-button :icon="Download" circle @click="emit('openDownloadDialog')" />
       </div>
     </div>
   </div>
@@ -207,6 +207,7 @@ const emit = defineEmits([
   "filter-change",
   "openPolyDialog",
   "openUpdateDialog",
+  "openDownloadDialog"
 ]);
 </script>
 <style lang="scss" scoped>

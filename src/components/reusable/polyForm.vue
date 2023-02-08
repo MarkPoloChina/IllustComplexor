@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog v-model="dialogVisible" title="元数据表单" width="60%">
+    <el-dialog v-model="dialogVisible" title="聚合表单" width="60%">
       <el-form :model="polyInfo" label-width="100px" style="width: 100%">
         <el-form-item label="对于全部" v-if="type == 'viewer'">
           <el-switch v-model="updateAll" />

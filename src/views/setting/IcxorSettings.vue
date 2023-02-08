@@ -8,9 +8,6 @@
       <el-tab-pane label="远程基" name="remote" lazy>
         <IcxorRemote></IcxorRemote>
       </el-tab-pane>
-      <el-tab-pane label="本地基" name="local" lazy>
-        <IcxorLocal></IcxorLocal>
-      </el-tab-pane>
       <el-tab-pane label="关于" name="about" lazy>
         <icxor-about></icxor-about>
       </el-tab-pane>
@@ -21,7 +18,6 @@
 import IcxorConfig from "@/components/IcxorSettings/IcxorConfig.vue";
 import IcxorAbout from "@/components/IcxorSettings/IcxorAbout.vue";
 import IcxorRemote from "@/components/IcxorSettings/IcxorRemote.vue";
-import IcxorLocal from "@/components/IcxorSettings/IcxorLocal.vue";
 </script>
 <style lang="scss" scoped>
 .setting-container {

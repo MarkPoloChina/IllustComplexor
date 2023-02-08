@@ -4,6 +4,7 @@ import store from "@/store";
 const ax = axios.create({
   baseURL: store.state.localApi ? config.baseURL : config.baseURL_mpi3s,
 });
+const ax_local = axios.create();
 
 /**
  * API Class
@@ -175,5 +176,21 @@ export class API {
       },
     });
     return resp.data;
+  }
+}
+
+export class APIProxy {
+  static async getLocalBlob(url) {
+    const resp = await ax_local.get(url, { responseType: "arraybuffer" });
+    let ext = null;
+    switch (resp.headers["content-type"]) {
+      case "image/jpeg":
+        ext = "jpg";
+        break;
+      case "image/png":
+        ext = "png";
+        break;
+    }
+    return { data: resp.data, ext: ext };
   }
 }

@@ -34,7 +34,6 @@
         :page-size="100"
         :pager-count="5"
         small
-        hide-on-single-page
         @current-change="handlePageChange"
       />
     </div>
