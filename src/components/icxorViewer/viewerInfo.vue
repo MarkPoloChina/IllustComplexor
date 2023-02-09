@@ -81,7 +81,9 @@
         >
       </el-descriptions>
       <el-descriptions
-        v-if="writableInfo && writableInfo.poly"
+        v-if="
+          writableInfo && writableInfo.poly && writableInfo.poly.length != 0
+        "
         class="info"
         title="聚合数据"
         :column="1"
@@ -89,15 +91,17 @@
         direction="vertical"
       >
         <template #extra> </template>
-        <el-descriptions-item label="聚合类型">{{
-          writableInfo.poly.type ?? "-"
-        }}</el-descriptions-item>
-        <el-descriptions-item label="聚合簇">{{
-          writableInfo.poly.parent ?? "-"
-        }}</el-descriptions-item>
-        <el-descriptions-item label="聚合名">{{
-          writableInfo.poly.name ?? "-"
-        }}</el-descriptions-item>
+        <template v-for="poly in writableInfo.poly" :key="poly.id">
+          <el-descriptions-item label="聚合类型">{{
+            poly.type ?? "-"
+          }}</el-descriptions-item>
+          <el-descriptions-item label="聚合簇">{{
+            poly.parent ?? "-"
+          }}</el-descriptions-item>
+          <el-descriptions-item label="聚合名">{{
+            poly.name ?? "-"
+          }}</el-descriptions-item>
+        </template>
       </el-descriptions>
       <!-- <el-empty description="尚未选定" v-if="!info" /> -->
     </el-scrollbar>
