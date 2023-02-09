@@ -3,8 +3,8 @@
     <div class="about">
       <el-image :src="url" class="home-img" style="width: 200px"></el-image>
       <div class="home-title">Illust Complexor</div>
-      <div class="home-title-2">Powered by MPSTO</div>
       <div class="version">Ver. Beta {{ packageJson.version }}</div>
+      <div class="home-title-2">Powered by MPSTO</div>
       <div class="about-info">
         <div class="title">Staff</div>
         <div class="info">
@@ -24,7 +24,7 @@
         <div class="title">Thanks</div>
         <div class="info">
           <div>
-            The Image "Cat with Vue Logo" Created by
+            The Image of Home-page is Photoshopped by
             <el-link
               type="primary"
               href=""
@@ -36,9 +36,7 @@
               "
               >RockRockWhite</el-link
             >
-          </div>
-          <div style="margin-top: 5px">
-            The Origin of Image "Cat with Vue Logo" Illusted by
+            from
             <el-link
               style="vertical-align: baseline"
               type="info"
@@ -118,7 +116,9 @@
             >
           </div>
         </div>
-        <div class="cpr">© Copyright 2020-2023 MarkPolo Studio, all rights reserved.</div>
+        <div class="cpr">
+          © Copyright 2020-2023 MarkPolo Studio, all rights reserved.
+        </div>
       </div>
     </div>
   </el-scrollbar>
