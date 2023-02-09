@@ -21,7 +21,7 @@
           />
         </el-form-item>
         <el-form-item label="评级">
-          <el-rate v-model="baseInfo.star" clearable/>
+          <el-rate v-model="baseInfo.star" clearable />
         </el-form-item>
         <el-form-item>
           <el-select

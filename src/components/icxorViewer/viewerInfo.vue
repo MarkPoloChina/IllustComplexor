@@ -28,11 +28,7 @@
           writableInfo.type
         }}</el-descriptions-item>
         <el-descriptions-item label="评分"
-          ><el-rate
-            v-model="writableInfo.star"
-            :disabled="!editable"
-            @change="emit('update:info', writableInfo)"
-            clearable
+          ><el-rate v-model="writableInfo.star" :disabled="!editable" clearable
         /></el-descriptions-item>
         <el-descriptions-item label="入库时间">
           <el-date-picker
