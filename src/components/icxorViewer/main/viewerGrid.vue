@@ -15,7 +15,7 @@
           :preview-src-list="[UrlGenerator.getBlobUrl(obj, 'original')]"
           fit="cover"
           @click="openLoading()"
-          @contextmenu.prevent="handleRightClick($event, obj)"
+          @contextmenu="handleRightClick($event, obj)"
           loading="lazy"
           @error="obj.err = true"
         >

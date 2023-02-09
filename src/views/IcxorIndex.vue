@@ -68,8 +68,9 @@ onMounted(() => {
   ConfigDB.initDB();
   // MetaDB.initMeta();
   useStore().commit("initStore");
-  initContext();
+  // initContext();
 });
+// eslint-disable-next-line no-unused-vars
 const initContext = () => {
   const createContextMenu = () => {
     return remote.Menu.buildFromTemplate([
@@ -86,8 +87,7 @@ const initContext = () => {
   };
   window.addEventListener(
     "contextmenu",
-    (event) => {
-      event.preventDefault();
+    () => {
       const contextMenu = createContextMenu();
       contextMenu.popup({
         window: remote.getCurrentWindow(),
