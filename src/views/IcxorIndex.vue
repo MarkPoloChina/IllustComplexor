@@ -54,7 +54,7 @@ import {
   CopyDocument,
 } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
-import { ConfigDB, MetaDB } from "@/js/local/DBService";
+import { ConfigDB } from "@/js/local/DBService";
 import { onMounted } from "vue";
 const remote = require("@electron/remote");
 
@@ -66,7 +66,7 @@ onMounted(() => {
     isDark.value = message;
   });
   ConfigDB.initDB();
-  MetaDB.initMeta();
+  // MetaDB.initMeta();
   useStore().commit("initStore");
   initContext();
 });

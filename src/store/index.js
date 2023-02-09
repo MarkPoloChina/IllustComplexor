@@ -23,7 +23,7 @@ export default createStore({
     initStore(state) {
       Object.keys(state).forEach((key) => {
         let value = ConfigDB.getByKey(key);
-        if (value === null) {
+        if (value === null || value === undefined) {
           ConfigDB.setByKey(key, defaultSetting[key]);
           value = defaultSetting[key];
         }
