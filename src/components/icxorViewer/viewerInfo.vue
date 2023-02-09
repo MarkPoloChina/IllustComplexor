@@ -32,6 +32,7 @@
             v-model="writableInfo.star"
             :disabled="!editable"
             @change="emit('update:info', writableInfo)"
+            clearable
         /></el-descriptions-item>
         <el-descriptions-item label="入库时间">
           <el-date-picker
