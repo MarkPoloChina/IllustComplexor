@@ -44,8 +44,7 @@ import { Picture } from "@element-plus/icons-vue";
 import { nextTick, reactive } from "vue";
 import { UrlGenerator } from "@/js/util/path";
 import { ElLoading } from "element-plus";
-const remote = require("@electron/remote");
-const { Menu, MenuItem } = remote;
+import { ipcRenderer } from "electron";
 // eslint-disable-next-line no-undef
 defineProps({
   list: Array,
@@ -68,28 +67,20 @@ const openLoading = () => {
 };
 const handleRightClick = (event, obj) => {
   event.preventDefault();
-  const menu = new Menu();
-  menu.append(
-    new MenuItem({
-      label: "详情",
-      click: () => {
+  ipcRenderer.removeAllListeners("context:click");
+  ipcRenderer.once("context:click", (event, item) => {
+    switch (item) {
+      case "详情":
         emit("showInfo", obj);
-      },
-    })
-  );
-  menu.append(
-    new MenuItem({
-      label: "移除",
-      click: () => {
+        break;
+      case "移除":
         emit("remove", obj);
-      },
-    })
-  );
-  // menu.append(new MenuItem({ type: "separator" })); //分割线
-  // menu.append(
-  //   new MenuItem({ label: "testCheckBox", type: "checkbox", checked: true })
-  // );
-  menu.popup({ window: remote.getCurrentWindow() });
+        break;
+      default:
+        break;
+    }
+  });
+  ipcRenderer.send("context:popup", [{ label: "详情" }, { label: "移除" }]);
 };
 </script>
 <style lang="scss" scoped>

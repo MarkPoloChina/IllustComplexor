@@ -7,14 +7,12 @@ import {
   Menu,
   shell,
   nativeTheme,
+  dialog,
   ipcMain,
 } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
-
-const remote = require("@electron/remote/main");
-remote.initialize();
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -93,8 +91,6 @@ async function createWindow() {
     },
   });
 
-  remote.enable(win.webContents);
-
   if (process.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
     await win.loadURL(process.env.WEBPACK_DEV_SERVER_URL);
@@ -104,17 +100,9 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
   }
-
-  // win.on("resize", () => {
-  //   win.webContents.send("resized");
-  // });
-  // win.on("minimize", () => {
-  //   win.webContents.send("resized");
-  // });
-  // win.on("maximize", () => {
-  //   win.webContents.send("resized");
-  // });
 }
+
+// activate darkmode ipc
 ipcMain.handle("dark-mode:toggle", () => {
   if (nativeTheme.shouldUseDarkColors) {
     nativeTheme.themeSource = "light";
@@ -137,6 +125,47 @@ nativeTheme.on("updated", () => {
     win.webContents.send("dark-mode:updated", nativeTheme.shouldUseDarkColors);
   });
 });
+
+// activate dialog ipc
+ipcMain.handle("dialog:openFile", async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ["openFile", "multiSelections"],
+    filters: [{ name: "Images", extensions: ["jpg", "png", "gif"] }],
+  });
+  if (canceled) {
+    return;
+  } else {
+    return filePaths;
+  }
+});
+
+ipcMain.handle("dialog:openDirectory", async () => {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ["openDirectory"],
+  });
+  if (canceled) {
+    return;
+  } else {
+    return filePaths[0];
+  }
+});
+
+// activate context ipc
+ipcMain.on("context:popup", (event, templateMenu) => {
+  templateMenu.forEach((item) => {
+    item.click = () => {
+      event.sender.send("context:click", item.label);
+    };
+  });
+  const ctx = Menu.buildFromTemplate(templateMenu);
+  ctx.popup(BrowserWindow.fromWebContents(event.sender));
+});
+
+// activate app ipc
+ipcMain.on("app:getPath", (event) => {
+  event.returnValue = app.getPath("userData");
+});
+
 // Quit when all windows are closed.
 app.on("window-all-closed", () => {
   // On macOS it is common for applications and their menu bar

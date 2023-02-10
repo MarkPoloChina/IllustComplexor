@@ -101,8 +101,8 @@ import { reactive, ref } from "vue";
 import { API } from "@/api/api";
 import MetaForm from "../reusable/metaForm.vue";
 import FilterTable from "./reusable/filterTable.vue";
+import { ipcRenderer } from "electron";
 
-const remote = require("@electron/remote");
 const log = reactive({ message: "", list: [] });
 const showDialog = ref(false);
 const autoKeys = ref([]);
@@ -129,23 +129,14 @@ const importOption = reactive({
 });
 const getDirectory = async () => {
   let _path = "";
-  _path = (
-    await remote.dialog.showOpenDialog({
-      properties: ["openDirectory"],
-    })
-  ).filePaths[0];
+  _path = await ipcRenderer.invoke("dialog:openDirectory");
   if (!_path) return;
   else importOption.pathDir = _path;
 };
 const getFile = async () => {
   let _path = [];
-  _path = (
-    await remote.dialog.showOpenDialog({
-      properties: ["openFile", "multiSelections"],
-      filters: [{ name: "Images", extensions: ["jpg", "png", "gif"] }],
-    })
-  ).filePaths;
-  if (_path.length == 0) return;
+  _path = await ipcRenderer.invoke("dialog:openFile");
+  if (!_path) return;
   else importOption.paths = _path;
 };
 const startAction = () => {

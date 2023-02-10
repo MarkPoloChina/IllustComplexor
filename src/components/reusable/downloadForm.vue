@@ -76,7 +76,7 @@ import { APIProxy } from "@/api/api";
 import { UrlGenerator } from "@/js/util/path";
 import { FileTransfer } from "@/js/util/file";
 import { FilenameResolver } from "@/js/util/filename";
-const remote = require("@electron/remote");
+import { ipcRenderer } from "electron";
 
 const downloadOption = reactive({
   pathDir: "",
@@ -84,11 +84,7 @@ const downloadOption = reactive({
 const downloadCnt = ref(0);
 const getDirectory = async () => {
   let _path = "";
-  _path = (
-    await remote.dialog.showOpenDialog({
-      properties: ["openDirectory"],
-    })
-  ).filePaths[0];
+  _path = await ipcRenderer.invoke("dialog:openDirectory");
   if (!_path) return;
   else downloadOption.pathDir = _path;
 };

@@ -35,8 +35,7 @@ import { ElLoading } from "element-plus";
 import { nextTick } from "vue";
 import { UrlGenerator } from "@/js/util/path";
 import { onMounted, ref } from "vue";
-const remote = require("@electron/remote");
-const { Menu, MenuItem } = remote;
+import { ipcRenderer } from "electron";
 
 const currentSelected = ref([]);
 // eslint-disable-next-line no-undef
@@ -69,27 +68,28 @@ const openLoading = () => {
 };
 const handleRightClick = (event, obj) => {
   event.preventDefault();
-  const menu = new Menu();
-  menu.append(
-    new MenuItem({
-      label: "详情",
-      click: () => {
+  ipcRenderer.removeAllListeners("context:click");
+  ipcRenderer.once("context:click", (event, item) => {
+    switch (item) {
+      case "详情":
         emit("select-change", obj);
-      },
-    })
-  );
-  menu.append(new MenuItem({ type: "separator" })); //分割线
-  menu.append(
-    new MenuItem({
+        break;
+      case "选定":
+        handleToggle(obj);
+        break;
+      default:
+        break;
+    }
+  });
+  ipcRenderer.send("context:popup", [
+    { label: "详情" },
+    { type: "separator" },
+    {
       label: "选定",
       type: "checkbox",
       checked: checkIfInSelected(obj),
-      click: () => {
-        handleToggle(obj);
-      },
-    })
-  );
-  menu.popup({ window: remote.getCurrentWindow() });
+    },
+  ]);
 };
 const handleToggle = (obj) => {
   let index = currentSelected.value.findIndex((val) => {

@@ -21,7 +21,6 @@
   },
   "main": "background.js",
   "dependencies": {
-    "@electron/remote": "^2.0.8",
     "@vueuse/core": "^9.4.0",
     "axios": "^0.27.2",
     "core-js": "^3.8.3",

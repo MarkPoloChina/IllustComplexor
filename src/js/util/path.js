@@ -1,13 +1,10 @@
 // import path from 'path';
-import { app } from "electron";
+import { ipcRenderer } from "electron";
 import config from "@/api/config";
 import store from "@/store/index";
 import { FilenameResolver } from "./filename";
 
-const remote = require("@electron/remote");
-
-const APP = process.type === "renderer" ? remote.app : app; // 根据process.type来分辨在哪种模式使用哪种模块
-const STORE_PATH = APP.getPath("userData"); // 获取electron应用的用户目录
+const STORE_PATH = ipcRenderer.sendSync("app:getPath");
 
 const ihs_pixiv_base = store.state.localIHS
   ? config.ihs_pixiv_base.replace(config.ihs_root, store.state.localIHS)

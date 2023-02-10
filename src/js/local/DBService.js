@@ -1,30 +1,28 @@
-import Lowdb from 'lowdb'
-import FileSync from 'lowdb/adapters/FileSync'
-import path from 'path';
-import { app } from 'electron'
-const remote = require("@electron/remote")
+import Lowdb from "lowdb";
+import FileSync from "lowdb/adapters/FileSync";
+import path from "path";
+import { ipcRenderer } from "electron";
 
-const APP = process.type === 'renderer' ? remote.app : app // 根据process.type来分辨在哪种模式使用哪种模块
-const STORE_PATH = APP.getPath('userData') // 获取electron应用的用户目录
-const dbConfig = Lowdb(new FileSync(path.join(STORE_PATH, '/config.json')))
+const STORE_PATH = ipcRenderer.sendSync("app:getPath");
+const dbConfig = Lowdb(new FileSync(path.join(STORE_PATH, "/config.json")));
 // const dbMeta = Lowdb(new FileSync(path.join(STORE_PATH, '/meta.json')))
 
 // const tempReader = { randomId: "", obj: null }
 export class ConfigDB {
   static initDB = () => {
-    if (!dbConfig.has('initStatus').value()) {
-      dbConfig.defaults({ initStatus: 'true' }).write();
+    if (!dbConfig.has("initStatus").value()) {
+      dbConfig.defaults({ initStatus: "true" }).write();
     }
-    dbConfig.set('lastVisit', new Date().toISOString()).write()
-  }
+    dbConfig.set("lastVisit", new Date().toISOString()).write();
+  };
 
   static getByKey = (key) => {
-    return dbConfig.get(key).value()
-  }
+    return dbConfig.get(key).value();
+  };
 
   static setByKey = (key, value) => {
-    dbConfig.set(key, value).write()
-  }
+    dbConfig.set(key, value).write();
+  };
 }
 
 // export class MetaDB {

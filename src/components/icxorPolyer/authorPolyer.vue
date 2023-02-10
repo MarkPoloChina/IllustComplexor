@@ -28,10 +28,9 @@ import { onMounted, reactive, ref } from "vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { API } from "@/api/api";
 import GridViewer from "./reusable/gridViewer.vue";
+import { ipcRenderer } from "electron";
 
 const currentKey = ref("0");
-const remote = require("@electron/remote");
-const { Menu, MenuItem } = remote;
 const author = reactive([]);
 const dialogVisible = ref(false);
 const currentInfo = reactive({ value: null });
@@ -51,22 +50,22 @@ const getData = async () => {
 };
 const handleRightClick = (event) => {
   event.preventDefault();
-  const menu = new Menu();
-  menu.append(
-    new MenuItem({
-      label: "详情",
-      click: () => {},
-    })
-  );
-  menu.append(
-    new MenuItem({
-      label: "删除当前聚合",
-      click: () => {
+  ipcRenderer.removeAllListeners("context:click");
+  ipcRenderer.once("context:click", (event, item) => {
+    switch (item) {
+      case "详情":
+        break;
+      case "删除当前聚合":
         handleDeletePoly();
-      },
-    })
-  );
-  menu.popup({ window: remote.getCurrentWindow() });
+        break;
+      default:
+        break;
+    }
+  });
+  ipcRenderer.send("context:popup", [
+    { label: "详情" },
+    { label: "删除当前聚合" },
+  ]);
 };
 const getInfo = (obj) => {
   currentInfo.value = obj;

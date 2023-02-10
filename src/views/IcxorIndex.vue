@@ -56,7 +56,6 @@ import {
 import { useStore } from "vuex";
 import { ConfigDB } from "@/js/local/DBService";
 import { onMounted } from "vue";
-const remote = require("@electron/remote");
 
 const isDark = useDark();
 
@@ -70,32 +69,31 @@ onMounted(() => {
   useStore().commit("initStore");
   // initContext();
 });
-// eslint-disable-next-line no-unused-vars
-const initContext = () => {
-  const createContextMenu = () => {
-    return remote.Menu.buildFromTemplate([
-      { label: "撤销", role: "undo" },
-      { label: "重做", role: "redo" },
-      { type: "separator" },
-      { label: "剪切", role: "cut" },
-      { label: "复制", role: "copy" },
-      { label: "粘贴", role: "paste" },
-      { label: "删除", role: "delete" },
-      { type: "separator" },
-      { label: "全选", role: "selectAll" },
-    ]);
-  };
-  window.addEventListener(
-    "contextmenu",
-    () => {
-      const contextMenu = createContextMenu();
-      contextMenu.popup({
-        window: remote.getCurrentWindow(),
-      });
-    },
-    false
-  );
-};
+// const initContext = () => {
+//   const createContextMenu = () => {
+//     return remote.Menu.buildFromTemplate([
+//       { label: "撤销", role: "undo" },
+//       { label: "重做", role: "redo" },
+//       { type: "separator" },
+//       { label: "剪切", role: "cut" },
+//       { label: "复制", role: "copy" },
+//       { label: "粘贴", role: "paste" },
+//       { label: "删除", role: "delete" },
+//       { type: "separator" },
+//       { label: "全选", role: "selectAll" },
+//     ]);
+//   };
+//   window.addEventListener(
+//     "contextmenu",
+//     () => {
+//       const contextMenu = createContextMenu();
+//       contextMenu.popup({
+//         window: remote.getCurrentWindow(),
+//       });
+//     },
+//     false
+//   );
+// };
 </script>
 <style lang="scss" scoped>
 .index-container {
