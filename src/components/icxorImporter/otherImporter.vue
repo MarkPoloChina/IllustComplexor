@@ -220,6 +220,7 @@ const handleUpload = () => {
     }
   )
     .then(() => {
+      loading.value = true;
       let dto = [];
       selectedList.forEach((idx) => {
         dto.push({
@@ -231,19 +232,26 @@ const handleUpload = () => {
           },
         });
       });
-      API.newIllusts(dto).then((data) => {
-        if (data.code == 200000) {
-          ElMessage.info("处理完成");
-          data.data.forEach((item) => {
-            log.list[item.bid].status = item.status;
-            log.list[item.bid].message = item.message;
-          });
-          log.list.forEach((ele) => {
-            ele.checked = false;
-          });
-          table.value.onReset();
-        }
-      });
+      API.newIllusts(dto)
+        .then((data) => {
+          if (data.code == 200000) {
+            ElMessage.info("处理完成");
+            data.data.forEach((item) => {
+              log.list[item.bid].status = item.status;
+              log.list[item.bid].message = item.message;
+            });
+            log.list.forEach((ele) => {
+              ele.checked = false;
+            });
+            table.value.onReset();
+          }
+        })
+        .catch(() => {
+          ElMessage.error("网络错误");
+        })
+        .finally(() => {
+          loading.value = false;
+        });
     })
     .catch(() => {});
 };

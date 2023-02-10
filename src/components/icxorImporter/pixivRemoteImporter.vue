@@ -141,6 +141,7 @@ const handleUpload = () => {
     }
   )
     .then(() => {
+      loading.value = true;
       const l = [];
       selectedList.value.forEach((ele) => {
         for (let i = 0; i < ele.page_count; i++) {
@@ -166,6 +167,9 @@ const handleUpload = () => {
         })
         .catch(() => {
           ElMessage.error("网络错误");
+        })
+        .finally(() => {
+          loading.value = false;
         });
     })
     .catch(() => {});

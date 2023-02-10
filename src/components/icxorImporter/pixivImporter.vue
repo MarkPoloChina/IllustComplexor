@@ -205,6 +205,7 @@ const handleUpload = () => {
     }
   )
     .then(() => {
+      loading.value = true;
       let dto = [];
       selectedList.forEach((idx) => {
         dto.push({
@@ -214,24 +215,28 @@ const handleUpload = () => {
           meta: { ...importOption.addition.meta, ...log.list[idx].dto.meta },
         });
       });
-      switch (importOption.importPolicy) {
-        case "add":
-          API.newIllusts(dto).then((data) => {
+      if (importOption.importPolicy == "add") {
+        API.newIllusts(dto)
+          .then((data) => {
             finAction(data);
+          })
+          .catch(() => {
+            ElMessage.error("网络错误");
+          })
+          .finally(() => {
+            loading.value = false;
           });
-          break;
-        case "modify":
-          API.updateIllustsByMatch(dto).then((data) => {
+      } else {
+        API.updateIllustsByMatch(dto, importOption.importPolicy)
+          .then((data) => {
             finAction(data);
+          })
+          .catch(() => {
+            ElMessage.error("网络错误");
+          })
+          .finally(() => {
+            loading.value = false;
           });
-          break;
-        case "cover":
-          API.coverIllustsByMatch(dto).then((data) => {
-            finAction(data);
-          });
-          break;
-        default:
-          break;
       }
     })
     .catch(() => {});
@@ -245,7 +250,7 @@ const handleUpload = () => {
       log.list.forEach((ele) => {
         ele.checked = false;
       });
-      table.value.onReset()
+      table.value.onReset();
     }
   };
 };

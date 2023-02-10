@@ -88,6 +88,15 @@
               </el-option>
             </el-select>
           </div>
+          <div>
+            <el-select
+              v-model="values.value['meta.pid']"
+              multiple
+              filterable
+              allow-create
+              placeholder="填写PID"
+            />
+          </div>
         </div>
       </transition>
     </div>
@@ -99,7 +108,11 @@
         <el-button :icon="EditPen" circle @click="emit('openUpdateDialog')" />
       </div>
       <div>
-        <el-button :icon="Download" circle @click="emit('openDownloadDialog')" />
+        <el-button
+          :icon="Download"
+          circle
+          @click="emit('openDownloadDialog')"
+        />
       </div>
     </div>
   </div>
@@ -127,6 +140,7 @@ const values = reactive({
     "poly.parent": [],
     "poly.name": [],
     "tag.name": [],
+    "meta.pid": [],
   },
 });
 const options = {
@@ -170,6 +184,8 @@ const getDateOptions = async () => {
 };
 const getPolyOptions = async (val) => {
   polyOptions.value.length = 0;
+  values.value["poly.parent"] = [];
+  values.value["poly.name"] = [];
   if (!val) return;
   for (const p of val) {
     const polies = await API.getPoly(p);
@@ -207,7 +223,7 @@ const emit = defineEmits([
   "filter-change",
   "openPolyDialog",
   "openUpdateDialog",
-  "openDownloadDialog"
+  "openDownloadDialog",
 ]);
 </script>
 <style lang="scss" scoped>

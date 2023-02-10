@@ -68,10 +68,10 @@ export class API {
     const resp = await ax.post("/illust/list", illustList);
     return resp.data;
   }
-  static async updateIllustsByMatch(illustList) {
+  static async updateIllustsByMatch(illustList, policy) {
     const resp = await ax.put("/illust/list", illustList, {
       params: {
-        addIfNotFound: 0,
+        addIfNotFound: policy == "modify" ? 0 : 1,
       },
     });
     return resp.data;
@@ -82,14 +82,6 @@ export class API {
         addIfNotFound: 0,
         byCondition: 1,
         conditionJson: conditionObj,
-      },
-    });
-    return resp.data;
-  }
-  static async coverIllustsByMatch(illustList) {
-    const resp = await ax.put("/illust/list", illustList, {
-      params: {
-        addIfNotFound: 1,
       },
     });
     return resp.data;
@@ -175,6 +167,10 @@ export class API {
         withIllust: 0,
       },
     });
+    return resp.data;
+  }
+  static async coverRemoteBase(rb) {
+    const resp = await ax.post("/illust/remote-base", rb);
     return resp.data;
   }
 }

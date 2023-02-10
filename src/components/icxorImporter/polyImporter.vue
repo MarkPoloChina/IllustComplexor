@@ -2,7 +2,8 @@
   <div class="importer-main">
     <el-alert type="info" show-icon :closable="false" style="flex: none">
       <template #title>
-        识别Pixiv规则的文件名, 匹配对应的PID和Page, 或者仅尝试匹配末端，然后生成聚合。
+        识别Pixiv规则的文件名, 匹配对应的PID和Page,
+        或者仅尝试匹配末端，然后生成聚合。
       </template>
     </el-alert>
     <div class="import-area">
@@ -196,6 +197,7 @@ const handleUpload = () => {
     }
   )
     .then(() => {
+      loading.value = true;
       let dto = [];
       selectedList.forEach((idx) => {
         dto.push({
@@ -208,19 +210,26 @@ const handleUpload = () => {
         importOption.poly.parent,
         importOption.poly.name,
         dto
-      ).then((data) => {
-        if (data.code == 200000) {
-          ElMessage.info("处理完成");
-          data.data.forEach((item) => {
-            log.list[item.bid].status = item.status;
-            log.list[item.bid].message = item.message;
-          });
-          log.list.forEach((ele) => {
-            ele.checked = false;
-          });
-          table.value.onReset();
-        }
-      });
+      )
+        .then((data) => {
+          if (data.code == 200000) {
+            ElMessage.info("处理完成");
+            data.data.forEach((item) => {
+              log.list[item.bid].status = item.status;
+              log.list[item.bid].message = item.message;
+            });
+            log.list.forEach((ele) => {
+              ele.checked = false;
+            });
+            table.value.onReset();
+          }
+        })
+        .catch(() => {
+          ElMessage.error("网络错误");
+        })
+        .finally(() => {
+          loading.value = false;
+        });
     })
     .catch(() => {});
 };

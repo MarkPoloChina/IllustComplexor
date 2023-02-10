@@ -56,13 +56,17 @@ export class UrlGenerator {
           obj.meta.page == 0
             ? FilenameResolver.generatePxderSingleFilename(
                 obj.meta.pid,
-                obj.meta.title,
+                obj.meta.title
+                  .replace(/[\x7F]/g, "")
+                  .replace(/[/\\:*?"<>|.&$]/g, ""),
                 null
               )
             : FilenameResolver.generatePxderMultipleFilename(
                 obj.meta.pid,
                 obj.meta.page,
-                obj.meta.title,
+                obj.meta.title
+                  .replace(/[\x7F]/g, "")
+                  .replace(/[/\\:*?"<>|.&$]/g, ""),
                 null
               )
         )}`;

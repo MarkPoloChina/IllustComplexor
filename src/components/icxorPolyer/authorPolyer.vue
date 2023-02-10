@@ -79,8 +79,8 @@ const handleRemove = (obj) => {
     type: "warning",
   })
     .then(() => {
-      API.removePolyById(author[currentKey.value].id, [obj.id]).then(
-        async (data) => {
+      API.removePolyById(author[currentKey.value].id, [obj.id])
+        .then(async (data) => {
           if (data.code == 200000) {
             ElMessage.success("移除成功");
             const data = await API.getPolyWithIllust("author");
@@ -89,8 +89,10 @@ const handleRemove = (obj) => {
                 author[currentKey.value].list = item.illusts;
             });
           }
-        }
-      );
+        })
+        .catch(() => {
+          ElMessage.error("网络错误");
+        });
     })
     .catch(() => {});
 };
@@ -101,12 +103,16 @@ const handleDeletePoly = () => {
     type: "warning",
   })
     .then(() => {
-      API.deletePoly(author[currentKey.value].id).then((data) => {
-        if (data.code == 200000) {
-          ElMessage.success("删除成功");
-          getData();
-        }
-      });
+      API.deletePoly(author[currentKey.value].id)
+        .then((data) => {
+          if (data.code == 200000) {
+            ElMessage.success("删除成功");
+            getData();
+          }
+        })
+        .catch(() => {
+          ElMessage.error("网络错误");
+        });
     })
     .catch(() => {});
 };

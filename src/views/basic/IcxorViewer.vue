@@ -157,13 +157,17 @@ const handleUpdate = ({ data, controller }) => {
               ...data,
             });
           });
-          API.updateIllustsByMatch(dto).then((data) => {
-            if (data.code == 200000) {
-              ElMessage.success("操作成功");
-              getIllusts();
-              getIllustsCount();
-            }
-          });
+          API.updateIllustsByMatch(dto)
+            .then((data) => {
+              if (data.code == 200000) {
+                ElMessage.success("操作成功");
+                getIllusts();
+                getIllustsCount();
+              }
+            })
+            .catch(() => {
+              ElMessage.error("网络错误");
+            });
         })
         .catch(() => {});
     }
@@ -180,16 +184,18 @@ const handleUpdate = ({ data, controller }) => {
         }
       )
         .then(() => {
-          API.updateIllustsByCondition(filter.filterObj, { ...data }).then(
-            (data) => {
+          API.updateIllustsByCondition(filter.filterObj, { ...data })
+            .then((data) => {
               if (data.code == 200000) {
                 ElMessage.success("操作成功");
                 getIllusts();
                 getIllustsCount();
                 filter.filterObj = {};
               }
-            }
-          );
+            })
+            .catch(() => {
+              ElMessage.error("网络错误");
+            });
         })
         .catch(() => {});
     }
@@ -210,15 +216,17 @@ const handlePoly = ({ data, controller }) => {
         }
       )
         .then(() => {
-          API.addPolyByMatch(data.type, data.parent, data.name, dto).then(
-            (data) => {
+          API.addPolyByMatch(data.type, data.parent, data.name, dto)
+            .then((data) => {
               if (data.code == 200000) {
                 ElMessage.success("操作成功");
                 getIllusts();
                 getIllustsCount();
               }
-            }
-          );
+            })
+            .catch(() => {
+              ElMessage.error("网络错误");
+            });
         })
         .catch(() => {});
     }
@@ -240,14 +248,18 @@ const handlePoly = ({ data, controller }) => {
             data.parent,
             data.name,
             filter.filterObj
-          ).then((data) => {
-            if (data.code == 200000) {
-              ElMessage.success("操作成功");
-              getIllusts();
-              getIllustsCount();
-              filter.filterObj = {};
-            }
-          });
+          )
+            .then((data) => {
+              if (data.code == 200000) {
+                ElMessage.success("操作成功");
+                getIllusts();
+                getIllustsCount();
+                filter.filterObj = {};
+              }
+            })
+            .catch(() => {
+              ElMessage.error("网络错误");
+            });
         })
         .catch(() => {});
     }
