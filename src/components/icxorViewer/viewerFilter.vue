@@ -12,15 +12,15 @@
         <div class="filter" v-if="show">
           <div>
             <el-select
-              v-model="values.value['illust.type']"
+              v-model="values.value['remote_base.id']"
               placeholder="选择类型"
               multiple
             >
               <el-option
-                v-for="item in options['illust.type']"
-                :key="item.type"
-                :label="item.type"
-                :value="item.type"
+                v-for="item in options['remote_base.id']"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               />
             </el-select>
           </div>
@@ -133,7 +133,7 @@ import { onMounted, reactive, ref, watch } from "vue";
 const show = ref(false);
 const values = reactive({
   value: {
-    "illust.type": [],
+    "remote_base.id": [],
     "illust.date": [],
     "illust.star": [],
     "poly.type": [],
@@ -144,7 +144,7 @@ const values = reactive({
   },
 });
 const options = {
-  "illust.type": [],
+  "remote_base.id": [],
   "illust.date": [],
   "poly.type": [
     {
@@ -171,8 +171,8 @@ onMounted(() => {
   getDateOptions();
 });
 const getTypeOptions = async () => {
-  const data = await API.getEnumSource();
-  options["illust.type"] = data;
+  const data = await API.getRemoteBase()
+  options["remote_base.id"] = data;
 };
 const getDateOptions = async () => {
   const data = await API.getEnumTimeline();

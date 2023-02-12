@@ -40,22 +40,29 @@ watch(curTab, async () => {
   if (source[curTab.value].list.length == 0) {
     source[curTab.value].list = await getIllusts(source[curTab.value].type);
   }
+  if (!source[curTab.value].cnt) {
+    source[curTab.value].cnt = await getIllustsCount(source[curTab.value].type);
+  }
 });
 const getEnum = async () => {
-  const data = await API.getEnumSource();
+  const data = await API.getRemoteBase();
   data.forEach((ele) => {
     source.push({
-      type: ele.type,
-      cnt: ele.count,
+      type: ele.name,
       page: 0,
       list: [],
     });
   });
+  if (source[0]) {
+    getIllustsCount(source[0].type).then((data) => {
+      source[0].cnt = data;
+    });
+  }
   if (source[0]) source[0].list = await getIllusts(source[0].type);
 };
 const getIllusts = async (type, page = 0) => {
   let list = await API.getIllusts(
-    { "illust.type": [type] },
+    { "remote_base.name": [type] },
     100,
     page * 100,
     "meta.pid",
@@ -63,15 +70,15 @@ const getIllusts = async (type, page = 0) => {
   );
   return list;
 };
+const getIllustsCount = async (type) => {
+  let { count } = await API.getIllustsCount({ "remote_base.name": [type] });
+  return count;
+};
 const getInfo = (obj) => {
   currentInfo.value = obj;
   if (currentInfo.value) dialogVisible.value = true;
 };
 const handleLoadMore = async () => {
-  if (source[curTab.value].page >= 10) {
-    console.log("!!");
-    return;
-  }
   source[curTab.value].list.push(
     ...(await getIllusts(
       source[curTab.value].type,

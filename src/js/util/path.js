@@ -26,55 +26,23 @@ export class PathHelper {
 
 export class UrlGenerator {
   static getBlobUrl(obj, type) {
-    if (type == "original") return this.getBlobOriginUrl(obj);
-    let base_url;
-    if (obj.type == "pixiv") {
+    if (obj.remote_base.type == "pixiv") {
       if (store.state.useIhsForPixiv ^ obj.err)
-        return `${ihs_pixiv_base}/${FilenameResolver.generatePixivWebFilename(
+        return this.getPixivIHSUrl(
           obj.meta.pid,
           obj.meta.page,
-          "jpg"
-        )}`;
+          obj.meta.title,
+          type
+        );
       else return this.getPixivBlobUrl(obj.meta.pid, obj.meta.page, type);
-    } else if (obj.remote_type == "mpihs") base_url = ihs_base;
-    else if (obj.remote_type == "cos") base_url = config.cos_base;
-    if (obj.thum_base) {
-      return `${base_url}${obj.thum_base.url}/${encodeURIComponent(
-        obj.thum_endpoint
+    } else
+      return `${obj.remote_base.type == "mpihs" ? ihs_base : config.cos_base}${
+        type == "original"
+          ? obj.remote_base.origin_url
+          : obj.remote_base.thum_url
+      }/${encodeURIComponent(
+        obj.remote_endpoint.substring(0, obj.remote_endpoint.lastIndexOf("."))
       )}`;
-    } else return "";
-  }
-
-  static getBlobOriginUrl(obj) {
-    let base_url;
-    if (obj.type == "pixiv") {
-      if (store.state.useIhsForPixiv ^ obj.err)
-        return `${ihs_pixiv_origin}/${encodeURIComponent(
-          obj.meta.page == 0
-            ? FilenameResolver.generatePxderSingleFilename(
-                obj.meta.pid,
-                obj.meta.title
-                  .replace(/[\x7F]/g, "")
-                  .replace(/[/\\:*?"<>|.&$]/g, ""),
-                null
-              )
-            : FilenameResolver.generatePxderMultipleFilename(
-                obj.meta.pid,
-                obj.meta.page,
-                obj.meta.title
-                  .replace(/[\x7F]/g, "")
-                  .replace(/[/\\:*?"<>|.&$]/g, ""),
-                null
-              )
-        )}`;
-      else return this.getPixivBlobUrl(obj.meta.pid, obj.meta.page, "original");
-    } else if (obj.remote_type == "mpihs") base_url = ihs_base;
-    else if (obj.remote_type == "cos") base_url = config.cos_base;
-    if (obj.remote_base)
-      return `${base_url}${obj.remote_base.url}/${encodeURIComponent(
-        obj.remote_endpoint
-      )}`;
-    else return "";
   }
 
   static getPixivBlobUrl(pid, page, type) {
@@ -87,5 +55,30 @@ export class UrlGenerator {
     url.searchParams.append("page", page);
     url.searchParams.append("type", type);
     return url.href;
+  }
+
+  static getPixivIHSUrl(pid, page, title, type) {
+    if (type == "original") {
+      return `${ihs_pixiv_origin}/${encodeURIComponent(
+        page == 0
+          ? FilenameResolver.generatePxderSingleFilename(
+              pid,
+              title.replace(/[\x7F]/g, "").replace(/[/\\:*?"<>|.&$]/g, ""),
+              null
+            )
+          : FilenameResolver.generatePxderMultipleFilename(
+              pid,
+              page,
+              title.replace(/[\x7F]/g, "").replace(/[/\\:*?"<>|.&$]/g, ""),
+              null
+            )
+      )}`;
+    } else {
+      return `${ihs_pixiv_base}/${FilenameResolver.generatePixivWebFilename(
+        pid,
+        page,
+        null
+      )}`;
+    }
   }
 }

@@ -105,6 +105,7 @@ import FilterTable from "./reusable/filterTable.vue";
 import { API } from "@/api/api";
 import PolyForm from "../reusable/polyForm.vue";
 import { ipcRenderer } from "electron";
+import { FileExplorer } from "@/js/util/file";
 
 const log = reactive({ message: "", list: [] });
 const table = ref();
@@ -150,19 +151,21 @@ const startAction = async () => {
   ElMessage.info("开始收集信息");
   loading.value = true;
   const process = async (paths) => {
-    let resp;
-    if (importOption.isTryAny) resp = await FilenameAdapter.getAnyDtoSet(paths);
-    else resp = await FilenameAdapter.getPixivDtoSet(paths);
+    const resp = await FilenameAdapter.getDtoList(
+      paths,
+      [],
+      importOption.isTryAny
+    );
     ElMessage.info(`信息收集完成，共${resp.length}条数据`);
     loading.value = false;
     log.list = resp;
   };
   if (importOption.importType == "directory") {
-    FilenameAdapter.parseBaseFilenamesFromDirectoryAsync(
-      importOption.pathDir
-    ).then((paths) => {
-      process(paths);
-    });
+    FileExplorer.parseFilenamesFromDirectoryAsync(importOption.pathDir).then(
+      (paths) => {
+        process(paths);
+      }
+    );
   } else process(importOption.paths);
 };
 const handleUpload = () => {

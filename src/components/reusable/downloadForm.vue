@@ -39,7 +39,7 @@
           show-overflow-tooltip
         />
         <el-table-column
-          prop="type"
+          prop="remote_base.name"
           label="类型"
           width="100"
           show-overflow-tooltip
@@ -72,11 +72,12 @@
 <script setup>
 import { ElMessage } from "element-plus";
 import { reactive, computed, ref } from "vue";
-import { APIProxy } from "@/api/api";
+import { APIProxy, API } from "@/api/api";
 import { UrlGenerator } from "@/js/util/path";
 import { FileTransfer } from "@/js/util/file";
 import { FilenameResolver } from "@/js/util/filename";
 import { ipcRenderer } from "electron";
+import config from "@/api/config";
 
 const downloadOption = reactive({
   pathDir: "",
@@ -122,30 +123,43 @@ const handleDownload = () => {
     return;
   }
   downloadCnt.value = 0;
-  for (const obj of writableList.value) {
-    APIProxy.getLocalBlob(UrlGenerator.getBlobOriginUrl(obj)).then(
-      ({ data, ext }) => {
-        FileTransfer.saveArrayBufferTo(
-          data,
-          obj.type == "pixiv"
-            ? FilenameResolver.generatePixivWebFilename(
-                obj.meta.pid,
-                obj.meta.page,
-                ext
-              )
-            : obj.remote_endpoint,
-          downloadOption.pathDir
-        )
-          .then(() => {})
-          .catch((err) => {
-            ElMessage.error(`第${downloadCnt.value}文件下载失败`);
-            console.log(err);
-          })
-          .finally(() => {
-            downloadCnt.value++;
-          });
+  const process = async (obj) => {
+    let url = UrlGenerator.getBlobUrl(obj, "original");
+    if (url.startsWith(config.baseURL_mpi3s) || url.startsWith(config.baseURL))
+      url = await API.getPixivImageUrl(obj.meta.pid, obj.meta.page, "original");
+    try {
+      const { data, ext } = await APIProxy.getLocalBlob(url);
+      FileTransfer.saveArrayBufferTo(
+        data,
+        obj.remote_base.type == "pixiv"
+          ? FilenameResolver.generatePixivWebFilename(
+              obj.meta.pid,
+              obj.meta.page,
+              ext
+            )
+          : obj.remote_endpoint,
+        downloadOption.pathDir
+      )
+        .then(() => {})
+        .catch((err) => {
+          ElMessage.error(`第${downloadCnt.value}文件保存失败`);
+          console.log(err);
+        })
+        .finally(() => {
+          downloadCnt.value++;
+        });
+    } catch (err) {
+      if (!obj.err) {
+        obj.err = true;
+        process(obj);
+      } else {
+        ElMessage.error(`第${downloadCnt.value}文件下载失败`);
+        console.log(err);
       }
-    );
+    }
+  };
+  for (const obj of writableList.value) {
+    process(obj);
   }
 };
 const handleClose = () => {

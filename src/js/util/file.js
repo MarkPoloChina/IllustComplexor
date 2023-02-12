@@ -11,3 +11,21 @@ export class FileTransfer {
     });
   };
 }
+
+export class FileExplorer {
+  /**
+   * @summary 从指定目录解析文件
+   * @param {string} [path] 文件路径
+   */
+  static parseFilenamesFromDirectory = (path) => {
+    return fs.readdirSync(path);
+  };
+
+  /**
+   * @summary 从指定目录异步解析文件
+   * @param {string} [path] 文件路径
+   */
+  static parseFilenamesFromDirectoryAsync = (path) => {
+    return fs.readdir(path);
+  };
+}

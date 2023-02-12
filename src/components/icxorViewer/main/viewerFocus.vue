@@ -9,7 +9,6 @@
           UrlGenerator.getBlobUrl(tableData[currentIndex], 'original'),
         ]"
         fit="contain"
-        @click="openLoading()"
       >
         <template #error>
           <div class="image-slot">
@@ -47,8 +46,6 @@
 </template>
 <script setup>
 import { Picture } from "@element-plus/icons-vue";
-import { ElLoading } from "element-plus";
-import { nextTick } from "vue";
 import { UrlGenerator } from "@/js/util/path";
 import { onMounted, ref } from "vue";
 import { ipcRenderer } from "electron";
@@ -69,18 +66,6 @@ const resetScroll = () => {
   currentIndex.value = 0;
 };
 onMounted(() => {});
-const openLoading = () => {
-  const tryOpen = () =>
-    nextTick(() => {
-      if (!document.querySelector(".el-image-viewer__mask")) return tryOpen();
-      else
-        ElLoading.service({
-          target: ".el-image-viewer__mask",
-        });
-    });
-  // if (!loadedSet.value.has(id))
-  tryOpen();
-};
 const handleRightClick = (event, obj, index) => {
   event.preventDefault();
   ipcRenderer.removeAllListeners("context:click");

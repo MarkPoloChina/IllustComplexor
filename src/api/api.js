@@ -4,7 +4,7 @@ import store from "@/store";
 const ax = axios.create({
   baseURL: store.state.localApi ? config.baseURL : config.baseURL_mpi3s,
 });
-const ax_local = axios.create();
+const ax_local = axios.create({ responseType: "arraybuffer" });
 
 /**
  * API Class
@@ -20,16 +20,6 @@ export class API {
       params: {
         row: "date",
         desc: 1,
-        requiredType: "pixiv",
-      },
-    });
-    return resp.data;
-  }
-  static async getEnumSource() {
-    const resp = await ax.get("/illust/enum", {
-      params: {
-        row: "type",
-        desc: 0,
       },
     });
     return resp.data;
@@ -177,7 +167,7 @@ export class API {
 
 export class APIProxy {
   static async getLocalBlob(url) {
-    const resp = await ax_local.get(url, { responseType: "arraybuffer" });
+    const resp = await ax_local.get(url);
     let ext = null;
     switch (resp.headers["content-type"]) {
       case "image/jpeg":

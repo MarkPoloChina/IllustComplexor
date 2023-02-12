@@ -30,7 +30,6 @@
         ref="table"
         v-loading="loading"
         :data="resultTable"
-        height="0"
         class="fliter-table"
         @selection-change="handleSelectionChange"
       >
@@ -105,7 +104,9 @@ const initTab = () => {
 const importOption = reactive({
   type: "public",
   addition: {
-    type: "pixiv",
+    remote_base: {
+      name: 'Pixiv',
+    },
     date: null,
   },
 });

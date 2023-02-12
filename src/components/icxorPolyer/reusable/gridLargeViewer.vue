@@ -22,7 +22,6 @@
               :src="UrlGenerator.getBlobUrl(obj, 'square_medium')"
               :preview-src-list="[UrlGenerator.getBlobUrl(obj, 'original')]"
               fit="cover"
-              @click="openLoading()"
               @contextmenu.prevent="handleRightClick($event, obj)"
               lazy
               @error="obj.err = true"
@@ -41,9 +40,7 @@
 </template>
 <script setup>
 import { Picture } from "@element-plus/icons-vue";
-import { nextTick, reactive } from "vue";
 import { UrlGenerator } from "@/js/util/path";
-import { ElLoading } from "element-plus";
 import { ipcRenderer } from "electron";
 // eslint-disable-next-line no-undef
 defineProps({
@@ -52,19 +49,6 @@ defineProps({
 });
 // eslint-disable-next-line no-undef
 const emit = defineEmits(["showInfo", "remove", "loadMore"]);
-const loadObj = reactive({ value: null });
-const openLoading = () => {
-  const tryOpen = () =>
-    nextTick(() => {
-      if (!document.querySelector(".el-image-viewer__mask")) return tryOpen();
-      else
-        loadObj.value = ElLoading.service({
-          target: ".el-image-viewer__mask",
-        });
-    });
-  // if (!loadedSet.value.has(id))
-  tryOpen();
-};
 const handleRightClick = (event, obj) => {
   event.preventDefault();
   ipcRenderer.removeAllListeners("context:click");

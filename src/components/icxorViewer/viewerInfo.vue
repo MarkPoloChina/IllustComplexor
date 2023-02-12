@@ -25,7 +25,7 @@
           writableInfo.id
         }}</el-descriptions-item>
         <el-descriptions-item label="类型">{{
-          writableInfo.type
+          writableInfo.remote_base.name
         }}</el-descriptions-item>
         <el-descriptions-item label="评分"
           ><el-rate

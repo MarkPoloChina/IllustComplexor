@@ -5,7 +5,7 @@
         <el-form-item label="对于全部" v-if="type == 'viewer'">
           <el-switch v-model="updateAll" />
         </el-form-item>
-        <el-form-item label="自动注入" v-if="type == 'pixiv'">
+        <el-form-item label="自动注入" v-if="type == 'basic'">
           <el-checkbox
             v-model="autoKeys['meta.title']"
             label="标题"
@@ -21,7 +21,7 @@
           />
         </el-form-item>
         <el-form-item label="评级">
-          <el-rate v-model="baseInfo.star" clearable/>
+          <el-rate v-model="baseInfo.star" clearable />
         </el-form-item>
         <el-form-item>
           <el-select
@@ -32,7 +32,7 @@
             placeholder="填写标签"
           />
         </el-form-item>
-        <el-form-item label="分级" v-if="type != 'other'">
+        <el-form-item label="分级">
           <el-select v-model="baseInfo.meta.limit" placeholder="Select">
             <el-option
               v-for="item in limitOptions"
@@ -108,14 +108,12 @@ const handleConfirm = () => {
   dialogVisible.value = false;
   let controller = null;
   let data = null;
-  if (props.type == "pixiv") {
+  if (props.type == "basic") {
     controller = [];
     Object.keys(autoKeys).forEach((key) => {
       if (autoKeys[key]) controller.push(key);
     });
     data = { ...baseInfo };
-  } else if (props.type == "other") {
-    data = { ...baseInfo, meta: null };
   } else if (props.type == "viewer") {
     data = { ...baseInfo };
     controller = updateAll.value;

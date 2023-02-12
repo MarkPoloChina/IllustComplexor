@@ -11,7 +11,7 @@
       </template>
       <el-descriptions-item>
         <template #label> 来源 </template>
-        {{ info.type }}
+        {{ info.remote_base.name }}
       </el-descriptions-item>
       <el-descriptions-item>
         <template #label> PID </template>

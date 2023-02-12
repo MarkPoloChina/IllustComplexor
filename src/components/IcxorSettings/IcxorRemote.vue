@@ -4,16 +4,44 @@
     <div class="form-block">
       <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="id" label="ID" width="120" />
-        <el-table-column label="标识符" width="250">
+        <el-table-column label="类型" width="200">
+          <template #default="scope">
+            <el-select
+              v-model="scope.row.type"
+              placeholder="选择类型"
+              :disabled="!scope.row.editing"
+            >
+              <el-option
+                v-for="item in ['pixiv', 'mpihs', 'cos']"
+                :key="item"
+                :label="item"
+                :value="item"
+              />
+            </el-select>
+            <span v-if="!scope.row.editing">{{ scope.row.name }}</span>
+            <span v-else><el-input v-model="scope.row.name"></el-input></span>
+          </template>
+        </el-table-column>
+        <el-table-column label="标识符" width="200">
           <template #default="scope">
             <span v-if="!scope.row.editing">{{ scope.row.name }}</span>
             <span v-else><el-input v-model="scope.row.name"></el-input></span>
           </template>
         </el-table-column>
-        <el-table-column label="URL">
+        <el-table-column label="原图URL">
           <template #default="scope">
-            <span v-if="!scope.row.editing">{{ scope.row.url }}</span>
-            <span v-else><el-input v-model="scope.row.url"></el-input></span>
+            <span v-if="!scope.row.editing">{{ scope.row.origin_url }}</span>
+            <span v-else
+              ><el-input v-model="scope.row.origin_url"></el-input
+            ></span>
+          </template>
+        </el-table-column>
+        <el-table-column label="缩略图URL">
+          <template #default="scope">
+            <span v-if="!scope.row.editing">{{ scope.row.thum_url }}</span>
+            <span v-else
+              ><el-input v-model="scope.row.thum_url"></el-input
+            ></span>
           </template>
         </el-table-column>
         <el-table-column fixed="right" label="Operations" width="120">
@@ -67,7 +95,13 @@ const revoke = () => {
   initForm();
 };
 const addRow = () => {
-  tableData.value.push({ id: null, name: "", url: "" });
+  tableData.value.push({
+    id: null,
+    name: "",
+    origin_url: "",
+    thum_url: "",
+    type: "",
+  });
 };
 const handleUpdateRemote = (row) => {
   API.coverRemoteBase(row)

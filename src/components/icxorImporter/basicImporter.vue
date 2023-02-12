@@ -2,8 +2,8 @@
   <div class="importer-main">
     <el-alert type="info" show-icon :closable="false" style="flex: none">
       <template #title>
-        识别Pixiv规则的文件名, 匹配对应的PID和Page,
-        然后导入或更新对应Illust。同时注入标题等元数据, 也可附加元数据。
+        利用文件名人工创建Illust信息, 指向对应的Remote, 或者上传图片,
+        也可附加元数据。
       </template>
     </el-alert>
     <div class="import-area">
@@ -42,6 +42,21 @@
               </el-col>
             </el-row>
           </el-form-item>
+          <el-form-item label="默认类型">
+            <el-select
+              v-model="importOption.addition.remote_base.name"
+              filterable
+              allow-create
+              placeholder="选择或填写类型"
+            >
+              <el-option
+                v-for="item in remoteBaseList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.name"
+              />
+            </el-select>
+          </el-form-item>
           <el-form-item label="策略">
             <el-radio-group v-model="importOption.importPolicy">
               <el-radio label="add">增加</el-radio>
@@ -50,7 +65,18 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item>
-            <el-button @click="showDialog = true">附加元</el-button>
+            <el-row :gutter="20" style="width: 100%">
+              <el-col :span="6">
+                <el-button @click="showDialog = true">附加元</el-button>
+              </el-col>
+              <el-col :span="12">
+                <el-switch
+                  v-model="importOption.acceptNormal"
+                  active-text="全部图片"
+                  inactive-text="仅Pixiv"
+                />
+              </el-col>
+            </el-row>
           </el-form-item>
         </el-form>
       </div>
@@ -88,45 +114,64 @@
   <MetaForm
     v-model="showDialog"
     @confirm="updateInfo"
-    :disableChangeAuto="log.list.length != 0"
     ref="metaForm"
-    type="pixiv"
+    type="basic"
   ></MetaForm>
 </template>
 <script setup>
 import { Check, Remove, Download } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { FilenameAdapter } from "@/js/util/filename";
-import { reactive, ref } from "vue";
-import { API } from "@/api/api";
+import { reactive, ref, onMounted } from "vue";
 import MetaForm from "../reusable/metaForm.vue";
 import FilterTable from "./reusable/filterTable.vue";
+import { API } from "@/api/api";
 import { ipcRenderer } from "electron";
+import { FileExplorer } from "@/js/util/file";
 
+const remoteBaseList = ref([]);
 const log = reactive({ message: "", list: [] });
 const showDialog = ref(false);
-const autoKeys = ref([]);
 const metaForm = ref();
 const table = ref();
 const loading = ref(false);
 const initTab = () => {
   importOption.importType = "directory";
   importOption.importPolicy = "add";
+  importOption.autoKeys = [];
   importOption.paths = [];
   importOption.pathDir = "";
-  importOption.addition = { meta: {} };
+  importOption.acceptNormal = true;
+  importOption.addition = {
+    remote_base: {
+      name: "",
+    },
+  };
   log.list.length = 0;
   log.message = "";
-  autoKeys.value.length = 0;
   metaForm.value.initForm();
 };
+onMounted(() => {
+  getRemoteBaseList();
+});
 const importOption = reactive({
   paths: [],
   pathDir: "",
+  autoKeys: [],
   importType: "directory",
   importPolicy: "add",
-  addition: { meta: {} },
+  acceptNormal: true,
+  addition: {
+    remote_base: {
+      name: "",
+    },
+  },
 });
+const getRemoteBaseList = () => {
+  API.getRemoteBase().then((data) => {
+    remoteBaseList.value = data;
+  });
+};
 const getDirectory = async () => {
   let _path = "";
   _path = await ipcRenderer.invoke("dialog:openDirectory");
@@ -139,7 +184,7 @@ const getFile = async () => {
   if (!_path) return;
   else importOption.paths = _path;
 };
-const startAction = () => {
+const startAction = async () => {
   if (
     (importOption.importType == "directory" && !importOption.pathDir) ||
     (importOption.importType == "files" && importOption.paths.length == 0)
@@ -150,28 +195,22 @@ const startAction = () => {
   ElMessage.info("开始收集信息");
   loading.value = true;
   const process = async (paths) => {
-    const resp = await FilenameAdapter.getPixivDtoList(paths, autoKeys.value);
+    const resp = await FilenameAdapter.getDtoList(
+      paths,
+      importOption.autoKeys,
+      importOption.acceptNormal
+    );
     ElMessage.info(`信息收集完成，共${resp.length}条数据`);
     loading.value = false;
     log.list = resp;
   };
   if (importOption.importType == "directory") {
-    FilenameAdapter.parseBaseFilenamesFromDirectoryAsync(
-      importOption.pathDir
-    ).then((paths) => {
-      process(paths);
-    });
+    FileExplorer.parseFilenamesFromDirectoryAsync(importOption.pathDir).then(
+      (paths) => {
+        process(paths);
+      }
+    );
   } else process(importOption.paths);
-};
-const checkIfNoConflict = (selectedList) => {
-  for (let idx of selectedList) {
-    if (
-      log.list[idx].status == "conflict" &&
-      selectedList.includes(log.list[idx].compareId)
-    )
-      return false;
-  }
-  return true;
 };
 const handleUpload = () => {
   let selectedList = [];
@@ -180,10 +219,6 @@ const handleUpload = () => {
   });
   if (selectedList.length == 0) {
     ElMessage.error("未选择任何数据");
-    return;
-  }
-  if (!checkIfNoConflict(selectedList)) {
-    ElMessage.error("尚有冲突未解决");
     return;
   }
   ElMessageBox.confirm(
@@ -201,11 +236,33 @@ const handleUpload = () => {
       selectedList.forEach((idx) => {
         dto.push({
           bid: idx,
-          type: "pixiv",
           ...importOption.addition,
-          meta: { ...importOption.addition.meta, ...log.list[idx].dto.meta },
+          ...log.list[idx].dto,
+          remote_base: {
+            ...importOption.addition.remote_base,
+            ...log.list[idx].dto.remote_base,
+          },
+          meta: log.list[idx].dto.meta
+            ? {
+                ...importOption.addition.meta,
+                ...log.list[idx].dto.meta,
+              }
+            : undefined,
         });
       });
+      const finAction = (data) => {
+        if (data.code == 200000) {
+          ElMessage.info("处理完成");
+          data.data.forEach((item) => {
+            log.list[item.bid].status = item.status;
+            log.list[item.bid].message = item.message;
+          });
+          log.list.forEach((ele) => {
+            ele.checked = false;
+          });
+          table.value.onReset();
+        }
+      };
       if (importOption.importPolicy == "add") {
         API.newIllusts(dto)
           .then((data) => {
@@ -231,23 +288,10 @@ const handleUpload = () => {
       }
     })
     .catch(() => {});
-  const finAction = (data) => {
-    if (data.code == 200000) {
-      ElMessage.info("处理完成");
-      data.data.forEach((item) => {
-        log.list[item.bid].status = item.status;
-        log.list[item.bid].message = item.message;
-      });
-      log.list.forEach((ele) => {
-        ele.checked = false;
-      });
-      table.value.onReset();
-    }
-  };
 };
 const updateInfo = ({ data, controller }) => {
   importOption.addition = { ...importOption.addition, ...data };
-  autoKeys.value.push(...controller);
+  if (controller) importOption.autoKeys = controller;
 };
 </script>
 <style lang="scss" scoped>

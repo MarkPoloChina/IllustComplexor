@@ -1,7 +1,6 @@
 import path from "path";
-import fs from "fs-extra";
 
-const extAllow = ["jpg", "png", "gif"];
+const extAllow = ["jpg", "png", "gif", "jpeg"];
 
 // const sleep = async () => {
 //   return await new Promise((resolve) => {
@@ -63,12 +62,19 @@ const possibleMatch = {
       };
     } else return null;
   },
+  Bili: (basename) => {
+    if (/^bili_/.test(basename)) {
+      return {
+        coreId: /^bili_(\S+)$/.exec(basename)[1],
+      };
+    } else return null;
+  },
 };
 
 export class FilenameResolver {
   static getObjFromFilename(filename) {
     const extname = getEXt(filename);
-    if (!extname) return null;
+    if (!extname) return;
     for (let match of Object.keys(possibleMatch)) {
       const res = possibleMatch[match](getBasename(filename));
       if (res) {
@@ -96,6 +102,7 @@ export class FilenameResolver {
   static generatePixivWebFilename(pid, page, ext) {
     if (pid && page !== null && page !== "" && ext)
       return `${pid}_p${page}.${ext}`;
+    else if (pid && page !== null && page !== "") return `${pid}_p${page}`;
     else return null;
   }
 }
@@ -106,11 +113,10 @@ export class FilenameResolver {
  */
 export class FilenameAdapter {
   /**
-   * @summary 从指定文件列表解析DTO, 用于Pixiv导入或更新
+   * @summary 将文件名批量转化成dto
    * @param {Array<string>} [paths] 文件路径
-   * @param {Array<string} [autoList] 请求注入字段
    */
-  static getPixivDtoList = async (paths, autoList) => {
+  static getDtoList = async (paths, autokeys, acceptNormal) => {
     let logs = [];
     let index = 0;
     for (const item of paths) {
@@ -120,203 +126,40 @@ export class FilenameAdapter {
         filename: filename,
         status: "ready",
         dto: null,
-        message: "OK",
+        message: "",
       };
       const reso = FilenameResolver.getObjFromFilename(filename);
-      if (reso) {
-        const dto = {
-          meta: {
-            pid: reso.pid,
-            page: reso.page,
-            title: autoList.includes("meta.title") ? reso.title : null,
-          },
-        };
-        const ti = logs.findIndex((value) => {
-          if (!value.dto) return false;
-          return (
-            value.dto.meta.pid == dto.meta.pid &&
-            value.dto.meta.page == dto.meta.page
-          );
-        });
-        if (ti != -1) {
-          if (autoList.includes("meta.title")) {
-            // 需要扩展时修改这里
-            logs[ti].status = "conflict";
-            logs[ti].message = `与文件${log.filename}发生冲突`;
-            logs[ti].compareId = index;
-            log.status = "conflict";
-            log.message = `与文件${logs[ti].filename}发生冲突`;
-            log.compareId = ti;
-            log.dto = dto;
-          } else {
-            log.status = "ignore";
-            log.message = "重复识别";
-          }
-        } else log.dto = dto;
-      } else {
+      if (reso === undefined || (reso === null && !acceptNormal)) {
         log.status = "ignore";
         log.message = "不可识别的文件";
-      }
-      logs.push(log);
-      index++;
-      // await sleep();
-    }
-    return logs;
-  };
-
-  /**
-   * @summary 从指定目录解析文件
-   * @param {string} [path] 文件路径
-   */
-  static parseBaseFilenamesFromDirectory = (path) => {
-    return fs.readdirSync(path);
-  };
-
-  /**
-   * @summary 从指定目录异步解析文件
-   * @param {string} [path] 文件路径
-   */
-  static parseBaseFilenamesFromDirectoryAsync = (path) => {
-    return fs.readdir(path);
-  };
-
-  /**
-   * @summary 从指定文件列表解析DTO, 但只用于确定Illust, 用于仅需识别pid和page的Pixiv导入或更新
-   * @param {Array<string>} [paths] 文件路径
-   */
-  static getPixivDtoSet = async (paths) => {
-    let logs = [];
-    let index = 0;
-    for (const item of paths) {
-      const filename = path.basename(item);
-      let log = {
-        oriIdx: index,
-        filename: filename,
-        status: "ready",
-        dto: null,
-        message: "OK",
-      };
-      const reso = FilenameResolver.getObjFromFilename(filename);
-      if (reso) {
-        const dto = {
-          meta: {
-            pid: reso.pid,
-            page: reso.page,
-          },
-        };
-        const ti = logs.findIndex((value) => {
-          if (!value.dto) return false;
-          return (
-            value.dto.meta.pid == dto.meta.pid &&
-            value.dto.meta.page == dto.meta.page
-          );
-        });
-        if (ti != -1) {
-          log.status = "ignore";
-          log.message = "重复识别";
-        } else log.dto = dto;
-      } else {
-        log.status = "ignore";
-        log.message = "不可识别的文件";
-      }
-      logs.push(log);
-      index++;
-      // await sleep();
-    }
-    return logs;
-  };
-
-  /**
-   * @summary 从指定文件列表解析DTO, 但只用于确定文件名
-   * @param {Array<string>} [paths] 文件路径
-   * @param {string | null | undefined} [thumExt] 缩略图末端的扩展名
-   * @param {boolean | undefined} [noThum] 是否不需要缩略图末端
-   */
-  static getOtherDtoSet = async (paths, thumExt, noThum) => {
-    let logs = [];
-    let index = 0;
-    for (const item of paths) {
-      const filename = path.basename(item);
-      let log = {
-        oriIdx: index,
-        filename: filename,
-        status: "ready",
-        dto: null,
-        message: "OK",
-      };
-      if ([".jpg", ".png", ".gif"].includes(path.extname(filename))) {
+      } else if (reso === null) {
+        log.message = "一般图片文件";
         log.dto = {
-          remote_info: !noThum
-            ? {
-                remote_endpoint: filename,
-                thum_endpoint: thumExt
-                  ? filename.replace(path.extname(filename), thumExt)
-                  : filename,
-              }
-            : {
-                remote_endpoint: filename,
-              },
+          remote_endpoint: filename,
         };
-      } else {
-        log.status = "ignore";
-        log.message = "不可识别的文件";
-      }
-      logs.push(log);
-      index++;
-      // await sleep();
-    }
-    return logs;
-  };
-
-  /**
-   * @summary 从指定文件列表解析DTO, 但识别全部图片，当符合Pixiv返回对应元，否则返回末端（不含缩略图）
-   * @param {Array<string>} [paths] 文件路径
-   */
-  static getAnyDtoSet = async (paths) => {
-    let logs = [];
-    let index = 0;
-    for (const item of paths) {
-      const filename = path.basename(item);
-      let log = {
-        oriIdx: index,
-        filename: filename,
-        status: "ready",
-        dto: null,
-        message: "OK, For Pixiv",
-      };
-      const reso = FilenameResolver.getObjFromFilename(filename);
-      if (reso) {
-        const dto = {
+      } else if (reso.pid) {
+        log.message = "Pixiv Target OK";
+        log.dto = {
           meta: {
             pid: reso.pid,
             page: reso.page,
+            title: autokeys.includes("meta.title") ? reso.title : null,
+          },
+          remote_base: {
+            name: "Pixiv",
           },
         };
-        const ti = logs.findIndex((value) => {
-          if (!value.dto || !value.dto.meta) return false;
-          return (
-            value.dto.meta.pid == dto.meta.pid &&
-            value.dto.meta.page == dto.meta.page
-          );
-        });
-        if (ti != -1) {
-          log.status = "ignore";
-          log.message = "重复识别";
-        } else log.dto = dto;
-      } else if ([".jpg", ".png", ".gif"].includes(path.extname(filename))) {
-        log.dto = {
-          remote_info: {
-            remote_endpoint: filename,
-          },
-        };
-        log.message = "OK, For Other";
       } else {
-        log.status = "ignore";
-        log.message = "不可识别的文件";
+        log.message = `Other Target OK with ${reso.match}`;
+        log.dto = {
+          remote_endpoint: `${reso.coreId}.${reso.extname}`,
+          remote_base: {
+            name: reso.match,
+          },
+        };
       }
       logs.push(log);
       index++;
-      // await sleep();
     }
     return logs;
   };
