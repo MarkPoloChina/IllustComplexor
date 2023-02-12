@@ -99,6 +99,8 @@ const handleRemove = (obj) => {
               if (item.id == lnr[currentKey.value].id)
                 lnr[currentKey.value].list = item.illusts;
             });
+          } else {
+            ElMessage.error(data.msg);
           }
         })
         .catch(() => {
@@ -119,6 +121,8 @@ const handleDeletePoly = () => {
           if (data.code == 200000) {
             ElMessage.success("删除成功");
             getData();
+          } else {
+            ElMessage.error(data.msg);
           }
         })
         .catch(() => {

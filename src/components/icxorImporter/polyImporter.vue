@@ -150,23 +150,20 @@ const startAction = async () => {
   }
   ElMessage.info("开始收集信息");
   loading.value = true;
-  const process = async (paths) => {
-    const resp = await FilenameAdapter.getDtoList(
-      paths,
-      [],
-      importOption.isTryAny
-    );
-    ElMessage.info(`信息收集完成，共${resp.length}条数据`);
-    loading.value = false;
-    log.list = resp;
-  };
-  if (importOption.importType == "directory") {
-    FileExplorer.parseFilenamesFromDirectoryAsync(importOption.pathDir).then(
-      (paths) => {
-        process(paths);
-      }
-    );
-  } else process(importOption.paths);
+  const paths =
+    importOption.importType == "directory"
+      ? await FileExplorer.parseFilenamesFromDirectoryAsync(
+          importOption.pathDir
+        )
+      : importOption.paths;
+  const resp = await FilenameAdapter.getDtoList(
+    paths,
+    [],
+    importOption.isTryAny
+  );
+  ElMessage.info(`信息收集完成，共${resp.length}条数据`);
+  loading.value = false;
+  log.list = resp;
 };
 const handleUpload = () => {
   if (!importOption.poly.name) {
@@ -216,6 +213,8 @@ const handleUpload = () => {
               ele.checked = false;
             });
             table.value.onReset();
+          } else {
+            ElMessage.error(data.msg);
           }
         })
         .catch(() => {

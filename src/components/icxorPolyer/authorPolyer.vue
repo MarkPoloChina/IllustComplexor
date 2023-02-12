@@ -87,6 +87,8 @@ const handleRemove = (obj) => {
               if (item.id == author[currentKey.value].id)
                 author[currentKey.value].list = item.illusts;
             });
+          } else {
+            ElMessage.error(data.msg);
           }
         })
         .catch(() => {
@@ -107,6 +109,8 @@ const handleDeletePoly = () => {
           if (data.code == 200000) {
             ElMessage.success("删除成功");
             getData();
+          } else {
+            ElMessage.error(data.msg);
           }
         })
         .catch(() => {

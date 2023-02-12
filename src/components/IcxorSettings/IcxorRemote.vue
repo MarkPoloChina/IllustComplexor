@@ -3,8 +3,8 @@
     <div class="title-block">远程基</div>
     <div class="form-block">
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="id" label="ID" width="120" />
-        <el-table-column label="类型" width="200">
+        <el-table-column prop="id" label="ID" width="50" />
+        <el-table-column label="类型" width="150">
           <template #default="scope">
             <el-select
               v-model="scope.row.type"
@@ -18,11 +18,9 @@
                 :value="item"
               />
             </el-select>
-            <span v-if="!scope.row.editing">{{ scope.row.name }}</span>
-            <span v-else><el-input v-model="scope.row.name"></el-input></span>
           </template>
         </el-table-column>
-        <el-table-column label="标识符" width="200">
+        <el-table-column label="标识符" width="150">
           <template #default="scope">
             <span v-if="!scope.row.editing">{{ scope.row.name }}</span>
             <span v-else><el-input v-model="scope.row.name"></el-input></span>
@@ -44,7 +42,7 @@
             ></span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" label="Operations" width="120">
+        <el-table-column fixed="right" label="操作" width="80">
           <template #default="scope">
             <el-button
               link

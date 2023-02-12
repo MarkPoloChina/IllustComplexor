@@ -2,8 +2,7 @@
   <div class="importer-main">
     <el-alert type="info" show-icon :closable="false" style="flex: none">
       <template #title>
-        利用文件名人工创建Illust信息, 指向对应的Remote, 或者上传图片,
-        也可附加元数据。
+        利用文件名创建Illust信息, 指向对应类型的Remote, 也可同时附加元数据。
       </template>
     </el-alert>
     <div class="import-area">
@@ -167,10 +166,8 @@ const importOption = reactive({
     },
   },
 });
-const getRemoteBaseList = () => {
-  API.getRemoteBase().then((data) => {
-    remoteBaseList.value = data;
-  });
+const getRemoteBaseList = async () => {
+  remoteBaseList.value = await API.getRemoteBase();
 };
 const getDirectory = async () => {
   let _path = "";
@@ -194,23 +191,20 @@ const startAction = async () => {
   }
   ElMessage.info("开始收集信息");
   loading.value = true;
-  const process = async (paths) => {
-    const resp = await FilenameAdapter.getDtoList(
-      paths,
-      importOption.autoKeys,
-      importOption.acceptNormal
-    );
-    ElMessage.info(`信息收集完成，共${resp.length}条数据`);
-    loading.value = false;
-    log.list = resp;
-  };
-  if (importOption.importType == "directory") {
-    FileExplorer.parseFilenamesFromDirectoryAsync(importOption.pathDir).then(
-      (paths) => {
-        process(paths);
-      }
-    );
-  } else process(importOption.paths);
+  const paths =
+    importOption.importType == "directory"
+      ? await FileExplorer.parseFilenamesFromDirectoryAsync(
+          importOption.pathDir
+        )
+      : importOption.paths;
+  const resp = await FilenameAdapter.getDtoList(
+    paths,
+    importOption.autoKeys,
+    importOption.acceptNormal
+  );
+  ElMessage.info(`信息收集完成，共${resp.length}条数据`);
+  loading.value = false;
+  log.list = resp;
 };
 const handleUpload = () => {
   let selectedList = [];
@@ -230,7 +224,7 @@ const handleUpload = () => {
       type: "warning",
     }
   )
-    .then(() => {
+    .then(async () => {
       loading.value = true;
       let dto = [];
       selectedList.forEach((idx) => {
@@ -250,7 +244,11 @@ const handleUpload = () => {
             : undefined,
         });
       });
-      const finAction = (data) => {
+      try {
+        const data =
+          importOption.importPolicy == "add"
+            ? await API.newIllusts(dto)
+            : await API.updateIllustsByMatch(dto, importOption.importPolicy);
         if (data.code == 200000) {
           ElMessage.info("处理完成");
           data.data.forEach((item) => {
@@ -261,30 +259,11 @@ const handleUpload = () => {
             ele.checked = false;
           });
           table.value.onReset();
-        }
-      };
-      if (importOption.importPolicy == "add") {
-        API.newIllusts(dto)
-          .then((data) => {
-            finAction(data);
-          })
-          .catch(() => {
-            ElMessage.error("网络错误");
-          })
-          .finally(() => {
-            loading.value = false;
-          });
-      } else {
-        API.updateIllustsByMatch(dto, importOption.importPolicy)
-          .then((data) => {
-            finAction(data);
-          })
-          .catch(() => {
-            ElMessage.error("网络错误");
-          })
-          .finally(() => {
-            loading.value = false;
-          });
+        } else ElMessage.error(`${data.msg}`);
+      } catch {
+        ElMessage.error("网络错误");
+      } finally {
+        loading.value = false;
       }
     })
     .catch(() => {});

@@ -79,7 +79,7 @@ const currentSelected = reactive({ value: null });
 const currentPage = ref(1);
 const viewerMain = ref();
 const pagination = ref();
-const downloadList = ref();
+const downloadList = ref([]);
 const filter = reactive({
   filterObj: {},
 });
@@ -163,6 +163,8 @@ const handleUpdate = ({ data, controller }) => {
                 ElMessage.success("操作成功");
                 getIllusts();
                 getIllustsCount();
+              } else {
+                ElMessage.error(data.msg);
               }
             })
             .catch(() => {
@@ -191,6 +193,8 @@ const handleUpdate = ({ data, controller }) => {
                 getIllusts();
                 getIllustsCount();
                 filter.filterObj = {};
+              } else {
+                ElMessage.error(data.msg);
               }
             })
             .catch(() => {
@@ -222,6 +226,8 @@ const handlePoly = ({ data, controller }) => {
                 ElMessage.success("操作成功");
                 getIllusts();
                 getIllustsCount();
+              } else {
+                ElMessage.error(data.msg);
               }
             })
             .catch(() => {
@@ -255,6 +261,8 @@ const handlePoly = ({ data, controller }) => {
                 getIllusts();
                 getIllustsCount();
                 filter.filterObj = {};
+              } else {
+                ElMessage.error(data.msg);
               }
             })
             .catch(() => {
@@ -267,8 +275,12 @@ const handlePoly = ({ data, controller }) => {
 };
 const handleOpenDownloadDialog = () => {
   const dto = viewerMain.value.getSelections();
-  show.download = true;
-  downloadList.value = dto;
+  if (dto && dto.length) {
+    show.download = true;
+    downloadList.value = dto;
+  } else {
+    ElMessage.error("尚未选择");
+  }
 };
 </script>
 <style lang="scss" scoped>
