@@ -8,10 +8,12 @@
       :flexible="true"
       highlight-current-row
       @current-change="handleCurrentChange"
-      @selection-change="handleSelectionChange"
+      @select="handleSelect"
+      @select-all="handleSelectAll"
+      @row-contextmenu="handleContextDeteched"
     >
       <el-table-column type="selection" width="55" />
-      <el-table-column prop="type" label="类型" :min-width="80" />
+      <el-table-column prop="remote_base.name" label="类型" :min-width="80" />
       <el-table-column prop="meta.pid" label="PID" :min-width="120" />
       <el-table-column prop="meta.page" label="页号" :min-width="50" />
       <el-table-column label="标题/末端" :min-width="280" show-overflow-tooltip>
@@ -25,29 +27,47 @@
   </div>
 </template>
 <script setup>
-import { onMounted, ref } from "vue";
+import { onMounted, watch, ref } from "vue";
 
 const table = ref();
 // eslint-disable-next-line no-undef
 const props = defineProps({
   tableData: Array,
-  selections: Array,
 });
 // eslint-disable-next-line no-undef
-const emits = defineEmits(["select-change", "update:selections"]);
+const emits = defineEmits(["select-change", "popup-context"]);
 const resetScroll = () => {
   table.value.setScrollTop(0);
 };
 onMounted(() => {
-  props.selections.forEach((ele) => {
-    table.value.toggleRowSelection(ele);
+  props.tableData.forEach((ele) => {
+    table.value.toggleRowSelection(ele, !!ele.checked);
   });
 });
-const handleSelectionChange = (val) => {
-  emits("update:selections", val);
-};
+watch(
+  () => props.tableData,
+  (val) => {
+    val.forEach((ele) => {
+      table.value.toggleRowSelection(ele, !!ele.checked);
+    });
+  },
+  {
+    deep: true,
+  }
+);
 const handleCurrentChange = (val) => {
   emits("select-change", val);
+};
+const handleContextDeteched = (row) => {
+  emits("popup-context", row);
+};
+const handleSelect = (selection, row) => {
+  row.checked = selection.length != 0;
+};
+const handleSelectAll = (selection) => {
+  props.tableData.forEach((item) => {
+    item.checked = selection.length != 0;
+  });
 };
 // eslint-disable-next-line no-undef
 defineExpose({ resetScroll });

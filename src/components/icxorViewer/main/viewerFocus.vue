@@ -3,7 +3,6 @@
     <div class="focus-container">
       <el-image
         class="viewer-img"
-        :class="checkIfInSelected(tableData[currentIndex]) ? 'with-border' : ''"
         :src="UrlGenerator.getBlobUrl(tableData[currentIndex], 'medium')"
         :preview-src-list="[
           UrlGenerator.getBlobUrl(tableData[currentIndex], 'original'),
@@ -26,12 +25,12 @@
         <div class="expo"></div>
         <el-image
           class="viewer-img"
-          :class="checkIfInSelected(obj) ? 'with-border' : ''"
+          :class="obj.checked ? 'with-border' : ''"
           :src="UrlGenerator.getBlobUrl(obj, 'square_medium')"
           fit="cover"
           @click="handleSelect(obj, index)"
-          @contextmenu.prevent="handleRightClick($event, obj, index)"
-          loading="lazy"
+          @contextmenu.prevent="handleRightClick($event, obj)"
+          lazy
           @error="obj.err = true"
         >
           <template #error>
@@ -48,62 +47,24 @@
 import { Picture } from "@element-plus/icons-vue";
 import { UrlGenerator } from "@/js/util/path";
 import { onMounted, ref } from "vue";
-import { ipcRenderer } from "electron";
 
-const currentSelected = ref([]);
 const currentIndex = ref(0);
 // eslint-disable-next-line no-undef
-const emit = defineEmits(["select-change", "selects-change"]);
+const emit = defineEmits(["select-change", "selects-change", "popup-context"]);
 const table = ref();
 // eslint-disable-next-line no-undef
 const props = defineProps({
   tableData: Array,
 });
 // eslint-disable-next-line no-undef
-// const emits = defineEmits(["select-change", "selects-change"]);
 const resetScroll = () => {
   table.value.setScrollTop(0);
   currentIndex.value = 0;
 };
 onMounted(() => {});
-const handleRightClick = (event, obj, index) => {
+const handleRightClick = (event, obj) => {
   event.preventDefault();
-  ipcRenderer.removeAllListeners("context:click");
-  ipcRenderer.once("context:click", (event, item) => {
-    switch (item) {
-      case "详情":
-        handleSelect(obj, index);
-        break;
-      case "选定":
-        handleToggle(obj);
-        break;
-      default:
-        break;
-    }
-  });
-  ipcRenderer.send("context:popup", [
-    { label: "详情" },
-    { type: "separator" },
-    {
-      label: "选定",
-      type: "checkbox",
-      checked: checkIfInSelected(obj),
-    },
-  ]);
-};
-const handleToggle = (obj) => {
-  let index = currentSelected.value.findIndex((val) => {
-    return obj.id == val.id;
-  });
-  if (index != -1) currentSelected.value.splice(index, 1);
-  else currentSelected.value.push(obj);
-};
-const checkIfInSelected = (obj) => {
-  return (
-    currentSelected.value.find((val) => {
-      return obj.id == val.id;
-    }) !== undefined
-  );
+  emit("popup-context", obj);
 };
 const handleSelect = (obj, index) => {
   currentIndex.value = index;
@@ -115,9 +76,6 @@ const handleIndexChange = (action) => {
   } else if (action == "down") if (currentIndex.value > 0) currentIndex.value--;
   emit("select-change", props.tableData[currentIndex.value]);
 };
-// const handleSelectionChange = (val) => {
-//   currentSelected.value = val;
-// };
 // eslint-disable-next-line no-undef
 defineExpose({ resetScroll, handleIndexChange });
 </script>

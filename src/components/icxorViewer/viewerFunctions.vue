@@ -1,10 +1,7 @@
 <template>
   <div class="viewer-func">
     <div class="viewer-controller">
-      <el-radio-group
-        v-model="viewerController.type"
-        @change="viewerTypeChange"
-      >
+      <el-radio-group v-model="viewerController.type">
         <el-radio label="grid">网格</el-radio>
         <el-radio label="table">表格</el-radio>
         <el-radio label="focus">聚焦</el-radio>
@@ -29,46 +26,45 @@
       <el-pagination
         background
         layout="total, prev, pager, next"
-        v-model:current-page="curPage"
+        v-model:current-page="writableCurPage"
         :total="illustCount"
         :page-size="100"
         :pager-count="5"
         small
-        @current-change="handlePageChange"
       />
     </div>
   </div>
 </template>
 <script setup>
 import { ArrowLeftBold, ArrowRightBold } from "@element-plus/icons-vue";
-import { reactive, ref } from "vue";
+import { reactive, computed, watch } from "vue";
 
 const viewerController = reactive({
   type: "table",
 });
 // eslint-disable-next-line no-undef
 const emit = defineEmits([
-  "pageChange",
-  "viewerTypeChange",
+  "update:curPage",
+  "update:viewerType",
   "focusUp",
   "focusDown",
 ]);
 // eslint-disable-next-line no-undef
-defineProps({
+const props = defineProps({
   illustCount: Number,
+  curPage: Number,
 });
-const curPage = ref(1);
-const handlePageChange = (val) => {
-  emit("pageChange", val);
-};
-const viewerTypeChange = (val) => {
-  emit("viewerTypeChange", val);
-};
-const initPage = () => {
-  curPage.value = 1;
-};
-// eslint-disable-next-line no-undef
-defineExpose({ initPage });
+const writableCurPage = computed({
+  get: () => {
+    return props.curPage;
+  },
+  set: (val) => {
+    emit("update:curPage", val);
+  },
+});
+watch(viewerController, (val) => {
+  emit("update:viewerType", val.type);
+});
 </script>
 <style lang="scss" scoped>
 .viewer-func {

@@ -10,12 +10,12 @@
         <div class="expo"></div>
         <el-image
           class="viewer-img"
-          :class="checkIfInSelected(obj) ? 'with-border' : ''"
+          :class="obj.checked ? 'with-border' : ''"
           :src="UrlGenerator.getBlobUrl(obj, 'square_medium')"
           :preview-src-list="[UrlGenerator.getBlobUrl(obj, 'original')]"
           fit="cover"
           @contextmenu="handleRightClick($event, obj)"
-          loading="lazy"
+          lazy
           @error="obj.err = true"
         >
           <template #error>
@@ -31,65 +31,22 @@
 <script setup>
 import { Picture } from "@element-plus/icons-vue";
 import { UrlGenerator } from "@/js/util/path";
-import { onMounted, ref } from "vue";
-import { ipcRenderer } from "electron";
+import { ref } from "vue";
 
-const currentSelected = ref([]);
 // eslint-disable-next-line no-undef
-const emit = defineEmits(["select-change", "update:selections"]);
+const emit = defineEmits(["update:selections", "popup-context"]);
 const table = ref();
 // eslint-disable-next-line no-undef
-const props = defineProps({
+defineProps({
   tableData: Array,
   selections: Array,
 });
 const resetScroll = () => {
   table.value.setScrollTop(0);
 };
-onMounted(() => {
-  props.selections.forEach((ele) => {
-    currentSelected.value.push(ele);
-  });
-});
 const handleRightClick = (event, obj) => {
   event.preventDefault();
-  ipcRenderer.removeAllListeners("context:click");
-  ipcRenderer.once("context:click", (event, item) => {
-    switch (item) {
-      case "详情":
-        emit("select-change", obj);
-        break;
-      case "选定":
-        handleToggle(obj);
-        break;
-      default:
-        break;
-    }
-  });
-  ipcRenderer.send("context:popup", [
-    { label: "详情" },
-    { type: "separator" },
-    {
-      label: "选定",
-      type: "checkbox",
-      checked: checkIfInSelected(obj),
-    },
-  ]);
-};
-const handleToggle = (obj) => {
-  let index = currentSelected.value.findIndex((val) => {
-    return obj.id == val.id;
-  });
-  if (index != -1) currentSelected.value.splice(index, 1);
-  else currentSelected.value.push(obj);
-  emit("update:selections", currentSelected.value);
-};
-const checkIfInSelected = (obj) => {
-  return (
-    currentSelected.value.findIndex((val) => {
-      return obj.id == val.id;
-    }) != -1
-  );
+  emit("popup-context", obj);
 };
 // eslint-disable-next-line no-undef
 defineExpose({ resetScroll });

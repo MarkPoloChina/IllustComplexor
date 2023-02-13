@@ -15,7 +15,7 @@
           <el-button
             :icon="ArrowRightBold"
             circle
-            @click="emit('close')"
+            @click="writableInfo = null"
             type="danger"
             size="small"
             style="margin-left: 10px"
@@ -75,7 +75,7 @@
           writableInfo.meta.author ?? "-"
         }}</el-descriptions-item>
         <el-descriptions-item label="收藏数">{{
-          writableInfo.meta.bookCnt ?? "-"
+          writableInfo.meta.book_cnt ?? "-"
         }}</el-descriptions-item>
         <el-descriptions-item label="标题">
           {{ writableInfo.meta.title ?? "-" }}</el-descriptions-item
@@ -117,13 +117,16 @@ const props = defineProps({
   info: Object,
 });
 // eslint-disable-next-line no-undef
-const emit = defineEmits(["update:info", "close"]);
+const emit = defineEmits(["update:info", "upload"]);
 const writableInfo = computed({
   get: () => {
     return props.info;
   },
   set: (value) => {
     emit("update:info", value);
+    if (value) {
+      emit("upload", value);
+    }
   },
 });
 const editable = ref(false);

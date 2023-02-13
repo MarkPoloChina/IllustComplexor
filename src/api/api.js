@@ -151,6 +151,10 @@ export class API {
     });
     return resp.data;
   }
+  static async updatePixivMeta(illust) {
+    const resp = await ax.put("/pixiv-api/pixiv-json/list", illust);
+    return resp.data;
+  }
   static async getRemoteBase() {
     const resp = await ax.get("/illust/remote-base/list", {
       params: {

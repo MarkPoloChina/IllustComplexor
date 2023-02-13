@@ -3,285 +3,51 @@
     <div class="title">视图</div>
     <div class="main">
       <div class="col selector-col">
-        <ViewerFilter
-          @filter-change="handleFilterChange"
-          @openPolyDialog="show.poly = true"
-          @openUpdateDialog="show.update = true"
-          @openDownloadDialog="handleOpenDownloadDialog"
-        ></ViewerFilter>
+        <ViewerFilter @update:filter="filter = $event"></ViewerFilter>
       </div>
       <div class="col main-and-func-col">
         <div class="main-row">
           <ViewerMain
-            :list="illustList"
+            :filter="filter"
+            :viewerType="viewerType"
+            v-model:curPage="curPage"
+            @update:currentSelected="currentSelected = $event"
+            @update:illustCount="illustCount = $event"
             ref="viewerMain"
-            @select-change="currentSelected.value = $event"
           ></ViewerMain>
         </div>
         <div class="func-row">
           <ViewerFunctions
             :illust-count="illustCount"
-            @page-change="handlePageChange"
-            @viewer-type-change="viewerMain && viewerMain.handleSetType($event)"
+            v-model:curPage="curPage"
+            @update:viewerType="viewerType = $event"
             @focus-up="viewerMain.handleFocusIndexChange('up')"
             @focus-down="viewerMain.handleFocusIndexChange('down')"
-            ref="pagination"
           ></ViewerFunctions>
         </div>
       </div>
       <div class="col info-col">
         <ViewerInfo
-          :info="currentSelected.value"
-          @update:info="handleSingleIllustChange"
-          @close="currentSelected.value = null"
+          v-model:info="currentSelected"
+          @upload="viewerMain.handleSingleIllustChange($event)"
         ></ViewerInfo>
       </div>
     </div>
-    <MetaForm
-      v-model="show.update"
-      @confirm="handleUpdate"
-      ref="metaForm"
-      type="viewer"
-    ></MetaForm>
-    <PolyForm
-      v-model="show.poly"
-      @confirm="handlePoly"
-      ref="polyForm"
-      type="viewer"
-    ></PolyForm>
-    <DownloadForm
-      v-model="show.download"
-      :download-list="downloadList"
-      ref="downloadForm"
-    ></DownloadForm>
   </div>
 </template>
 <script setup>
-import { API } from "@/api/api";
 import ViewerMain from "@/components/icxorViewer/viewerMain.vue";
 import ViewerFilter from "@/components/icxorViewer/viewerFilter.vue";
 import ViewerFunctions from "@/components/icxorViewer/viewerFunctions.vue";
 import ViewerInfo from "@/components/icxorViewer/viewerInfo.vue";
-import { onMounted, ref, reactive } from "vue";
-import { ElMessage, ElMessageBox } from "element-plus";
-import MetaForm from "@/components/reusable/metaForm.vue";
-import PolyForm from "@/components/reusable/polyForm.vue";
-import DownloadForm from "@/components/reusable/downloadForm.vue";
+import { ref } from "vue";
 
-const show = reactive({
-  poly: false,
-  update: false,
-  download: false,
-});
-const illustList = ref([]);
-const illustCount = ref(1000);
-const currentSelected = reactive({ value: null });
-const currentPage = ref(1);
 const viewerMain = ref();
-const pagination = ref();
-const downloadList = ref([]);
-const filter = reactive({
-  filterObj: {},
-});
-onMounted(() => {
-  getIllusts();
-  getIllustsCount();
-});
-const getIllusts = async () => {
-  let list = await API.getIllusts(
-    filter.filterObj,
-    100,
-    (currentPage.value - 1) * 100,
-    "meta.pid",
-    1
-  );
-  if (list) {
-    illustList.value = list;
-  }
-  return list;
-};
-const getIllustsCount = async () => {
-  let { count } = await API.getIllustsCount(filter.filterObj);
-  illustCount.value = parseInt(count);
-  return count;
-};
-const handleFilterChange = (_filter) => {
-  viewerMain.value.handleResetScroll();
-  currentPage.value = 1;
-  pagination.value.initPage();
-  filter.filterObj = _filter;
-  getIllusts();
-  getIllustsCount();
-};
-const handlePageChange = (_page) => {
-  viewerMain.value.handleResetScroll();
-  currentPage.value = _page;
-  getIllusts();
-};
-const handleSingleIllustChange = (obj) => {
-  API.updateIllustsByMatch([obj])
-    .then((data) => {
-      if (data.code === 200000) {
-        if (data.data[0].status == "success") {
-          ElMessage.success("修改成功");
-        } else {
-          ElMessage.error(`修改失败：${data.data[0].message}`);
-        }
-      } else {
-        ElMessage.error("服务器错误");
-      }
-    })
-    .catch((err) => {
-      ElMessage.error(`网络错误：${err}`);
-    });
-};
-const handleUpdate = ({ data, controller }) => {
-  if (!controller) {
-    const idto = viewerMain.value.getSelections();
-    if (idto.length == 0) ElMessage.error("项目为空");
-    else {
-      ElMessageBox.confirm(
-        `将为${idto.length}个项目进行更新，确认？`,
-        "Warning",
-        {
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancel",
-          type: "warning",
-        }
-      )
-        .then(() => {
-          let dto = [];
-          idto.forEach((ele) => {
-            dto.push({
-              id: ele.id,
-              ...data,
-            });
-          });
-          API.updateIllustsByMatch(dto)
-            .then((data) => {
-              if (data.code == 200000) {
-                ElMessage.success("操作成功");
-                getIllusts();
-                getIllustsCount();
-              } else {
-                ElMessage.error(data.msg);
-              }
-            })
-            .catch(() => {
-              ElMessage.error("网络错误");
-            });
-        })
-        .catch(() => {});
-    }
-  } else {
-    if (illustCount.value == 0) ElMessage.error("项目为空");
-    else {
-      ElMessageBox.confirm(
-        `将为符合条件的${illustCount.value}个项目更新元，确认？`,
-        "Warning",
-        {
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancel",
-          type: "warning",
-        }
-      )
-        .then(() => {
-          API.updateIllustsByCondition(filter.filterObj, { ...data })
-            .then((data) => {
-              if (data.code == 200000) {
-                ElMessage.success("操作成功");
-                getIllusts();
-                getIllustsCount();
-                filter.filterObj = {};
-              } else {
-                ElMessage.error(data.msg);
-              }
-            })
-            .catch(() => {
-              ElMessage.error("网络错误");
-            });
-        })
-        .catch(() => {});
-    }
-  }
-};
-const handlePoly = ({ data, controller }) => {
-  if (!controller) {
-    const dto = viewerMain.value.getSelections();
-    if (dto.length == 0) ElMessage.error("项目为空");
-    else {
-      ElMessageBox.confirm(
-        `将为${dto.length}个项目创建或添加聚合，确认？`,
-        "Warning",
-        {
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancel",
-          type: "warning",
-        }
-      )
-        .then(() => {
-          API.addPolyByMatch(data.type, data.parent, data.name, dto)
-            .then((data) => {
-              if (data.code == 200000) {
-                ElMessage.success("操作成功");
-                getIllusts();
-                getIllustsCount();
-              } else {
-                ElMessage.error(data.msg);
-              }
-            })
-            .catch(() => {
-              ElMessage.error("网络错误");
-            });
-        })
-        .catch(() => {});
-    }
-  } else {
-    if (illustCount.value == 0) ElMessage.error("项目为空");
-    else {
-      ElMessageBox.confirm(
-        `将为符合条件的${illustCount.value}个项目创建或添加聚合，确认？`,
-        "Warning",
-        {
-          confirmButtonText: "OK",
-          cancelButtonText: "Cancel",
-          type: "warning",
-        }
-      )
-        .then(() => {
-          API.addPolyByCondition(
-            data.type,
-            data.parent,
-            data.name,
-            filter.filterObj
-          )
-            .then((data) => {
-              if (data.code == 200000) {
-                ElMessage.success("操作成功");
-                getIllusts();
-                getIllustsCount();
-                filter.filterObj = {};
-              } else {
-                ElMessage.error(data.msg);
-              }
-            })
-            .catch(() => {
-              ElMessage.error("网络错误");
-            });
-        })
-        .catch(() => {});
-    }
-  }
-};
-const handleOpenDownloadDialog = () => {
-  const dto = viewerMain.value.getSelections();
-  if (dto && dto.length) {
-    show.download = true;
-    downloadList.value = dto;
-  } else {
-    ElMessage.error("尚未选择");
-  }
-};
+const viewerType = ref("table");
+const filter = ref({});
+const currentSelected = ref(null);
+const illustCount = ref(0);
+const curPage = ref(1);
 </script>
 <style lang="scss" scoped>
 .viewer-container {

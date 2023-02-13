@@ -12,7 +12,7 @@
         <div class="filter" v-if="show">
           <div>
             <el-select
-              v-model="values.value['remote_base.id']"
+              v-model="filterCondition['remote_base.id']"
               placeholder="选择类型"
               multiple
             >
@@ -26,7 +26,7 @@
           </div>
           <div>
             <el-select
-              v-model="values.value['poly.type']"
+              v-model="filterCondition['poly.type']"
               placeholder="选择聚合类型"
               multiple
               @change="getPolyOptions"
@@ -39,7 +39,7 @@
               />
             </el-select>
           </div>
-          <div v-if="values.value['poly.type'][0]">
+          <div v-if="filterCondition['poly.type'][0]">
             <el-cascader
               v-model="polyValue"
               :options="polyOptions"
@@ -51,7 +51,7 @@
           </div>
           <div>
             <el-select
-              v-model="values.value['illust.date']"
+              v-model="filterCondition['illust.date']"
               placeholder="选择入库时间"
               multiple
             >
@@ -65,7 +65,7 @@
           </div>
           <div>
             <el-select
-              v-model="values.value['tag.name']"
+              v-model="filterCondition['tag.name']"
               multiple
               filterable
               allow-create
@@ -74,7 +74,7 @@
           </div>
           <div>
             <el-select
-              v-model="values.value['illust.star']"
+              v-model="filterCondition['illust.star']"
               placeholder="选择评级"
               multiple
             >
@@ -90,7 +90,7 @@
           </div>
           <div>
             <el-select
-              v-model="values.value['meta.pid']"
+              v-model="filterCondition['meta.pid']"
               multiple
               filterable
               allow-create
@@ -102,17 +102,7 @@
     </div>
     <div>
       <div class="item-bottom">
-        <el-button :icon="MessageBox" circle @click="emit('openPolyDialog')" />
-      </div>
-      <div class="item-bottom">
-        <el-button :icon="EditPen" circle @click="emit('openUpdateDialog')" />
-      </div>
-      <div>
-        <el-button
-          :icon="Download"
-          circle
-          @click="emit('openDownloadDialog')"
-        />
+        <el-button :icon="Refresh" circle @click="handleClear" />
       </div>
     </div>
   </div>
@@ -123,25 +113,21 @@ import { UtilDate } from "@/js/util/date";
 import {
   ArrowLeftBold,
   ArrowRightBold,
-  Download,
-  EditPen,
-  MessageBox,
+  Refresh,
 } from "@element-plus/icons-vue";
 
 import { onMounted, reactive, ref, watch } from "vue";
 
 const show = ref(false);
-const values = reactive({
-  value: {
-    "remote_base.id": [],
-    "illust.date": [],
-    "illust.star": [],
-    "poly.type": [],
-    "poly.parent": [],
-    "poly.name": [],
-    "tag.name": [],
-    "meta.pid": [],
-  },
+const filterCondition = reactive({
+  "remote_base.id": [],
+  "illust.date": [],
+  "illust.star": [],
+  "poly.type": [],
+  "poly.parent": [],
+  "poly.name": [],
+  "tag.name": [],
+  "meta.pid": [],
 });
 const options = {
   "remote_base.id": [],
@@ -163,15 +149,15 @@ const options = {
 };
 const polyOptions = ref([]);
 const polyValue = ref();
-watch(values, (val) => {
-  emit("filter-change", val.value);
+watch(filterCondition, (val) => {
+  emit("update:filter", val);
 });
 onMounted(() => {
   getTypeOptions();
   getDateOptions();
 });
 const getTypeOptions = async () => {
-  const data = await API.getRemoteBase()
+  const data = await API.getRemoteBase();
   options["remote_base.id"] = data;
 };
 const getDateOptions = async () => {
@@ -184,8 +170,8 @@ const getDateOptions = async () => {
 };
 const getPolyOptions = async (val) => {
   polyOptions.value.length = 0;
-  values.value["poly.parent"] = [];
-  values.value["poly.name"] = [];
+  filterCondition["poly.parent"] = [];
+  filterCondition["poly.name"] = [];
   if (!val) return;
   for (const p of val) {
     const polies = await API.getPoly(p);
@@ -209,22 +195,22 @@ const getPolyOptions = async (val) => {
   }
 };
 const handlePolyChange = (val) => {
-  values.value["poly.parent"] = [];
-  values.value["poly.name"] = [];
+  filterCondition["poly.parent"] = [];
+  filterCondition["poly.name"] = [];
   val.forEach((item) => {
-    if (!values.value["poly.parent"].find((val) => val == item[0]))
-      values.value["poly.parent"].push(item[0]);
-    if (item[1] && !values.value["poly.name"].find((val) => val == item[1]))
-      values.value["poly.name"].push(item[1]);
+    if (!filterCondition["poly.parent"].find((val) => val == item[0]))
+      filterCondition["poly.parent"].push(item[0]);
+    if (item[1] && !filterCondition["poly.name"].find((val) => val == item[1]))
+      filterCondition["poly.name"].push(item[1]);
+  });
+};
+const handleClear = () => {
+  Object.keys(filterCondition).forEach((key) => {
+    filterCondition[key] = [];
   });
 };
 // eslint-disable-next-line no-undef
-const emit = defineEmits([
-  "filter-change",
-  "openPolyDialog",
-  "openUpdateDialog",
-  "openDownloadDialog",
-]);
+const emit = defineEmits(["update:filter"]);
 </script>
 <style lang="scss" scoped>
 .container {
