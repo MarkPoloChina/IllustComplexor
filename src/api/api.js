@@ -142,6 +142,15 @@ export class API {
     const resp = await ax.post("/illust/remote-base", rb);
     return resp.data;
   }
+  static async coverIllustToday(date, illustId) {
+    const resp = await ax.put("/illust/illust-today", null, {
+      params: {
+        date: date,
+        illustId: illustId,
+      },
+    });
+    return resp.data;
+  }
 }
 
 export class APIProxy {

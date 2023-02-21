@@ -25,6 +25,7 @@
       ref="polyForm"
       type="viewer"
     ></PolyForm>
+    <IllustTodayForm v-model="show.it" @confirm="handleIT"></IllustTodayForm>
     <DownloadForm
       v-model="show.download"
       :download-list="waitingOperateDto"
@@ -44,6 +45,7 @@ import { ipcRenderer } from "electron";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { API } from "@/api/api";
 import { BatchDto } from "@/js/dto/batch";
+import IllustTodayForm from "../reusable/illustTodayForm.vue";
 
 const viewer = ref(null);
 // eslint-disable-next-line no-undef
@@ -90,6 +92,7 @@ const show = reactive({
   poly: false,
   update: false,
   download: false,
+  it: false,
 });
 const handleFocusIndexChange = (action) => {
   viewer.value.handleIndexChange(action);
@@ -297,6 +300,31 @@ const handleFetch = () => {
     ElMessage.error("尚未选择");
   }
 };
+const handleIT = ({ data }) => {
+  if (waitingOperateDto.value.length != 1) {
+    ElMessage.error("必须为1个对象操作");
+    return;
+  }
+  ElMessageBox.confirm(
+    `将为${waitingOperateDto.value.length}个项目建立IT，确认？`,
+    "Warning",
+    {
+      confirmButtonText: "OK",
+      cancelButtonText: "Cancel",
+      type: "warning",
+    }
+  )
+    .then(() => {
+      API.coverIllustToday(data.date, waitingOperateDto.value[0].id)
+        .then(() => {
+          ElMessage.success("请求成功");
+        })
+        .catch((err) => {
+          ElMessage.error(`错误: ${err}`);
+        });
+    })
+    .catch(() => {});
+};
 const handlePopupContext = (row) => {
   if (!row) return;
   currentOperating.value = row;
@@ -317,6 +345,9 @@ const handlePopupContext = (row) => {
         break;
       case "抓取元":
         handleFetch();
+        break;
+      case "每日一图":
+        show.it = true;
         break;
       case "下载":
         handleOpenDownloadDialog();
@@ -342,6 +373,9 @@ const handlePopupContext = (row) => {
     },
     {
       label: "抓取元",
+    },
+    {
+      label: "每日一图",
     },
     {
       label: "下载",
