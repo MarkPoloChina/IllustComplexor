@@ -2,7 +2,7 @@ export class BatchDto {
   conditionObject = null;
   addition = null;
   control = {
-    asyncResult: true,
+    asyncResult: false,
     addIfNotFound: false,
   };
   dtos = [];

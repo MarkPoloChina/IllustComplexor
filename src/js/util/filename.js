@@ -9,7 +9,9 @@ const extAllow = ["jpg", "png", "gif", "jpeg"];
 // };
 
 const getEXt = (filename) => {
-  return extAllow.find((str) => "." + str == path.extname(filename));
+  return extAllow.find(
+    (str) => "." + str == path.extname(filename).toLowerCase()
+  );
 };
 
 const getBasename = (filename) => {
@@ -62,10 +64,17 @@ const possibleMatch = {
       };
     } else return null;
   },
-  Bili: (basename) => {
+  Bilibili: (basename) => {
     if (/^bili_/.test(basename)) {
       return {
         coreId: /^bili_(\S+)$/.exec(basename)[1],
+      };
+    } else return null;
+  },
+  Arknights_Char: (basename) => {
+    if (/^char_/.test(basename)) {
+      return {
+        coreId: basename,
       };
     } else return null;
   },

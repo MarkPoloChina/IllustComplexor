@@ -143,9 +143,8 @@ const initTab = () => {
   importOption.pathDir = "";
   importOption.acceptNormal = true;
   importOption.addition = {
-    remote_base: {
-      name: "",
-    },
+    remote_base: {},
+    meta: {},
   };
   log.list.length = 0;
   log.message = "";
@@ -162,9 +161,8 @@ const importOption = reactive({
   importPolicy: "add",
   acceptNormal: true,
   addition: {
-    remote_base: {
-      name: "",
-    },
+    remote_base: {},
+    meta: {},
   },
 });
 const getRemoteBaseList = async () => {
@@ -253,7 +251,8 @@ const handleUpload = () => {
           ele.checked = false;
         });
         table.value.onReset();
-      } catch {
+      } catch (err) {
+        console.log(err);
         ElMessage.error("网络错误");
       } finally {
         loading.value = false;

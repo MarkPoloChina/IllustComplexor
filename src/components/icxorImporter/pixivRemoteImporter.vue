@@ -106,9 +106,10 @@ const importOption = reactive({
   type: "public",
   addition: {
     remote_base: {
-      name: "Pixiv",
+      id: 2,
     },
     date: null,
+    meta: {},
   },
 });
 const startAction = () => {
