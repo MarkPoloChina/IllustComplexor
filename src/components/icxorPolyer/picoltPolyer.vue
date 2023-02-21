@@ -27,6 +27,13 @@ onMounted(() => {
 const getData = async () => {
   const data = await API.getPolyWithIllust("picolt");
   data.forEach((item) => {
+    item.illusts.sort((a, b) => {
+      if (a.remote_base.name == "Pixiv" && b.remote_base.name != "Pixiv")
+        return -1;
+      else if (a.remote_base.name != "Pixiv" && b.remote_base.name == "Pixiv")
+        return 1;
+      else 0;
+    });
     picolt.push({
       name: `${item.parent}-${item.name}`,
       list: item.illusts,

@@ -2,6 +2,7 @@
 import { ipcRenderer } from "electron";
 import config from "@/api/config";
 import store from "@/store/index";
+import path from "path";
 import { FilenameResolver } from "./filename";
 
 const STORE_PATH = ipcRenderer.sendSync("app:getPath");
@@ -21,6 +22,19 @@ const ihs_pixiv_origin = store.state.localIHS
 export class PathHelper {
   static getBaseUrl = () => {
     return STORE_PATH;
+  };
+  static joinFilenamePath = (...paths) => {
+    return path.join(...paths);
+  };
+  static getExtNameWithDot = (_path) => {
+    return path.extname(_path);
+  };
+  static getBasename = (_path) => {
+    return path.basename(_path);
+  };
+  static getPrefixName = (_path) => {
+    const basename = path.basename(_path);
+    return basename.substring(0, basename.lastIndexOf("."));
   };
 }
 

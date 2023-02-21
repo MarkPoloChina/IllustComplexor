@@ -50,7 +50,9 @@ defineProps({
 // eslint-disable-next-line no-undef
 const emit = defineEmits(["showInfo", "remove", "loadMore"]);
 const handleRightClick = (event, obj) => {
-  event.preventDefault();
+  if (event.stopPropagation) {
+    event.stopPropagation();
+  }
   ipcRenderer.removeAllListeners("context:click");
   ipcRenderer.once("context:click", (event, item) => {
     switch (item) {

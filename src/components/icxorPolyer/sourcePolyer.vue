@@ -65,8 +65,7 @@ const getIllusts = async (type, page = 0) => {
     { "remote_base.name": [type] },
     100,
     page * 100,
-    "meta.pid",
-    true
+    { "meta.pid": "DESC" }
   );
   return list;
 };

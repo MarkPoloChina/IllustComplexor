@@ -33,11 +33,6 @@ const routes = [
         component: () => import("../views/setting/IcxorSettings.vue"),
       },
       {
-        path: "tools",
-        name: "tools",
-        component: () => import("../views/basic/IcxorTool.vue"),
-      },
-      {
         path: "pixiv",
         name: "pixiv",
         component: () => import("../views/basic/IcxorPixiv.vue"),

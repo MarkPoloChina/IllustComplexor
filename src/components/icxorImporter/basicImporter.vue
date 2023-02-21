@@ -127,6 +127,7 @@ import FilterTable from "./reusable/filterTable.vue";
 import { API } from "@/api/api";
 import { ipcRenderer } from "electron";
 import { FileExplorer } from "@/js/util/file";
+import { BatchDto } from "@/js/dto/batch";
 
 const remoteBaseList = ref([]);
 const log = reactive({ message: "", list: [] });
@@ -226,40 +227,32 @@ const handleUpload = () => {
   )
     .then(async () => {
       loading.value = true;
-      let dto = [];
+      const dto = new BatchDto();
       selectedList.forEach((idx) => {
-        dto.push({
+        dto.dtos.push({
           bid: idx,
-          ...importOption.addition,
-          ...log.list[idx].dto,
-          remote_base: {
-            ...importOption.addition.remote_base,
-            ...log.list[idx].dto.remote_base,
+          dto: {
+            ...log.list[idx].dto,
           },
-          meta: log.list[idx].dto.meta
-            ? {
-                ...importOption.addition.meta,
-                ...log.list[idx].dto.meta,
-              }
-            : undefined,
         });
       });
+      dto.addition = { ...importOption.addition };
+      if (importOption.importPolicy == "cover")
+        dto.control.addIfNotFound = true;
       try {
         const data =
           importOption.importPolicy == "add"
             ? await API.newIllusts(dto)
-            : await API.updateIllustsByMatch(dto, importOption.importPolicy);
-        if (data.code == 200000) {
-          ElMessage.info("处理完成");
-          data.data.forEach((item) => {
-            log.list[item.bid].status = item.status;
-            log.list[item.bid].message = item.message;
-          });
-          log.list.forEach((ele) => {
-            ele.checked = false;
-          });
-          table.value.onReset();
-        } else ElMessage.error(`${data.msg}`);
+            : await API.updateIllusts(dto);
+        ElMessage.info("处理完成");
+        data.forEach((item) => {
+          log.list[item.bid].status = item.status;
+          log.list[item.bid].message = item.message;
+        });
+        log.list.forEach((ele) => {
+          ele.checked = false;
+        });
+        table.value.onReset();
       } catch {
         ElMessage.error("网络错误");
       } finally {

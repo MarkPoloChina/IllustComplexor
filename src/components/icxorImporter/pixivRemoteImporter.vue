@@ -87,6 +87,7 @@
 </template>
 <script setup>
 import { API } from "@/api/api";
+import { BatchDto } from "@/js/dto/batch";
 import { Check, Download, Remove } from "@element-plus/icons-vue";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { reactive, ref } from "vue";
@@ -105,7 +106,7 @@ const importOption = reactive({
   type: "public",
   addition: {
     remote_base: {
-      name: 'Pixiv',
+      name: "Pixiv",
     },
     date: null,
   },
@@ -143,31 +144,29 @@ const handleUpload = () => {
   )
     .then(() => {
       loading.value = true;
-      const l = [];
+      const dto = new BatchDto();
+      dto.addition = { ...importOption.addition };
       selectedList.value.forEach((ele) => {
         for (let i = 0; i < ele.page_count; i++) {
-          l.push({
-            meta: {
-              pid: ele.id,
-              page: i,
-              title: ele.title,
+          dto.dtos.push({
+            dto: {
+              meta: {
+                pid: ele.id,
+                page: i,
+                title: ele.title,
+              },
             },
-            ...importOption.addition,
           });
         }
       });
-      API.newIllusts(l)
-        .then((data) => {
-          if (data.code != 200000) {
-            ElMessage.error(data.msg);
-          } else {
-            selectedList.value.length = 0;
-            table.value.clearSelection();
-            ElMessage.success("完成操作");
-          }
+      API.newIllusts(dto)
+        .then(() => {
+          selectedList.value.length = 0;
+          table.value.clearSelection();
+          ElMessage.success("完成操作");
         })
-        .catch(() => {
-          ElMessage.error("网络错误");
+        .catch((err) => {
+          ElMessage.error(`错误: ${err}`);
         })
         .finally(() => {
           loading.value = false;

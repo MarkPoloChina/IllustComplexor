@@ -16,7 +16,7 @@ const ax_local = axios.create({ responseType: "arraybuffer" });
  */
 export class API {
   static async getEnumTimeline() {
-    const resp = await ax.get("/illust/enum", {
+    const resp = await ax.get("/illust/base/enum", {
       params: {
         row: "date",
         desc: 1,
@@ -34,11 +34,10 @@ export class API {
     });
     return resp.data;
   }
-  static async getIllusts(conditionJson, limit, offset, orderAs, orderDesc) {
-    const resp = await ax.get("/illust/list", {
+  static async getIllusts(conditionJson, limit, offset, orderJson) {
+    const resp = await ax.get("/illust/base/list", {
       params: {
-        orderAs: orderAs,
-        orderDesc: orderDesc,
+        orderAs: orderJson,
         offset: offset,
         limit: limit,
         conditionJson: conditionJson,
@@ -47,7 +46,7 @@ export class API {
     return resp.data;
   }
   static async getIllustsCount(conditionJson) {
-    const resp = await ax.get("/illust/list/count", {
+    const resp = await ax.get("/illust/base/count", {
       params: {
         conditionJson: conditionJson,
       },
@@ -55,23 +54,17 @@ export class API {
     return resp.data;
   }
   static async newIllusts(illustList) {
-    const resp = await ax.post("/illust/list", illustList);
+    const resp = await ax.post("/illust/bases", illustList);
     return resp.data;
   }
-  static async updateIllustsByMatch(illustList, policy) {
-    const resp = await ax.put("/illust/list", illustList, {
-      params: {
-        addIfNotFound: policy == "modify" ? 0 : 1,
-      },
-    });
+  static async updateIllusts(illustList) {
+    const resp = await ax.put("/illust/bases", illustList);
     return resp.data;
   }
-  static async updateIllustsByCondition(conditionObj, illustDto) {
-    const resp = await ax.put("/illust/list", [illustDto], {
+  static async updateIllust(illustList, addIfNotFound) {
+    const resp = await ax.put("/illust/base", illustList, {
       params: {
-        addIfNotFound: 0,
-        byCondition: 1,
-        conditionJson: conditionObj,
+        addIfNotFound: addIfNotFound,
       },
     });
     return resp.data;
@@ -94,30 +87,12 @@ export class API {
     });
     return resp.data;
   }
-  static async addPolyByMatch(type, parent, name, illustList) {
-    const resp = await ax.post("/illust/poly/list", illustList, {
-      params: {
-        type: type,
-        parent: parent,
-        name: name,
-      },
-    });
-    return resp.data;
-  }
-  static async addPolyByCondition(type, parent, name, conditionObj) {
-    const resp = await ax.post("/illust/poly/list", null, {
-      params: {
-        byCondition: 1,
-        type: type,
-        parent: parent,
-        name: name,
-        conditionJson: conditionObj,
-      },
-    });
+  static async addPoly(illustList) {
+    const resp = await ax.post("/illust/poly/bases", illustList);
     return resp.data;
   }
   static async removePolyById(polyId, illustList) {
-    const resp = await ax.delete("/illust/poly/list", {
+    const resp = await ax.delete("/illust/poly/bases", {
       params: {
         polyId: polyId,
         illustList: illustList,

@@ -48,13 +48,10 @@ const getData = async () => {
     });
   });
 };
-const handleRightClick = (event) => {
-  event.preventDefault();
+const handleRightClick = () => {
   ipcRenderer.removeAllListeners("context:click");
   ipcRenderer.once("context:click", (event, item) => {
     switch (item) {
-      case "详情":
-        break;
       case "删除当前聚合":
         handleDeletePoly();
         break;
@@ -62,10 +59,7 @@ const handleRightClick = (event) => {
         break;
     }
   });
-  ipcRenderer.send("context:popup", [
-    { label: "详情" },
-    { label: "删除当前聚合" },
-  ]);
+  ipcRenderer.send("context:popup", [{ label: "删除当前聚合" }]);
 };
 const getInfo = (obj) => {
   currentInfo.value = obj;
@@ -79,20 +73,16 @@ const handleRemove = (obj) => {
   })
     .then(() => {
       API.removePolyById(author[currentKey.value].id, [obj.id])
-        .then(async (data) => {
-          if (data.code == 200000) {
-            ElMessage.success("移除成功");
-            const data = await API.getPolyWithIllust("author");
-            data.forEach((item) => {
-              if (item.id == author[currentKey.value].id)
-                author[currentKey.value].list = item.illusts;
-            });
-          } else {
-            ElMessage.error(data.msg);
-          }
+        .then(async () => {
+          ElMessage.success("移除成功");
+          const data = await API.getPolyWithIllust("author");
+          data.forEach((item) => {
+            if (item.id == author[currentKey.value].id)
+              author[currentKey.value].list = item.illusts;
+          });
         })
-        .catch(() => {
-          ElMessage.error("网络错误");
+        .catch((err) => {
+          ElMessage.error(`错误: ${err}`);
         });
     })
     .catch(() => {});
@@ -105,16 +95,12 @@ const handleDeletePoly = () => {
   })
     .then(() => {
       API.deletePoly(author[currentKey.value].id)
-        .then((data) => {
-          if (data.code == 200000) {
-            ElMessage.success("删除成功");
-            getData();
-          } else {
-            ElMessage.error(data.msg);
-          }
+        .then(() => {
+          ElMessage.success("删除成功");
+          getData();
         })
-        .catch(() => {
-          ElMessage.error("网络错误");
+        .catch((err) => {
+          ElMessage.error(`错误: ${err}`);
         });
     })
     .catch(() => {});

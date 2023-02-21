@@ -18,10 +18,6 @@
           <el-icon><Upload /></el-icon>
           <template #title>导入</template>
         </el-menu-item>
-        <el-menu-item index="/tools">
-          <el-icon><CopyDocument /></el-icon>
-          <template #title>本地工具</template>
-        </el-menu-item>
         <el-menu-item index="/pixiv">
           <el-icon
             ><img
@@ -51,7 +47,6 @@ import {
   MessageBox,
   Upload,
   Setting,
-  CopyDocument,
 } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import { ConfigDB } from "@/js/local/DBService";

@@ -106,6 +106,7 @@ import { API } from "@/api/api";
 import PolyForm from "../reusable/polyForm.vue";
 import { ipcRenderer } from "electron";
 import { FileExplorer } from "@/js/util/file";
+import { BatchDto } from "@/js/dto/batch";
 
 const log = reactive({ message: "", list: [] });
 const table = ref();
@@ -189,36 +190,30 @@ const handleUpload = () => {
   )
     .then(() => {
       loading.value = true;
-      let dto = [];
+      const dto = new BatchDto();
       selectedList.forEach((idx) => {
-        dto.push({
+        dto.dtos.push({
           bid: idx,
-          ...log.list[idx].dto,
+          dto: {
+            ...log.list[idx].dto,
+          },
         });
       });
-      API.addPolyByMatch(
-        importOption.poly.type,
-        importOption.poly.parent,
-        importOption.poly.name,
-        dto
-      )
+      dto.polyBase = { ...importOption.poly };
+      API.addPoly(dto)
         .then((data) => {
-          if (data.code == 200000) {
-            ElMessage.info("处理完成");
-            data.data.forEach((item) => {
-              log.list[item.bid].status = item.status;
-              log.list[item.bid].message = item.message;
-            });
-            log.list.forEach((ele) => {
-              ele.checked = false;
-            });
-            table.value.onReset();
-          } else {
-            ElMessage.error(data.msg);
-          }
+          ElMessage.info("处理完成");
+          data.forEach((item) => {
+            log.list[item.bid].status = item.status;
+            log.list[item.bid].message = item.message;
+          });
+          log.list.forEach((ele) => {
+            ele.checked = false;
+          });
+          table.value.onReset();
         })
-        .catch(() => {
-          ElMessage.error("网络错误");
+        .catch((err) => {
+          ElMessage.error(`错误: ${err}`);
         })
         .finally(() => {
           loading.value = false;

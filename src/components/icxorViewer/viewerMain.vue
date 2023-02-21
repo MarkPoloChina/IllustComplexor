@@ -43,6 +43,7 @@ import DownloadForm from "@/components/reusable/downloadForm.vue";
 import { ipcRenderer } from "electron";
 import { ElMessage, ElMessageBox } from "element-plus";
 import { API } from "@/api/api";
+import { BatchDto } from "@/js/dto/batch";
 
 const viewer = ref(null);
 // eslint-disable-next-line no-undef
@@ -102,8 +103,7 @@ const getIllusts = async () => {
     props.filter,
     100,
     (writableCurPage.value - 1) * 100,
-    "meta.pid",
-    1
+    { "meta.pid": "DESC" }
   );
   if (list) {
     illustList.value = list;
@@ -131,20 +131,12 @@ watch(
   }
 );
 const handleSingleIllustChange = (obj) => {
-  API.updateIllustsByMatch([obj])
-    .then((data) => {
-      if (data.code === 200000) {
-        if (data.data[0].status == "success") {
-          ElMessage.success("修改成功");
-        } else {
-          ElMessage.error(`修改失败：${data.data[0].message}`);
-        }
-      } else {
-        ElMessage.error("服务器错误");
-      }
+  API.updateIllust(obj)
+    .then(() => {
+      ElMessage.success("修改成功");
     })
     .catch((err) => {
-      ElMessage.error(`网络错误：${err}`);
+      ElMessage.error(`错误: ${err}`);
     });
 };
 const handleUpdate = ({ data, controller }) => {
@@ -163,24 +155,22 @@ const handleUpdate = ({ data, controller }) => {
       }
     )
       .then(() => {
-        const dto = [];
+        const dto = new BatchDto();
         waitingOperateDto.value.forEach((ele) => {
-          dto.push({
-            id: ele.id,
-            ...data,
+          dto.dtos.push({
+            dto: {
+              id: ele.id,
+            },
           });
         });
-        API.updateIllustsByMatch(dto)
-          .then((data) => {
-            if (data.code == 200000) {
-              ElMessage.success("操作成功");
-              getIllustsAndCount();
-            } else {
-              ElMessage.error(data.msg);
-            }
+        dto.addition = { ...data };
+        API.updateIllusts(dto)
+          .then(() => {
+            ElMessage.success("操作成功");
+            getIllustsAndCount();
           })
-          .catch(() => {
-            ElMessage.error("网络错误");
+          .catch((err) => {
+            ElMessage.error(`错误: ${err}`);
           });
       })
       .catch(() => {});
@@ -197,17 +187,16 @@ const handleUpdate = ({ data, controller }) => {
         }
       )
         .then(() => {
-          API.updateIllustsByCondition(props.filter, { ...data })
-            .then((data) => {
-              if (data.code == 200000) {
-                ElMessage.success("操作成功");
-                getIllustsAndCount();
-              } else {
-                ElMessage.error(data.msg);
-              }
+          const dto = new BatchDto();
+          dto.conditionObject = props.filter;
+          dto.addition = { ...data };
+          API.updateIllusts(dto)
+            .then(() => {
+              ElMessage.success("操作成功");
+              getIllustsAndCount();
             })
-            .catch(() => {
-              ElMessage.error("网络错误");
+            .catch((err) => {
+              ElMessage.error(`错误: ${err}`);
             });
         })
         .catch(() => {});
@@ -230,22 +219,20 @@ const handlePoly = ({ data, controller }) => {
       }
     )
       .then(() => {
-        API.addPolyByMatch(
-          data.type,
-          data.parent,
-          data.name,
-          waitingOperateDto.value
-        )
-          .then((data) => {
-            if (data.code == 200000) {
-              ElMessage.success("操作成功");
-              getIllustsAndCount();
-            } else {
-              ElMessage.error(data.msg);
-            }
+        const dto = new BatchDto();
+        waitingOperateDto.value.forEach((ele) => {
+          dto.dtos.push({
+            dto: ele,
+          });
+        });
+        dto.polyBase = { ...data };
+        API.addPoly(dto)
+          .then(() => {
+            ElMessage.success("操作成功");
+            getIllustsAndCount();
           })
-          .catch(() => {
-            ElMessage.error("网络错误");
+          .catch((err) => {
+            ElMessage.error(`错误: ${err}`);
           });
       })
       .catch(() => {});
@@ -262,22 +249,16 @@ const handlePoly = ({ data, controller }) => {
         }
       )
         .then(() => {
-          API.addPolyByCondition(
-            data.type,
-            data.parent,
-            data.name,
-            props.filter
-          )
-            .then((data) => {
-              if (data.code == 200000) {
-                ElMessage.success("操作成功");
-                getIllustsAndCount();
-              } else {
-                ElMessage.error(data.msg);
-              }
+          const dto = new BatchDto();
+          dto.conditionObject = props.filter;
+          dto.polyBase = { ...data };
+          API.addPoly(dto)
+            .then(() => {
+              ElMessage.success("操作成功");
+              getIllustsAndCount();
             })
-            .catch(() => {
-              ElMessage.error("网络错误");
+            .catch((err) => {
+              ElMessage.error(`错误: ${err}`);
             });
         })
         .catch(() => {});
@@ -304,15 +285,11 @@ const handleFetch = () => {
     )
       .then(() => {
         API.updatePixivMeta(waitingOperateDto.value)
-          .then((data) => {
-            if (data.code === 200000) {
-              ElMessage.success("请求成功");
-            } else {
-              ElMessage.error(data.msg);
-            }
+          .then(() => {
+            ElMessage.success("请求成功");
           })
-          .catch(() => {
-            ElMessage.error("网络错误");
+          .catch((err) => {
+            ElMessage.error(`错误: ${err}`);
           });
       })
       .catch(() => {});

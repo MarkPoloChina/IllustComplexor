@@ -48,25 +48,10 @@ const getData = async () => {
     });
   });
 };
-// const handleSortChange = (item, value) => {
-//   if (value.startsWith("bookCnt"))
-//     item.list.sort((a, b) => {
-//       return value.indexOf("Down") == -1
-//         ? a.bookCnt - b.bookCnt
-//         : b.bookCnt - a.bookCnt;
-//     });
-//   else if (value.startsWith("default"))
-//     item.list.sort((a, b) => {
-//       return value.indexOf("Down") == -1 ? a.pid - b.pid : b.pid - a.pid;
-//     });
-// };
-const handleRightClick = (event) => {
-  event.preventDefault();
+const handleRightClick = () => {
   ipcRenderer.removeAllListeners("context:click");
   ipcRenderer.once("context:click", (event, item) => {
     switch (item) {
-      case "详情":
-        break;
       case "删除当前聚合":
         handleDeletePoly();
         break;
@@ -74,10 +59,7 @@ const handleRightClick = (event) => {
         break;
     }
   });
-  ipcRenderer.send("context:popup", [
-    { label: "详情" },
-    { label: "删除当前聚合" },
-  ]);
+  ipcRenderer.send("context:popup", [{ label: "删除当前聚合" }]);
 };
 const getInfo = (obj) => {
   currentInfo.value = obj;
@@ -91,20 +73,16 @@ const handleRemove = (obj) => {
   })
     .then(() => {
       API.removePolyById(lnr[currentKey.value].id, [obj.id])
-        .then(async (data) => {
-          if (data.code == 200000) {
-            ElMessage.success("移除成功");
-            const data = await API.getPolyWithIllust("lnr");
-            data.forEach((item) => {
-              if (item.id == lnr[currentKey.value].id)
-                lnr[currentKey.value].list = item.illusts;
-            });
-          } else {
-            ElMessage.error(data.msg);
-          }
+        .then(async () => {
+          ElMessage.success("移除成功");
+          const data = await API.getPolyWithIllust("lnr");
+          data.forEach((item) => {
+            if (item.id == lnr[currentKey.value].id)
+              lnr[currentKey.value].list = item.illusts;
+          });
         })
-        .catch(() => {
-          ElMessage.error("网络错误");
+        .catch((err) => {
+          ElMessage.error(`错误: ${err}`);
         });
     })
     .catch(() => {});
@@ -117,16 +95,12 @@ const handleDeletePoly = () => {
   })
     .then(() => {
       API.deletePoly(lnr[currentKey.value].id)
-        .then((data) => {
-          if (data.code == 200000) {
-            ElMessage.success("删除成功");
-            getData();
-          } else {
-            ElMessage.error(data.msg);
-          }
+        .then(() => {
+          ElMessage.success("删除成功");
+          getData();
         })
-        .catch(() => {
-          ElMessage.error("网络错误");
+        .catch((err) => {
+          ElMessage.error(`错误: ${err}`);
         });
     })
     .catch(() => {});

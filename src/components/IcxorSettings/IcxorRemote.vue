@@ -103,16 +103,12 @@ const addRow = () => {
 };
 const handleUpdateRemote = (row) => {
   API.coverRemoteBase(row)
-    .then((data) => {
-      if (data.code == 200000) {
-        ElMessage.success("更改成功");
-        row.editing = false;
-      } else {
-        ElMessage.error(data.msg);
-      }
+    .then(() => {
+      ElMessage.success("更改成功");
+      row.editing = false;
     })
-    .catch(() => {
-      ElMessage.error("网络错误");
+    .catch((err) => {
+      ElMessage.error(`错误: ${err}`);
     });
 };
 </script>

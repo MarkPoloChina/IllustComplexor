@@ -31,8 +31,8 @@
           ><el-rate
             v-model="writableInfo.star"
             :disabled="!editable"
-            @change="emit('update:info', writableInfo)"
             clearable
+            @change="emit('upload', writableInfo)"
         /></el-descriptions-item>
         <el-descriptions-item label="入库时间">
           <el-date-picker
@@ -42,6 +42,7 @@
             type="date"
             placeholder="Pick a day"
             :disabled="!editable"
+            @change="emit('upload', writableInfo)"
         /></el-descriptions-item>
         <el-descriptions-item label="标签">
           <el-tag v-for="tag in writableInfo.tag" :key="tag.id">{{
@@ -124,9 +125,6 @@ const writableInfo = computed({
   },
   set: (value) => {
     emit("update:info", value);
-    if (value) {
-      emit("upload", value);
-    }
   },
 });
 const editable = ref(false);
