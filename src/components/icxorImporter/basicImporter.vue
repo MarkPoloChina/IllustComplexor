@@ -43,7 +43,7 @@
           </el-form-item>
           <el-form-item label="默认类型">
             <el-select
-              v-model="importOption.addition.remote_base.name"
+              v-model="importOption.addition.remote_base.id"
               filterable
               allow-create
               placeholder="选择或填写类型"
@@ -52,7 +52,7 @@
                 v-for="item in remoteBaseList"
                 :key="item.id"
                 :label="item.name"
-                :value="item.name"
+                :value="item.id"
               />
             </el-select>
           </el-form-item>
@@ -72,7 +72,7 @@
                 <el-switch
                   v-model="importOption.acceptNormal"
                   active-text="全部图片"
-                  inactive-text="仅Pixiv"
+                  inactive-text="仅可识别"
                 />
               </el-col>
             </el-row>

@@ -51,7 +51,7 @@
                 <el-switch
                   v-model="importOption.isTryAny"
                   active-text="全部图片"
-                  inactive-text="仅Pixiv"
+                  inactive-text="仅可识别"
                 />
               </el-col>
             </el-row>

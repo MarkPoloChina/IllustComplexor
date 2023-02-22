@@ -114,6 +114,7 @@ const getIllusts = async () => {
 };
 const getIllustsAndCount = async () => {
   writableCurPage.value = 1;
+  currentSelected.value = null;
   const { count } = await API.getIllustsCount(props.filter);
   illustCount.value = parseInt(count);
   getIllusts();
@@ -290,6 +291,7 @@ const handleFetch = () => {
         API.updatePixivMeta(waitingOperateDto.value)
           .then(() => {
             ElMessage.success("请求成功");
+            getIllustsAndCount();
           })
           .catch((err) => {
             ElMessage.error(`错误: ${err}`);
