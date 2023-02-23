@@ -93,6 +93,7 @@ const curPage = ref(1);
         }
       }
       &.info-col {
+        max-width: min-content;
         margin-right: 0;
         flex: none;
         padding: 0;

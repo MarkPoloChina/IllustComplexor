@@ -101,12 +101,11 @@ onMounted(() => {
   getIllustsAndCount();
 });
 const getIllusts = async () => {
-  viewer.value.resetScroll();
   const list = await API.getIllusts(
     props.filter,
     100,
     (writableCurPage.value - 1) * 100,
-    { "meta.pid": "DESC" }
+    null
   );
   if (list) {
     illustList.value = list;

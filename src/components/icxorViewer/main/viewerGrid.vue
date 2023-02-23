@@ -31,25 +31,29 @@
 <script setup>
 import { Picture } from "@element-plus/icons-vue";
 import { UrlGenerator } from "@/js/util/path";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 
 // eslint-disable-next-line no-undef
 const emit = defineEmits(["update:selections", "popup-context"]);
 const table = ref();
 // eslint-disable-next-line no-undef
-defineProps({
+const props = defineProps({
   tableData: Array,
   selections: Array,
 });
-const resetScroll = () => {
-  table.value.setScrollTop(0);
-};
+watch(
+  () => props.tableData,
+  () => {
+    table.value.setScrollTop(0);
+  },
+  {
+    deep: false,
+  }
+);
 const handleRightClick = (event, obj) => {
   event.preventDefault();
   emit("popup-context", obj);
 };
-// eslint-disable-next-line no-undef
-defineExpose({ resetScroll });
 </script>
 <style lang="scss" scoped>
 .grid-container {

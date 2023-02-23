@@ -46,7 +46,7 @@
 <script setup>
 import { Picture } from "@element-plus/icons-vue";
 import { UrlGenerator } from "@/js/util/path";
-import { onMounted, ref } from "vue";
+import { ref, watch } from "vue";
 
 const currentIndex = ref(0);
 // eslint-disable-next-line no-undef
@@ -56,12 +56,16 @@ const table = ref();
 const props = defineProps({
   tableData: Array,
 });
-// eslint-disable-next-line no-undef
-const resetScroll = () => {
-  table.value.setScrollTop(0);
-  currentIndex.value = 0;
-};
-onMounted(() => {});
+watch(
+  () => props.tableData,
+  (val) => {
+    table.value.setScrollTop(0);
+    handleSelect(val[0], 0);
+  },
+  {
+    deep: false,
+  }
+);
 const handleRightClick = (event, obj) => {
   event.preventDefault();
   emit("popup-context", obj);
@@ -77,7 +81,7 @@ const handleIndexChange = (action) => {
   emit("select-change", props.tableData[currentIndex.value]);
 };
 // eslint-disable-next-line no-undef
-defineExpose({ resetScroll, handleIndexChange });
+defineExpose({ handleIndexChange });
 </script>
 <style lang="scss" scoped>
 .v-focus-container {

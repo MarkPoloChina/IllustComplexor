@@ -36,9 +36,6 @@ const props = defineProps({
 });
 // eslint-disable-next-line no-undef
 const emits = defineEmits(["select-change", "popup-context"]);
-const resetScroll = () => {
-  table.value.setScrollTop(0);
-};
 onMounted(() => {
   props.tableData.forEach((ele) => {
     table.value.toggleRowSelection(ele, !!ele.checked);
@@ -55,6 +52,15 @@ watch(
     deep: true,
   }
 );
+watch(
+  () => props.tableData,
+  () => {
+    table.value.setScrollTop(0);
+  },
+  {
+    deep: false,
+  }
+);
 const handleCurrentChange = (val) => {
   emits("select-change", val);
 };
@@ -69,8 +75,6 @@ const handleSelectAll = (selection) => {
     item.checked = selection.length != 0;
   });
 };
-// eslint-disable-next-line no-undef
-defineExpose({ resetScroll });
 </script>
 <style lang="scss" scoped>
 .table-container {
