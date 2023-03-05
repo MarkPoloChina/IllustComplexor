@@ -7,17 +7,7 @@ import { FilenameResolver } from "./filename";
 
 const STORE_PATH = ipcRenderer.sendSync("app:getPath");
 
-const ihs_pixiv_base = store.state.localIHS
-  ? config.ihs_pixiv_base.replace(config.ihs_root, store.state.localIHS)
-  : config.ihs_pixiv_base;
-
-const ihs_base = store.state.localIHS
-  ? config.ihs_base.replace(config.ihs_root, store.state.localIHS)
-  : config.ihs_base;
-
-const ihs_pixiv_origin = store.state.localIHS
-  ? config.ihs_pixiv_origin.replace(config.ihs_root, store.state.localIHS)
-  : config.ihs_pixiv_origin;
+const ihs_base = store.state.localIHS ? store.state.localIHS : config.ihs_base;
 
 export class PathHelper {
   static getBaseUrl = () => {
@@ -42,12 +32,16 @@ export class UrlGenerator {
   static getBlobUrl(obj, type) {
     if (obj.remote_base.type == "pixiv") {
       if (store.state.useIhsForPixiv ^ obj.err)
-        return this.getPixivIHSUrl(
+        return `${ihs_base}${
+          type == "original"
+            ? obj.remote_base.origin_url
+            : obj.remote_base.thum_url
+        }/${this.getPixivIHSUrl(
           obj.meta.pid,
           obj.meta.page,
           obj.meta.title,
           type
-        );
+        )}`;
       else return this.getPixivBlobUrl(obj.meta.pid, obj.meta.page, type);
     } else
       return `${obj.remote_base.type == "mpihs" ? ihs_base : config.cos_base}${
@@ -73,7 +67,7 @@ export class UrlGenerator {
 
   static getPixivIHSUrl(pid, page, title, type) {
     if (type == "original") {
-      return `${ihs_pixiv_origin}/${encodeURIComponent(
+      return encodeURIComponent(
         page == 0
           ? FilenameResolver.generatePxderSingleFilename(
               pid,
@@ -86,13 +80,9 @@ export class UrlGenerator {
               title.replace(/[\x7F]/g, "").replace(/[/\\:*?"<>|.&$]/g, ""),
               null
             )
-      )}`;
+      );
     } else {
-      return `${ihs_pixiv_base}/${FilenameResolver.generatePixivWebFilename(
-        pid,
-        page,
-        null
-      )}`;
+      return FilenameResolver.generatePixivWebFilename(pid, page, null);
     }
   }
 }
