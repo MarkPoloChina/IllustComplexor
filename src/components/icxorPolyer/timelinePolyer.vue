@@ -48,7 +48,7 @@ const getEnum = async () => {
   if (timeline[0]) timeline[0].list = await getIllusts(timeline[0].time);
 };
 const getIllusts = async (timeline) => {
-  let list = await API.getIllusts({ date: [timeline] }, null, null, null);
+  let list = await API.getIllusts({ date: [timeline] }, -1, null, null);
   return list;
 };
 const getInfo = (obj) => {
