@@ -42,7 +42,7 @@ module.exports = defineConfig({
         },
         win: {
           target: ["msi", "nsis"],
-          icon: "build/common/icons/icon.ico",
+          icon: "build/basic/icons/icon.ico",
         },
         nsis: {
           oneClick: false,
