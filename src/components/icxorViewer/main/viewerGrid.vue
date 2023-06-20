@@ -1,6 +1,6 @@
 <template>
   <el-scrollbar style="border-radius: 5px" class="grid-container" ref="table">
-    <el-row>
+    <el-row v-loading="loading">
       <el-col
         :span="8"
         v-for="(obj, index) in tableData"
@@ -40,6 +40,7 @@ const table = ref();
 const props = defineProps({
   tableData: Array,
   selections: Array,
+  loading: Boolean,
 });
 watch(
   () => props.tableData,

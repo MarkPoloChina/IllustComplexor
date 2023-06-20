@@ -2,9 +2,6 @@
   <div>
     <el-dialog v-model="dialogVisible" title="元数据表单" width="60%">
       <el-form :model="baseInfo" label-width="100px" style="width: 100%">
-        <el-form-item label="对于全部" v-if="type == 'viewer'">
-          <el-switch v-model="updateAll" />
-        </el-form-item>
         <el-form-item label="自动注入" v-if="type == 'basic'">
           <el-checkbox
             v-model="autoKeys['meta.title']"
@@ -23,7 +20,7 @@
         <el-form-item label="评级">
           <el-rate v-model="baseInfo.star" clearable />
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="标签">
           <el-select
             v-model="baseInfo.tag"
             multiple
@@ -53,7 +50,7 @@
   </div>
 </template>
 <script setup>
-import { reactive, computed, ref } from "vue";
+import { reactive, computed } from "vue";
 
 const baseInfo = reactive({
   date: null,
@@ -66,7 +63,6 @@ const baseInfo = reactive({
 const autoKeys = reactive({
   "meta.title": false,
 });
-const updateAll = ref(false);
 const limitOptions = [
   {
     value: "R-18",
@@ -86,6 +82,7 @@ const props = defineProps({
   modelValue: Boolean,
   disableChangeAuto: Boolean,
   type: String,
+  chooseAll: Boolean,
 });
 // eslint-disable-next-line no-undef
 const emit = defineEmits(["update:modelValue", "confirm"]);
@@ -101,7 +98,6 @@ const initForm = () => {
   baseInfo.date = null;
   baseInfo.star = 0;
   baseInfo.meta.limit = null;
-  updateAll.value = false;
   autoKeys["meta.title"] = false;
 };
 const handleConfirm = () => {
@@ -113,10 +109,20 @@ const handleConfirm = () => {
     Object.keys(autoKeys).forEach((key) => {
       if (autoKeys[key]) controller.push(key);
     });
-    data = { ...baseInfo };
+    data = {
+      ...baseInfo,
+      tag: baseInfo.tag.map((value) => {
+        return { name: value };
+      }),
+    };
   } else if (props.type == "viewer") {
-    data = { ...baseInfo };
-    controller = updateAll.value;
+    data = {
+      ...baseInfo,
+      tag: baseInfo.tag.map((value) => {
+        return { name: value };
+      }),
+    };
+    controller = props.chooseAll;
   }
   emit("confirm", {
     data: data,

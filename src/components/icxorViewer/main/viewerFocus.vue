@@ -1,7 +1,8 @@
 <template>
-  <div class="v-focus-container">
+  <div class="v-focus-container" v-loading="loading">
     <div class="focus-container">
       <el-image
+        v-if="tableData[currentIndex]"
         class="viewer-img"
         :src="UrlGenerator.getBlobUrl(tableData[currentIndex], 'medium')"
         :preview-src-list="[
@@ -55,6 +56,7 @@ const table = ref();
 // eslint-disable-next-line no-undef
 const props = defineProps({
   tableData: Array,
+  loading: Boolean,
 });
 watch(
   () => props.tableData,

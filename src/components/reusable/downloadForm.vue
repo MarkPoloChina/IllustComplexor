@@ -142,7 +142,7 @@ const handleDownload = () => {
       )
         .then(() => {})
         .catch((err) => {
-          ElMessage.error(`第${downloadCnt.value}文件保存失败`);
+          ElMessage.error(`第${downloadCnt.value + 1}文件${obj.id}保存失败`);
           console.log(err);
         })
         .finally(() => {
@@ -153,7 +153,7 @@ const handleDownload = () => {
         obj.err = true;
         process(obj);
       } else {
-        ElMessage.error(`第${downloadCnt.value}文件下载失败`);
+        ElMessage.error(`第${downloadCnt.value + 1}文件${obj.id}下载失败`);
         console.log(err);
       }
     }

@@ -2,9 +2,6 @@
   <div>
     <el-dialog v-model="dialogVisible" title="聚合表单" width="60%">
       <el-form :model="polyInfo" label-width="100px" style="width: 100%">
-        <el-form-item label="对于全部" v-if="type == 'viewer'">
-          <el-switch v-model="updateAll" />
-        </el-form-item>
         <el-form-item label="聚合类型">
           <el-select
             v-model="polyInfo.type"
@@ -98,11 +95,11 @@ const polyInfo = reactive({
   waifu2x: "",
 });
 const polyParentEnum = ref([]);
-const updateAll = ref(false);
 // eslint-disable-next-line no-undef
 const props = defineProps({
   modelValue: Boolean,
   type: String,
+  chooseAll: Boolean,
 });
 // eslint-disable-next-line no-undef
 const emit = defineEmits(["update:modelValue", "confirm"]);
@@ -129,7 +126,6 @@ const initForm = () => {
   polyInfo.parent = "";
   polyInfo.name = "";
   polyInfo.waifu2x = "";
-  updateAll.value = false;
   getPolyParentEnum(polyInfo.type);
 };
 const handleConfirm = () => {
@@ -140,7 +136,7 @@ const handleConfirm = () => {
     data = { ...polyInfo };
   } else if (props.type == "viewer") {
     data = { ...polyInfo };
-    controller = updateAll.value;
+    controller = props.chooseAll;
   }
   emit("confirm", {
     data: data,

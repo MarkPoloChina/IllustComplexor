@@ -2,7 +2,7 @@
   <div>
     <el-dialog v-model="dialogVisible" title="IT表单" width="60%">
       <el-form :model="baseInfo" label-width="100px" style="width: 100%">
-        <el-form-item label="入库时间">
+        <el-form-item label="日期">
           <el-date-picker
             v-model="baseInfo.date"
             value-format="YYYY-MM-DD"

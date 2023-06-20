@@ -7,6 +7,7 @@
       ref="table"
       :flexible="true"
       highlight-current-row
+      v-loading="loading"
       @current-change="handleCurrentChange"
       @select="handleSelect"
       @select-all="handleSelectAll"
@@ -33,6 +34,7 @@ const table = ref();
 // eslint-disable-next-line no-undef
 const props = defineProps({
   tableData: Array,
+  loading: Boolean,
 });
 // eslint-disable-next-line no-undef
 const emits = defineEmits(["select-change", "popup-context"]);

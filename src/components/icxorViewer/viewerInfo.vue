@@ -45,10 +45,22 @@
             @change="emit('upload', writableInfo)"
         /></el-descriptions-item>
         <el-descriptions-item label="标签">
-          <el-tag v-for="tag in writableInfo.tag" :key="tag.id">{{
-            tag.name
-          }}</el-tag>
-          {{ !writableInfo.tag || writableInfo.tag.length == 0 ? "-" : "" }}
+          <div v-if="!editable">
+            <el-tag v-for="tag in writableInfo.tag" :key="tag.id">{{
+              tag.name
+            }}</el-tag>
+            {{ !writableInfo.tag || writableInfo.tag.length == 0 ? "-" : "" }}
+          </div>
+          <div v-else>
+            <el-select
+              v-model="writableTag"
+              multiple
+              filterable
+              allow-create
+              placeholder="填写筛选标签"
+              @change="emit('upload', writableInfo)"
+            />
+          </div>
         </el-descriptions-item>
       </el-descriptions>
       <el-descriptions
@@ -125,6 +137,22 @@ const writableInfo = computed({
   },
   set: (value) => {
     emit("update:info", value);
+  },
+});
+const writableTag = computed({
+  get: () => {
+    if (!writableInfo.value || !writableInfo.value.tag) return [];
+    return writableInfo.value.tag.map((value) => {
+      return value.name;
+    });
+  },
+  set: (value) => {
+    writableInfo.value.tag.length = 0;
+    writableInfo.value.tag.push(
+      ...value.map((_value) => {
+        return { name: _value };
+      })
+    );
   },
 });
 const editable = ref(false);
