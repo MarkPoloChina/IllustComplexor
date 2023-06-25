@@ -5,6 +5,7 @@ const defaultSetting = {
   useIhsForPixiv: false,
   localApi: true,
   localIHS: "",
+  localIHSOptions: [],
 };
 
 export default createStore({
@@ -13,6 +14,7 @@ export default createStore({
     useIhsForPixiv: false,
     localApi: true,
     localIHS: "",
+    localIHSOptions: [],
   },
   getters: {},
   mutations: {

@@ -19,7 +19,20 @@
           />
         </el-form-item>
         <el-form-item label="IHS路径">
-          <el-input v-model="configForm.localIHS" placeholder="请输入路径" />
+          <el-select
+            v-model="configForm.localIHS"
+            filterable
+            allow-create
+            placeholder="请输入路径"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in configForm.localIHSOptions"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
         </el-form-item>
       </el-form>
     </div>
@@ -60,10 +73,12 @@ import { Check, Remove } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
 import { onMounted, reactive } from "vue";
 import { PathHelper } from "@/js/util/path";
+import { ElMessage } from "element-plus";
 
 const configForm = reactive({
   username: "",
   localIHS: "",
+  localIHSOptions: [],
   useIhsForPixiv: false,
   localApi: false,
 });
@@ -76,11 +91,16 @@ const initForm = () => {
   configForm.localIHS = store.state.localIHS;
   configForm.useIhsForPixiv = store.state.useIhsForPixiv;
   configForm.localApi = store.state.localApi;
+  configForm.localIHSOptions = store.state.localIHSOptions;
 };
 const commit = () => {
+  if (!configForm.localIHSOptions.includes(configForm.localIHS)) {
+    configForm.localIHSOptions.push(configForm.localIHS);
+  }
   Object.keys(configForm).forEach((key) => {
     store.commit("reviseByKey", { key: key, value: configForm[key] });
   });
+  ElMessage.success("修改成功");
 };
 const revoke = () => {
   initForm();

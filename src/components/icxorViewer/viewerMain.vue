@@ -295,6 +295,10 @@ const handleOpenDownloadDialog = async () => {
     ElMessage.error("不允许一次性下载超过1000张图片");
     return;
   }
+  if (chooseAll.download && illustCount.value == 0) {
+    ElMessage.error("项目为空");
+    return;
+  }
   if (chooseAll.download) {
     ElMessage.info("正在收集信息");
     waitingDownloadList.value = await API.getIllusts(
@@ -320,7 +324,13 @@ const handleFetch = (chooseAll) => {
         }
       )
         .then(() => {
-          API.updatePixivMeta(waitingOperateDto.value)
+          const dto = new BatchDto();
+          waitingOperateDto.value.forEach((ele) => {
+            dto.dtos.push({
+              dto: ele,
+            });
+          });
+          API.updatePixivMeta(dto)
             .then(() => {
               ElMessage.success("请求成功");
               getIllustsAndCount();
@@ -334,7 +344,31 @@ const handleFetch = (chooseAll) => {
       ElMessage.error("尚未选择");
     }
   else {
-    ElMessage.error("Not Available");
+    if (illustCount.value == 0) ElMessage.error("项目为空");
+    else {
+      ElMessageBox.confirm(
+        `将为符合条件的${illustCount.value}个项目创建或添加聚合，确认？`,
+        "Warning",
+        {
+          confirmButtonText: "OK",
+          cancelButtonText: "Cancel",
+          type: "warning",
+        }
+      )
+        .then(() => {
+          const dto = new BatchDto();
+          dto.conditionObject = props.filter;
+          API.updatePixivMeta(dto)
+            .then(() => {
+              ElMessage.success("请求成功");
+              getIllustsAndCount();
+            })
+            .catch((err) => {
+              ElMessage.error(`错误: ${err}`);
+            });
+        })
+        .catch(() => {});
+    }
   }
 };
 const handleIT = ({ data }) => {
