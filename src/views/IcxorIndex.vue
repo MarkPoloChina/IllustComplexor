@@ -21,8 +21,8 @@
         <el-menu-item index="/pixiv">
           <el-icon
             ><img
-              src="../assets/img/pixiv-square-logo.svg"
-              style="user-select: none"
+              src="../assets/img/pixiv_icon.svg"
+              style="user-select: none; width: 30px"
           /></el-icon>
           <template #title>Pixiv</template>
         </el-menu-item>

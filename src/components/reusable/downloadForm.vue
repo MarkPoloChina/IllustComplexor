@@ -60,7 +60,7 @@
       </el-table>
       <template #footer>
         <span class="dialog-footer">
-          <el-button @click="handleClose">Cancel</el-button>
+          <el-button @click="handleClose">Close</el-button>
           <el-button type="primary" @click="handleDownload">
             Confirm
           </el-button>

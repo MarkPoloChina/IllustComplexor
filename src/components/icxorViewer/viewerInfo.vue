@@ -73,7 +73,12 @@
         direction="vertical"
       >
         <template #extra>
-          <el-button type="primary" size="small">在Pixiv打开</el-button>
+          <el-button
+            type="primary"
+            size="small"
+            @click="toPixiv(writableInfo.meta.pid, writableInfo.meta.page)"
+            >在Pixiv打开</el-button
+          >
         </template>
         <el-descriptions-item label="PId">{{
           writableInfo.meta.pid
@@ -124,6 +129,7 @@
 <script setup>
 import { Edit, ArrowRightBold } from "@element-plus/icons-vue";
 import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 
 // eslint-disable-next-line no-undef
 const props = defineProps({
@@ -156,6 +162,10 @@ const writableTag = computed({
   },
 });
 const editable = ref(false);
+const router = useRouter();
+const toPixiv = (pid, page) => {
+  router.push(`/pixiv/illust/${pid}/${page}`);
+};
 </script>
 <style lang="scss" scoped>
 .info-container {

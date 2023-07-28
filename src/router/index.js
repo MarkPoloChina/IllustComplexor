@@ -37,6 +37,11 @@ const routes = [
         name: "pixiv",
         component: () => import("../views/basic/IcxorPixiv.vue"),
       },
+      {
+        path: "pixiv/illust/:pid/:page",
+        name: "pixivIllust",
+        component: () => import("../views/basic/IcxorPixiv.vue"),
+      },
     ],
   },
 ];
