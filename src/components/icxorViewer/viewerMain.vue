@@ -12,7 +12,8 @@
         :tableData="illustList"
         ref="viewer"
         :loading="isLoading"
-        @select-change="currentSelected = $event"
+        @select-change="if (currentSelected) currentSelected = $event;"
+        @select-activate="currentSelected = $event"
         @popup-context="handlePopupContext"
         @star-change="emit('update:star', $event)"
       />

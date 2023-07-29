@@ -29,7 +29,7 @@
           :class="obj.checked ? 'with-border' : ''"
           :src="UrlGenerator.getBlobUrl(obj, 'square_medium')"
           fit="cover"
-          @click="handleSelect(obj, index)"
+          @click="handleSelect(obj, index, true)"
           @contextmenu.prevent="handleRightClick($event, obj)"
           lazy
           @error="obj.err = true"
@@ -54,6 +54,7 @@ const currentIndex = ref(0);
 const emit = defineEmits([
   "select-change",
   "selects-change",
+  "select-activate",
   "popup-context",
   "star-change",
 ]);
@@ -77,9 +78,10 @@ const handleRightClick = (event, obj) => {
   event.preventDefault();
   emit("popup-context", obj);
 };
-const handleSelect = (obj, index) => {
+const handleSelect = (obj, index, isToActivate = false) => {
   currentIndex.value = index;
-  emit("select-change", obj);
+  if (isToActivate) emit("select-activate", obj);
+  else emit("select-change", obj);
 };
 const handleIndexChange = (action) => {
   if (action == "up") {
