@@ -54,7 +54,9 @@ app.on("window-all-closed", () => {
   // if (process.platform !== "darwin") {
   //   app.quit();
   // }
-  app.quit();
+  if (!process.env.WEBPACK_DEV_SERVER_URL) {
+    app.quit();
+  }
 });
 
 app.on("activate", () => {
