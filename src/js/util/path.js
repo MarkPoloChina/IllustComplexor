@@ -38,9 +38,9 @@ export class UrlGenerator {
             : obj.remote_base.thum_url
         }/${this.getPixivIHSUrl(
           obj.meta.pid,
-          obj.meta.page,
-          obj.meta.title,
-          type
+          obj.meta.page
+          // obj.meta.title,
+          // type
         )}`;
       else return this.getPixivBlobUrl(obj.meta.pid, obj.meta.page, type);
     } else
@@ -65,24 +65,28 @@ export class UrlGenerator {
     return url.href;
   }
 
-  static getPixivIHSUrl(pid, page, title, type) {
-    if (type == "original") {
-      return encodeURIComponent(
-        page == 0
-          ? FilenameResolver.generatePxderSingleFilename(
-              pid,
-              title.replace(/[\x7F]/g, "").replace(/[/\\:*?"<>|.&$]/g, ""),
-              null
-            )
-          : FilenameResolver.generatePxderMultipleFilename(
-              pid,
-              page,
-              title.replace(/[\x7F]/g, "").replace(/[/\\:*?"<>|.&$]/g, ""),
-              null
-            )
-      );
-    } else {
-      return FilenameResolver.generatePixivWebFilename(pid, page, null);
-    }
+  // static getPixivIHSUrl(pid, page, title, type) {
+  //   if (type == "original") {
+  //     return encodeURIComponent(
+  //       page == 0
+  //         ? FilenameResolver.generatePxderSingleFilename(
+  //             pid,
+  //             title.replace(/[\x7F]/g, "").replace(/[/\\:*?"<>|.&$]/g, ""),
+  //             null
+  //           )
+  //         : FilenameResolver.generatePxderMultipleFilename(
+  //             pid,
+  //             page,
+  //             title.replace(/[\x7F]/g, "").replace(/[/\\:*?"<>|.&$]/g, ""),
+  //             null
+  //           )
+  //     );
+  //   } else {
+  //     return FilenameResolver.generatePixivWebFilename(pid, page, null);
+  //   }
+  // }
+
+  static getPixivIHSUrl(pid, page) {
+    return FilenameResolver.generatePixivWebFilename(pid, page, null);
   }
 }
