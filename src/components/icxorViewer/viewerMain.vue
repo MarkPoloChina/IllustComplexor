@@ -1,19 +1,22 @@
 <template>
   <div style="height: 100%">
-    <component
-      :is="
-        viewerType == 'table'
-          ? ViewerTable
-          : viewerType == 'grid'
-          ? ViewerGrid
-          : ViewerFocus
-      "
-      :tableData="illustList"
-      ref="viewer"
-      :loading="isLoading"
-      @select-change="currentSelected = $event"
-      @popup-context="handlePopupContext"
-    />
+    <KeepAlive>
+      <component
+        :is="
+          viewerType == 'table'
+            ? ViewerTable
+            : viewerType == 'grid'
+            ? ViewerGrid
+            : ViewerFocus
+        "
+        :tableData="illustList"
+        ref="viewer"
+        :loading="isLoading"
+        @select-change="currentSelected = $event"
+        @popup-context="handlePopupContext"
+        @star-change="emit('update:star', $event)"
+      />
+    </KeepAlive>
     <MetaForm
       v-model="show.update"
       :choose-all="chooseAll.update"
@@ -56,12 +59,14 @@ const emit = defineEmits([
   "update:curPage",
   "update:currentSelected",
   "update:illustCount",
+  "update:star",
 ]);
 // eslint-disable-next-line no-undef
 const props = defineProps({
   filter: Object,
   viewerType: String,
   curPage: Number,
+  currentSelected: Object,
 });
 const writableCurPage = computed({
   get: () => {
@@ -77,9 +82,13 @@ const illustCount = ref(0);
 watch(illustCount, (val) => {
   emit("update:illustCount", val);
 });
-const currentSelected = ref(null);
-watch(currentSelected, (val) => {
-  emit("update:currentSelected", val);
+const currentSelected = computed({
+  get: () => {
+    return props.currentSelected;
+  },
+  set: (val) => {
+    emit("update:currentSelected", val);
+  },
 });
 const currentOperating = ref(null);
 const waitingDownloadList = ref([]);

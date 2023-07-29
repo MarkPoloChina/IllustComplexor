@@ -27,6 +27,11 @@
         <el-descriptions-item label="类型">{{
           writableInfo.remote_base.name
         }}</el-descriptions-item>
+        <el-descriptions-item
+          label="末端"
+          v-if="writableInfo.remote_endpoint"
+          >{{ writableInfo.remote_endpoint }}</el-descriptions-item
+        >
         <el-descriptions-item label="评分"
           ><el-rate
             v-model="writableInfo.star"
@@ -166,6 +171,14 @@ const router = useRouter();
 const toPixiv = (pid, page) => {
   router.push(`/pixiv/illust/${pid}/${page}`);
 };
+const handleStarChange = (star) => {
+  if (!editable.value) return;
+  if (writableInfo.value.star == star) writableInfo.value.star = 0;
+  else writableInfo.value.star = star;
+  emit("upload", writableInfo.value);
+};
+// eslint-disable-next-line no-undef
+defineExpose({ handleStarChange });
 </script>
 <style lang="scss" scoped>
 .info-container {

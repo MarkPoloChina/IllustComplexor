@@ -47,11 +47,16 @@
 <script setup>
 import { Picture } from "@element-plus/icons-vue";
 import { UrlGenerator } from "@/js/util/path";
-import { ref, watch } from "vue";
+import { onActivated, onDeactivated, ref, watch } from "vue";
 
 const currentIndex = ref(0);
 // eslint-disable-next-line no-undef
-const emit = defineEmits(["select-change", "selects-change", "popup-context"]);
+const emit = defineEmits([
+  "select-change",
+  "selects-change",
+  "popup-context",
+  "star-change",
+]);
 const table = ref();
 // eslint-disable-next-line no-undef
 const props = defineProps({
@@ -81,6 +86,48 @@ const handleIndexChange = (action) => {
     if (currentIndex.value < props.tableData.length - 1) currentIndex.value++;
   } else if (action == "down") if (currentIndex.value > 0) currentIndex.value--;
   emit("select-change", props.tableData[currentIndex.value]);
+};
+onActivated(() => {
+  addKeyboardListener();
+});
+onDeactivated(() => {
+  removeKeyboardListener();
+});
+const keyboardHandler = (event) => {
+  event.preventDefault();
+  switch (event.key) {
+    case "ArrowRight":
+      handleIndexChange("up");
+      break;
+    case "ArrowLeft":
+      handleIndexChange("down");
+      break;
+    case "1":
+      emit("star-change", 1);
+      break;
+    case "2":
+      emit("star-change", 2);
+      break;
+    case "3":
+      emit("star-change", 3);
+      break;
+    case "4":
+      emit("star-change", 4);
+      break;
+    case "5":
+      emit("star-change", 5);
+      break;
+    default:
+      break;
+  }
+  // 打印按下的按键
+  console.log("按下了：" + event.key);
+};
+const addKeyboardListener = () => {
+  document.addEventListener("keyup", keyboardHandler);
+};
+const removeKeyboardListener = () => {
+  document.removeEventListener("keyup", keyboardHandler);
 };
 // eslint-disable-next-line no-undef
 defineExpose({ handleIndexChange });

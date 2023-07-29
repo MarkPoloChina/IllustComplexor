@@ -11,8 +11,9 @@
             :filter="filter"
             :viewerType="viewerType"
             v-model:curPage="curPage"
-            @update:currentSelected="currentSelected = $event"
+            v-model:currentSelected="currentSelected"
             @update:illustCount="illustCount = $event"
+            @update:star="viewerInfo.handleStarChange($event)"
             ref="viewerMain"
           ></ViewerMain>
         </div>
@@ -30,6 +31,7 @@
         <ViewerInfo
           v-model:info="currentSelected"
           @upload="viewerMain.handleSingleIllustChange($event)"
+          ref="viewerInfo"
         ></ViewerInfo>
       </div>
     </div>
@@ -43,6 +45,7 @@ import ViewerInfo from "@/components/icxorViewer/viewerInfo.vue";
 import { ref } from "vue";
 
 const viewerMain = ref();
+const viewerInfo = ref();
 const viewerType = ref("table");
 const filter = ref({});
 const currentSelected = ref(null);
