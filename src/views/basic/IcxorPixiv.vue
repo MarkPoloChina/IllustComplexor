@@ -32,6 +32,13 @@ onActivated(() => {
   }
   .tabs {
     padding: 0 10px 0 10px;
+    height: calc(100% - 52px);
+    :deep(.el-tabs__content) {
+      height: calc(100% - 55px);
+    }
+    :deep(.el-tab-pane) {
+      height: 100%;
+    }
   }
 }
 </style>

@@ -151,6 +151,14 @@ export class API {
     });
     return resp.data;
   }
+  static async getPixivInfo(pid) {
+    const resp = await ax.get("/pixiv-api/pixiv-json", {
+      params: {
+        pid: pid,
+      },
+    });
+    return resp;
+  }
 }
 
 export class APIProxy {
