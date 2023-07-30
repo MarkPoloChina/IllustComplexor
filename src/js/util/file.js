@@ -21,8 +21,10 @@ export class FileExplorer {
    * @summary 从指定目录异步解析文件名
    * @param {string} [path] 文件路径
    */
-  static parseFilenamesFromDirectoryAsync = (path) => {
-    return fs.readdir(path);
+  static parseFilenamesFromDirectoryAsync = async (path) => {
+    return (await fs.readdir(path)).filter((value) => {
+      return fs.statSync(PathHelper.joinFilenamePath(path, value)).isFile();
+    });
   };
 
   /**

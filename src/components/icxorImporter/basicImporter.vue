@@ -41,12 +41,10 @@
               </el-col>
             </el-row>
           </el-form-item>
-          <el-form-item label="默认类型">
+          <el-form-item label="默认基">
             <el-select
               v-model="importOption.addition.remote_base.id"
-              filterable
-              allow-create
-              placeholder="选择或填写类型"
+              placeholder="选择默认基"
             >
               <el-option
                 v-for="item in remoteBaseList"
