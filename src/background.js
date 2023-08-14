@@ -109,6 +109,13 @@ const prepareEnv = () => {
           },
         },
         {
+          label: "重载",
+          click: () => {
+            BrowserWindow.getFocusedWindow().close();
+            createWindow();
+          },
+        },
+        {
           label: "退出",
           role: "quit",
         },
