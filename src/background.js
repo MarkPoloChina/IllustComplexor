@@ -14,6 +14,7 @@ import {
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
+let toReloadSignal = false;
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
@@ -54,9 +55,13 @@ app.on("window-all-closed", () => {
   // if (process.platform !== "darwin") {
   //   app.quit();
   // }
-  if (!process.env.WEBPACK_DEV_SERVER_URL) {
-    app.quit();
-  }
+
+  if (
+    (process.env.WEBPACK_DEV_SERVER_URL && process.platform === "darwin") ||
+    toReloadSignal
+  )
+    return;
+  app.quit();
 });
 
 app.on("activate", () => {
@@ -111,8 +116,10 @@ const prepareEnv = () => {
         {
           label: "重载",
           click: () => {
+            toReloadSignal = true;
             BrowserWindow.getFocusedWindow().close();
             createWindow();
+            toReloadSignal = false;
           },
         },
         {
