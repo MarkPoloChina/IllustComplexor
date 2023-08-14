@@ -20,11 +20,14 @@
       </el-form>
       <el-progress
         style="width: 100%; margin-bottom: 10px"
-        :text-inside="true"
         :stroke-width="24"
         :percentage="progress"
-        :status="progress == 100 ? 'success' : ''"
-      />
+        :status="status"
+      >
+        <div style="width: 100px; text-align: center; font-size: 15px">
+          {{ progressText() }}
+        </div>
+      </el-progress>
       <el-table
         ref="table"
         :data="writableList"
@@ -77,8 +80,9 @@ import { UrlGenerator } from "@/js/util/path";
 import { FileTransfer } from "@/js/util/file";
 import { FilenameResolver } from "@/js/util/filename";
 import { ipcRenderer } from "electron";
-import config from "@/api/config";
+import { useStore } from "vuex";
 
+const store = useStore();
 const downloadOption = reactive({
   pathDir: "",
 });
@@ -113,6 +117,16 @@ const writableList = computed({
 const progress = computed(() => {
   return (downloadCnt.value / writableList.value.length) * 100;
 });
+const progressText = () => {
+  return `${downloadCnt.value} / ${writableList.value.length}`;
+};
+const status = computed({
+  get: () => {
+    if (status.value == "warning") return status.value;
+    return progress.value == 100 ? "success" : "";
+  },
+  set: () => {},
+});
 const handleDownload = () => {
   if (writableList.value.length == 0) {
     ElMessage.error("未选定数据");
@@ -125,7 +139,7 @@ const handleDownload = () => {
   downloadCnt.value = 0;
   const process = async (obj) => {
     let url = UrlGenerator.getBlobUrl(obj, "original");
-    if (url.startsWith(config.baseURL_mpi3s) || url.startsWith(config.baseURL))
+    if (url.startsWith(store.state.api))
       url = await API.getPixivImageUrl(obj.meta.pid, obj.meta.page, "original");
     try {
       const { data, ext } = await APIProxy.getLocalBlob(url);
@@ -141,9 +155,9 @@ const handleDownload = () => {
         downloadOption.pathDir
       )
         .then(() => {})
-        .catch((err) => {
+        .catch(() => {
           ElMessage.error(`第${downloadCnt.value + 1}文件${obj.id}保存失败`);
-          console.log(err);
+          status.value = "warning";
         })
         .finally(() => {
           downloadCnt.value++;
@@ -151,10 +165,10 @@ const handleDownload = () => {
     } catch (err) {
       if (!obj.err) {
         obj.err = true;
-        process(obj);
+        await process(obj);
       } else {
         ElMessage.error(`第${downloadCnt.value + 1}文件${obj.id}下载失败`);
-        console.log(err);
+        status.value = "warning";
       }
     }
   };

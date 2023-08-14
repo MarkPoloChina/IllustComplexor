@@ -4,7 +4,12 @@
       <el-image
         v-if="tableData[currentIndex]"
         class="viewer-img"
-        :src="UrlGenerator.getBlobUrl(tableData[currentIndex], 'medium')"
+        :src="
+          UrlGenerator.getBlobUrl(
+            tableData[currentIndex],
+            store.state.useLocal ? 'original' : 'medium'
+          )
+        "
         :preview-src-list="[
           UrlGenerator.getBlobUrl(tableData[currentIndex], 'original'),
         ]"
@@ -48,7 +53,9 @@
 import { Picture } from "@element-plus/icons-vue";
 import { UrlGenerator } from "@/js/util/path";
 import { onActivated, onDeactivated, ref, watch } from "vue";
+import { useStore } from "vuex";
 
+const store = useStore();
 const currentIndex = ref(0);
 // eslint-disable-next-line no-undef
 const emit = defineEmits([

@@ -2,19 +2,25 @@ import { createStore } from "vuex";
 import { ConfigDB } from "@/js/local/DBService";
 const defaultSetting = {
   username: "MarkPolo",
-  useIhsForPixiv: false,
-  localApi: true,
   localIHS: "",
-  localIHSOptions: [],
+  remoteIHS: "https://ihs.markpolo.cn",
+  useIhsForPixiv: false,
+  api: "https://mpi3s.markpolo.cn",
+  apiOptions: ["https://mpi3s.markpolo.cn", "http://localhost:3000"],
+  cos: "https://cloud.markpolo.cn/ICXOR",
+  useLocal: false,
 };
 
 export default createStore({
   state: {
     username: "",
     useIhsForPixiv: false,
-    localApi: true,
     localIHS: "",
-    localIHSOptions: [],
+    remoteIHS: "",
+    api: "",
+    apiOptions: [],
+    cos: "",
+    useLocal: false,
   },
   getters: {},
   mutations: {

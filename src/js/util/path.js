@@ -1,13 +1,14 @@
 // import path from 'path';
 import { ipcRenderer } from "electron";
-import config from "@/api/config";
 import store from "@/store/index";
 import path from "path";
 import { FilenameResolver } from "./filename";
 
 const STORE_PATH = ipcRenderer.sendSync("app:getPath");
 
-const ihs_base = store.state.localIHS ? store.state.localIHS : config.ihs_base;
+const ihs_base = store.state.useLocal
+  ? store.state.localIHS
+  : store.state.remoteIHS;
 
 export class PathHelper {
   static getBaseUrl = () => {
@@ -44,7 +45,7 @@ export class UrlGenerator {
         )}`;
       else return this.getPixivBlobUrl(obj.meta.pid, obj.meta.page, type);
     } else
-      return `${obj.remote_base.type == "mpihs" ? ihs_base : config.cos_base}${
+      return `${obj.remote_base.type == "mpihs" ? ihs_base : store.state.cos}${
         type == "original"
           ? obj.remote_base.origin_url
           : obj.remote_base.thum_url
@@ -54,11 +55,7 @@ export class UrlGenerator {
   }
 
   static getPixivBlobUrl(pid, page, type) {
-    let url = new URL(
-      `${
-        store.state.localApi ? config.baseURL : config.baseURL_mpi3s
-      }/pixiv-api/blob`
-    );
+    let url = new URL(`${store.state.api}/pixiv-api/blob`);
     url.searchParams.append("pid", pid);
     url.searchParams.append("page", page);
     url.searchParams.append("type", type);

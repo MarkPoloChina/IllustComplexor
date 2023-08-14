@@ -1,6 +1,6 @@
 <template>
   <div class="config">
-    <div class="title-block">用户信息</div>
+    <div class="title-block">用户</div>
     <div class="form-block">
       <el-form :model="configForm" label-width="100px" style="width: 100%">
         <el-form-item label="用户名">
@@ -8,7 +8,7 @@
         </el-form-item>
       </el-form>
     </div>
-    <div class="title-block">存储信息</div>
+    <div class="title-block">本地存储</div>
     <div class="form-block">
       <el-form :model="configForm" label-width="100px" style="width: 100%">
         <el-form-item label="本地路径">
@@ -18,37 +18,50 @@
             disabled
           />
         </el-form-item>
-        <el-form-item label="IHS路径">
+      </el-form>
+    </div>
+    <div class="title-block">访图控制</div>
+    <div class="form-block">
+      <el-form :model="configForm" label-width="100px" style="width: 100%">
+        <el-form-item label="公网 / 内网">
+          <el-switch
+            v-model="configForm.useLocal"
+            active-text="内网"
+            inactive-text="公网"
+          />
+        </el-form-item>
+        <el-form-item label="公网IHS路径">
+          <el-input v-model="configForm.remoteIHS" placeholder="请输入路径" />
+        </el-form-item>
+        <el-form-item label="内网IHS路径">
+          <el-input v-model="configForm.localIHS" placeholder="请输入路径" />
+        </el-form-item>
+        <el-form-item label="COS路径">
+          <el-input v-model="configForm.cos" placeholder="请输入路径" />
+        </el-form-item>
+        <el-form-item label="Pixiv优先IHS">
+          <el-switch v-model="configForm.useIhsForPixiv" />
+        </el-form-item>
+      </el-form>
+    </div>
+    <div class="title-block">API</div>
+    <div class="form-block">
+      <el-form :model="configForm" label-width="100px" style="width: 100%">
+        <el-form-item label="API路径">
           <el-select
-            v-model="configForm.localIHS"
+            v-model="configForm.api"
             filterable
             allow-create
             placeholder="请输入路径"
             style="width: 100%"
           >
             <el-option
-              v-for="item in configForm.localIHSOptions"
+              v-for="item in configForm.apiOptions"
               :key="item"
               :label="item"
               :value="item"
             />
           </el-select>
-        </el-form-item>
-      </el-form>
-    </div>
-    <div class="title-block">偏好信息</div>
-    <div class="form-block">
-      <el-form :model="configForm" label-width="100px" style="width: 100%">
-        <el-form-item label="优先IHS">
-          <el-switch v-model="configForm.useIhsForPixiv" />
-        </el-form-item>
-      </el-form>
-    </div>
-    <div class="title-block">调试信息</div>
-    <div class="form-block">
-      <el-form :model="configForm" label-width="100px" style="width: 100%">
-        <el-form-item label="本地API">
-          <el-switch v-model="configForm.localApi" />
         </el-form-item>
       </el-form>
     </div>
@@ -78,29 +91,30 @@ import { ElMessage } from "element-plus";
 const configForm = reactive({
   username: "",
   localIHS: "",
-  localIHSOptions: [],
+  remoteIHS: "",
   useIhsForPixiv: false,
-  localApi: false,
+  api: "",
+  apiOptions: [],
+  useLocal: false,
+  cos: "",
 });
 const store = useStore();
 onMounted(() => {
   initForm();
 });
 const initForm = () => {
-  configForm.username = store.state.username;
-  configForm.localIHS = store.state.localIHS;
-  configForm.useIhsForPixiv = store.state.useIhsForPixiv;
-  configForm.localApi = store.state.localApi;
-  configForm.localIHSOptions = store.state.localIHSOptions;
+  Object.keys(configForm).forEach((key) => {
+    configForm[key] = store.state[key];
+  });
 };
 const commit = () => {
-  if (!configForm.localIHSOptions.includes(configForm.localIHS)) {
-    configForm.localIHSOptions.push(configForm.localIHS);
+  if (!configForm.apiOptions.includes(configForm.api)) {
+    configForm.apiOptions.push(configForm.api);
   }
   Object.keys(configForm).forEach((key) => {
     store.commit("reviseByKey", { key: key, value: configForm[key] });
   });
-  ElMessage.success("修改成功");
+  ElMessage.success("修改成功,重载后生效");
 };
 const revoke = () => {
   initForm();

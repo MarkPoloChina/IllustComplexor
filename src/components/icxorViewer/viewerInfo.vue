@@ -27,11 +27,20 @@
         <el-descriptions-item label="类型">{{
           writableInfo.remote_base.name
         }}</el-descriptions-item>
-        <el-descriptions-item
-          label="末端"
-          v-if="writableInfo.remote_endpoint"
-          >{{ writableInfo.remote_endpoint }}</el-descriptions-item
-        >
+        <el-descriptions-item label="末端" v-if="writableInfo.remote_endpoint">
+          <div v-if="!editable">
+            {{ writableInfo.remote_endpoint }}
+          </div>
+          <div v-else>
+            <el-input v-model="writableInfo.remote_endpoint"
+              ><template #append>
+                <el-button
+                  :icon="Check"
+                  @click="emit('upload', writableInfo)"
+                /> </template
+            ></el-input>
+          </div>
+        </el-descriptions-item>
         <el-descriptions-item label="评分"
           ><el-rate
             v-model="writableInfo.star"
@@ -132,7 +141,7 @@
   </transition>
 </template>
 <script setup>
-import { Edit, ArrowRightBold } from "@element-plus/icons-vue";
+import { Edit, ArrowRightBold, Check } from "@element-plus/icons-vue";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 

@@ -406,6 +406,32 @@ const handleIT = ({ data }) => {
     })
     .catch(() => {});
 };
+const handleDelete = () => {
+  if (waitingOperateDto.value) {
+    ElMessageBox.confirm(
+      `将永久删除${waitingOperateDto.value.length}个项目，确认？`,
+      "Warning",
+      {
+        confirmButtonText: "OK",
+        cancelButtonText: "Cancel",
+        type: "warning",
+      }
+    )
+      .then(() => {
+        API.deleteIllust(waitingOperateDto.value.map((v) => v.id))
+          .then(() => {
+            ElMessage.success("请求成功");
+            getIllustsAndCount();
+          })
+          .catch((err) => {
+            ElMessage.error(`错误: ${err}`);
+          });
+      })
+      .catch(() => {});
+  } else {
+    ElMessage.error("尚未选择");
+  }
+};
 const handlePopupContext = (row) => {
   if (!row) return;
   currentOperating.value = row;
@@ -451,6 +477,9 @@ const handlePopupContext = (row) => {
         chooseAll.download = true;
         handleOpenDownloadDialog();
         break;
+      case "删除":
+        handleDelete();
+        break;
       default:
         break;
     }
@@ -493,6 +522,10 @@ const handlePopupContext = (row) => {
     },
     {
       label: "全部下载",
+    },
+    { type: "separator" },
+    {
+      label: "删除",
     },
   ]);
 };

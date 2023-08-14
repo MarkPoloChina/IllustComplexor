@@ -1,8 +1,7 @@
 import axios from "axios";
-import config from "./config";
 import store from "@/store";
 const ax = axios.create({
-  baseURL: store.state.localApi ? config.baseURL : config.baseURL_mpi3s,
+  baseURL: store.state.api,
 });
 const ax_local = axios.create({ responseType: "arraybuffer" });
 
@@ -68,6 +67,14 @@ export class API {
       },
     });
     return resp.data;
+  }
+  static async deleteIllusts(illustIds) {
+    const resp = await ax.delete("/illust/bases", {
+      params: {
+        illustIds: illustIds,
+      },
+    });
+    return resp;
   }
   static async getPoly(type) {
     const resp = await ax.get("/illust/poly/list", {
