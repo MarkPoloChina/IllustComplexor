@@ -418,7 +418,7 @@ const handleDelete = () => {
       }
     )
       .then(() => {
-        API.deleteIllust(waitingOperateDto.value.map((v) => v.id))
+        API.deleteIllusts(waitingOperateDto.value.map((v) => v.id))
           .then(() => {
             ElMessage.success("请求成功");
             getIllustsAndCount();
