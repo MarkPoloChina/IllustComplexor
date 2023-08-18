@@ -136,7 +136,7 @@ const loading = ref(false);
 const initTab = () => {
   importOption.importType = "directory";
   importOption.importPolicy = "add";
-  importOption.autoKeys = [];
+  importOption.autoKeys = {};
   importOption.paths = [];
   importOption.pathDir = "";
   importOption.acceptNormal = true;
@@ -154,7 +154,7 @@ onMounted(() => {
 const importOption = reactive({
   paths: [],
   pathDir: "",
-  autoKeys: [],
+  autoKeys: {},
   importType: "directory",
   importPolicy: "add",
   acceptNormal: true,

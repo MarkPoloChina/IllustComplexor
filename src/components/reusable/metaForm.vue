@@ -9,6 +9,21 @@
             :disabled="disableChangeAuto"
           />
         </el-form-item>
+        <el-form-item v-if="type == 'basic'">
+          <template #label>
+            <el-tooltip
+              effect="dark"
+              content="只有导入零散插画时才应该添加前导, 优先远程基。必须添加后导斜杠。"
+              placement="right"
+            >
+              末端前导
+            </el-tooltip>
+          </template>
+          <el-input
+            v-model="autoKeys['remote_endpoint']"
+            :disabled="disableChangeAuto"
+          />
+        </el-form-item>
         <el-form-item label="入库时间">
           <el-date-picker
             v-model="baseInfo.date"
@@ -50,7 +65,7 @@
   </div>
 </template>
 <script setup>
-import { reactive, computed } from "vue";
+import { reactive, computed, toRaw } from "vue";
 
 const baseInfo = reactive({
   date: null,
@@ -62,6 +77,7 @@ const baseInfo = reactive({
 });
 const autoKeys = reactive({
   "meta.title": false,
+  remote_endpoint: "",
 });
 const limitOptions = [
   {
@@ -99,16 +115,14 @@ const initForm = () => {
   baseInfo.star = 0;
   baseInfo.meta.limit = null;
   autoKeys["meta.title"] = false;
+  autoKeys.remote_endpoint = "";
 };
 const handleConfirm = () => {
   dialogVisible.value = false;
   let controller = null;
   let data = null;
   if (props.type == "basic") {
-    controller = [];
-    Object.keys(autoKeys).forEach((key) => {
-      if (autoKeys[key]) controller.push(key);
-    });
+    controller = toRaw(autoKeys);
     data = {
       ...baseInfo,
       tag: baseInfo.tag.map((value) => {

@@ -78,6 +78,13 @@ const possibleMatch = {
       };
     } else return null;
   },
+  BA: (basename) => {
+    if (/^BA_/.test(basename)) {
+      return {
+        coreId: basename,
+      };
+    } else return null;
+  },
 };
 
 export class FilenameResolver {
@@ -144,7 +151,7 @@ export class FilenameAdapter {
       } else if (reso === null) {
         log.message = "一般图片文件";
         log.dto = {
-          remote_endpoint: filename,
+          remote_endpoint: `${autokeys["remote_endpoint"] || ""}${filename}`,
         };
       } else if (reso.pid) {
         log.message = "Pixiv Target OK";
@@ -152,7 +159,7 @@ export class FilenameAdapter {
           meta: {
             pid: reso.pid,
             page: reso.page,
-            title: autokeys.includes("meta.title") ? reso.title : null,
+            title: autokeys["meta.title"] ? reso.title : null,
           },
           remote_base: {
             name: "Pixiv",
@@ -161,7 +168,9 @@ export class FilenameAdapter {
       } else {
         log.message = `Other Target OK with ${reso.match}`;
         log.dto = {
-          remote_endpoint: `${reso.coreId}.${reso.extname}`,
+          remote_endpoint: `${autokeys["remote_endpoint"] || ""}${
+            reso.coreId
+          }.${reso.extname}`,
           remote_base: {
             name: reso.match,
           },
