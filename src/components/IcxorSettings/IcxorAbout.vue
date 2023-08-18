@@ -1,5 +1,5 @@
 <template>
-  <el-scrollbar height="calc(100% - 80px)">
+  <el-scrollbar height="100%">
     <div class="about">
       <el-image :src="url" class="home-img" style="width: 200px"></el-image>
       <div class="home-title">Illust Complexor</div>
@@ -139,6 +139,8 @@ const linkClick = (url) => {
 <style lang="scss" scoped>
 .about {
   @include Flex-C-AC;
+  margin-top: 20px;
+  margin-bottom: 20px;
   .home-img {
     width: 40%;
     margin-bottom: 20px;

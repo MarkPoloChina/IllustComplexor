@@ -31,16 +31,18 @@ import IcxorRemote from "@/components/IcxorSettings/IcxorRemote.vue";
     font-size: 24px;
     font-weight: bold;
     color: $color-greengray-1;
+    flex: none;
   }
   .tabs {
     padding: 0 10px 0 10px;
-    height: 100%;
+    flex: auto;
+    overflow: hidden;
     position: relative;
     :deep(.el-tab-pane) {
       height: 100%;
     }
     :deep(.el-tabs__content) {
-      height: calc(100% - 50px);
+      height: calc(100% - 55px);
     }
     :deep(.el-tabs__item.is-active) {
       color: $color-stdblue-1;

@@ -129,8 +129,6 @@ const keyboardHandler = (event) => {
     default:
       break;
   }
-  // 打印按下的按键
-  console.log("按下了：" + event.key);
 };
 const addKeyboardListener = () => {
   document.addEventListener("keyup", keyboardHandler);

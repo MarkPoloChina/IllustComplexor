@@ -86,7 +86,7 @@ onMounted(() => {
 });
 const tableData = ref([]);
 const initForm = async () => {
-  tableData.value = await API.getRemoteBase();
+  tableData.value = (await API.getRemoteBase()).sort((a, b) => a.id - b.id);
 };
 const revoke = () => {
   tableData.value.length = 0;
@@ -115,18 +115,22 @@ const handleUpdateRemote = (row) => {
 <style lang="scss" scoped>
 .config {
   @include Flex-C;
-  height: calc(100% - 20px);
+  height: 100%;
   .title-block {
     padding: 10px 0 10px 0;
     font-size: 18px;
     color: $color-greengray-1;
+    flex: none;
   }
   .form-block {
     @include Flex-C-AC;
+    overflow: hidden;
+    flex: auto;
   }
   .btn-block {
     @include Flex-R-JC;
-    margin-top: auto;
+    flex: none;
+    margin: 20px 0 10px 0;
   }
 }
 </style>
