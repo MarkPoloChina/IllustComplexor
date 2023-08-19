@@ -3,11 +3,11 @@ import { ConfigDB } from "@/js/local/DBService";
 const defaultSetting = {
   username: "MarkPolo",
   localIHS: "",
-  remoteIHS: "https://ihs.markpolo.cn",
+  remoteIHS: "",
   useIhsForPixiv: false,
-  api: "https://mpi3s.markpolo.cn",
-  apiOptions: ["https://mpi3s.markpolo.cn", "http://localhost:3000"],
-  cos: "https://cloud.markpolo.cn/ICXOR",
+  api: "",
+  apiOptions: [],
+  cos: "",
   useLocal: false,
 };
 
