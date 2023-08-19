@@ -23,6 +23,7 @@
   "dependencies": {
     "@vueuse/core": "^9.4.0",
     "axios": "^0.27.2",
+    "caniuse-lite": "^1.0.30001521",
     "core-js": "^3.8.3",
     "element-plus": "2.2.18",
     "fs-extra": "^10.1.0",
