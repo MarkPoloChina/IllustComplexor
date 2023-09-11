@@ -21,6 +21,18 @@ protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
 ]);
 
+const contextMenuTemplate = [
+  { label: "撤销", role: "undo" },
+  { label: "重做", role: "redo" },
+  { type: "separator" },
+  { label: "剪切", role: "cut", accelerator: "CmdOrCtrl+X" },
+  { label: "复制", role: "copy", accelerator: "CmdOrCtrl+C" },
+  { label: "粘贴", role: "paste", accelerator: "CmdOrCtrl+V" },
+  { label: "删除", role: "delete" },
+  { type: "separator" },
+  { label: "全选", role: "selectAll", accelerator: "CmdOrCtrl+A" },
+];
+
 async function createWindow() {
   // Create the browser window.
   const win = new BrowserWindow({
@@ -34,6 +46,11 @@ async function createWindow() {
       nodeIntegration: process.env.ELECTRON_NODE_INTEGRATION,
       contextIsolation: !process.env.ELECTRON_NODE_INTEGRATION,
     },
+  });
+
+  const contextMenu = Menu.buildFromTemplate(contextMenuTemplate);
+  win.webContents.on("context-menu", (event, params) => {
+    contextMenu.popup(win, params.x, params.y);
   });
 
   if (process.env.WEBPACK_DEV_SERVER_URL) {
@@ -103,10 +120,23 @@ if (isDevelopment) {
 
 const prepareEnv = () => {
   // 设置菜单模块
-  let menu = Menu.buildFromTemplate([
+  const menu = Menu.buildFromTemplate([
     {
       label: "文件",
       submenu: [
+        {
+          label: "关于",
+          role: "about",
+          click: async () => {
+            if (BrowserWindow.getAllWindows().length === 0)
+              await createWindow();
+            const currentWin = BrowserWindow.getAllWindows()[0];
+            currentWin.webContents.send("router:go", "/about");
+          },
+        },
+        {
+          type: "separator",
+        },
         {
           label: "打开调试窗口",
           click: () => {
@@ -121,6 +151,9 @@ const prepareEnv = () => {
             createWindow();
             toReloadSignal = false;
           },
+        },
+        {
+          type: "separator",
         },
         {
           label: "退出",
@@ -166,7 +199,7 @@ const prepareEnv = () => {
         {
           label: "个人主页",
           click: () => {
-            shell.openExternal("https://markpolo.cn");
+            shell.openExternal("https://www.markpolo.cn");
           },
         },
       ],
@@ -232,13 +265,28 @@ const prepareEnv = () => {
         event.sender.send("context:click", item.label);
       };
     });
-    const ctx = Menu.buildFromTemplate(templateMenu);
+    const ctx = Menu.buildFromTemplate([
+      ...templateMenu,
+      {
+        type: "separator",
+      },
+      ...contextMenuTemplate,
+    ]);
     ctx.popup(BrowserWindow.fromWebContents(event.sender));
   });
 
   // activate app ipc
   ipcMain.on("app:getPath", (event) => {
     event.returnValue = app.getPath("userData");
+  });
+
+  ipcMain.handle("app:getCacheSize", async () => {
+    const size = await session.defaultSession.getCacheSize();
+    return size;
+  });
+
+  ipcMain.handle("app:clearCache", async () => {
+    await session.defaultSession.clearCache();
   });
 
   // add before-request rule

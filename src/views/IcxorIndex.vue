@@ -55,44 +55,21 @@ import {
 import { useStore } from "vuex";
 import { ConfigDB } from "@/js/local/DBService";
 import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 
 const isDark = useDark();
-
+const router = useRouter();
 onMounted(() => {
   ipcRenderer.invoke("dark-mode:get").then((value) => (isDark.value = value));
   ipcRenderer.on("dark-mode:updated", (event, message) => {
     isDark.value = message;
   });
+  ipcRenderer.on("router:go", (event, message) => {
+    router.push(message);
+  });
   ConfigDB.initDB();
-  // MetaDB.initMeta();
   useStore().commit("initStore");
-  // initContext();
 });
-// const initContext = () => {
-//   const createContextMenu = () => {
-//     return remote.Menu.buildFromTemplate([
-//       { label: "撤销", role: "undo" },
-//       { label: "重做", role: "redo" },
-//       { type: "separator" },
-//       { label: "剪切", role: "cut" },
-//       { label: "复制", role: "copy" },
-//       { label: "粘贴", role: "paste" },
-//       { label: "删除", role: "delete" },
-//       { type: "separator" },
-//       { label: "全选", role: "selectAll" },
-//     ]);
-//   };
-//   window.addEventListener(
-//     "contextmenu",
-//     () => {
-//       const contextMenu = createContextMenu();
-//       contextMenu.popup({
-//         window: remote.getCurrentWindow(),
-//       });
-//     },
-//     false
-//   );
-// };
 </script>
 <style lang="scss" scoped>
 .index-container {

@@ -1,7 +1,7 @@
 <template>
   <div class="config">
     <div class="form-container">
-      <el-scrollbar style="width: 100%;">
+      <el-scrollbar style="width: 100%">
         <div class="title-block">用户</div>
         <div class="form-block">
           <el-form :model="configForm" label-width="100px" style="width: 100%">
@@ -17,18 +17,24 @@
         <div class="form-block">
           <el-form :model="configForm" label-width="100px" style="width: 100%">
             <el-form-item label="本地路径">
-              <el-input
-                :model-value="PathHelper.getBaseUrl()"
-                placeholder="请输入路径"
-                disabled
-              />
+              <span>{{ PathHelper.getBaseUrl() }}</span>
+            </el-form-item>
+            <el-form-item label="缓存大小">
+              <span>{{ cacheSize ?? "正在计算中" }}</span>
+              <el-button
+                type="danger"
+                size="small"
+                style="margin-left: 20px"
+                @click="clearCache"
+                >清空</el-button
+              >
             </el-form-item>
           </el-form>
         </div>
         <div class="title-block">访图控制</div>
         <div class="form-block">
           <el-form :model="configForm" label-width="100px" style="width: 100%">
-            <el-form-item label="公网 / 内网">
+            <el-form-item label="IHS模式">
               <el-switch
                 v-model="configForm.useLocal"
                 active-text="内网"
@@ -47,11 +53,18 @@
                 placeholder="请输入路径"
               />
             </el-form-item>
-            <el-form-item label="COS路径">
-              <el-input v-model="configForm.cos" placeholder="请输入路径" />
-            </el-form-item>
             <el-form-item label="Pixiv优先IHS">
               <el-switch v-model="configForm.useIhsForPixiv" />
+            </el-form-item>
+            <el-form-item label="Pixiv模式">
+              <el-switch
+                v-model="configForm.useLocalPixiv"
+                active-text="本地"
+                inactive-text="API代理"
+              />
+            </el-form-item>
+            <el-form-item label="COS路径">
+              <el-input v-model="configForm.cos" placeholder="请输入路径" />
             </el-form-item>
           </el-form>
         </div>
@@ -97,9 +110,10 @@
 <script setup>
 import { Check, Remove } from "@element-plus/icons-vue";
 import { useStore } from "vuex";
-import { onMounted, reactive } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { PathHelper } from "@/js/util/path";
-import { ElMessage } from "element-plus";
+import { ElMessage, ElMessageBox } from "element-plus";
+import { ipcRenderer } from "electron";
 
 const configForm = reactive({
   username: "",
@@ -109,11 +123,13 @@ const configForm = reactive({
   api: "",
   apiOptions: [],
   useLocal: false,
+  useLocalPixiv: false,
   cos: "",
 });
 const store = useStore();
 onMounted(() => {
   initForm();
+  getCacheSize();
 });
 const initForm = () => {
   Object.keys(configForm).forEach((key) => {
@@ -131,6 +147,36 @@ const commit = () => {
 };
 const revoke = () => {
   initForm();
+};
+const cacheSize = ref(null);
+const getCacheSize = async () => {
+  const size = await ipcRenderer.invoke("app:getCacheSize");
+  const formatBytes = (bytes) => {
+    if (bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
+    const i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  };
+  cacheSize.value = formatBytes(size);
+};
+const clearCache = () => {
+  ElMessageBox.confirm("将清空全部缓存，确认？", "Warning", {
+    confirmButtonText: "OK",
+    cancelButtonText: "Cancel",
+    type: "warning",
+  })
+    .then(async () => {
+      try {
+        await ipcRenderer.invoke("app:clearCache");
+        ElMessage.success("缓存已清空");
+      } catch (error) {
+        ElMessage.error("缓存清空失败");
+      } finally {
+        getCacheSize();
+      }
+    })
+    .catch(() => {});
 };
 </script>
 <style lang="scss" scoped>

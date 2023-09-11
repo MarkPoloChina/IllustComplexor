@@ -1,7 +1,7 @@
 <template>
   <div class="setting-container">
     <div class="title">设置</div>
-    <el-tabs class="tabs" model-value="config">
+    <el-tabs class="tabs" v-model="currentTab">
       <el-tab-pane label="配置信息" name="config" lazy>
         <icxor-config></icxor-config>
       </el-tab-pane>
@@ -18,6 +18,13 @@
 import IcxorConfig from "@/components/IcxorSettings/IcxorConfig.vue";
 import IcxorAbout from "@/components/IcxorSettings/IcxorAbout.vue";
 import IcxorRemote from "@/components/IcxorSettings/IcxorRemote.vue";
+import { onMounted, ref } from "vue";
+import { useRoute } from "vue-router";
+const currentTab = ref("config");
+const route = useRoute();
+onMounted(() => {
+  if (route.path == "/about") currentTab.value = "about";
+});
 </script>
 <style lang="scss" scoped>
 .setting-container {
