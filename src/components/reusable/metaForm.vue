@@ -8,6 +8,16 @@
             label="标题"
             :disabled="disableChangeAuto"
           />
+          <el-checkbox
+            v-model="autoKeys.REFORPIXIV"
+            label="Pixiv末端"
+            :disabled="disableChangeAuto"
+          />
+          <el-checkbox
+            v-model="autoKeys.thumb_endpoint.jpg"
+            label="jpg缩图末端"
+            :disabled="disableChangeAuto"
+          />
         </el-form-item>
         <el-form-item v-if="type == 'basic'">
           <template #label>
@@ -20,7 +30,7 @@
             </el-tooltip>
           </template>
           <el-input
-            v-model="autoKeys['remote_endpoint']"
+            v-model="autoKeys.remote_endpoint"
             :disabled="disableChangeAuto"
           />
         </el-form-item>
@@ -33,7 +43,8 @@
           />
         </el-form-item>
         <el-form-item label="评级">
-          <el-rate v-model="baseInfo.star" clearable />
+          <el-rate v-model="baseInfo.star" clearable :disabled="noChangeStar" />
+          <el-checkbox v-model="noChangeStar" label="不修改" />
         </el-form-item>
         <el-form-item label="标签">
           <el-select
@@ -65,7 +76,7 @@
   </div>
 </template>
 <script setup>
-import { reactive, computed, toRaw } from "vue";
+import { reactive, computed, toRaw, ref } from "vue";
 
 const baseInfo = reactive({
   date: null,
@@ -75,8 +86,13 @@ const baseInfo = reactive({
     limit: null,
   },
 });
+const noChangeStar = ref(true);
 const autoKeys = reactive({
   "meta.title": false,
+  REFORPIXIV: false,
+  thumb_endpoint: {
+    jpg: false,
+  },
   remote_endpoint: "",
 });
 const limitOptions = [
@@ -116,6 +132,8 @@ const initForm = () => {
   baseInfo.meta.limit = null;
   autoKeys["meta.title"] = false;
   autoKeys.remote_endpoint = "";
+  autoKeys.REFORPIXIV = false;
+  autoKeys.thumb_endpoint.jpg = false;
 };
 const handleConfirm = () => {
   dialogVisible.value = false;
@@ -138,6 +156,7 @@ const handleConfirm = () => {
     };
     controller = props.chooseAll;
   }
+  if (noChangeStar.value && data) data.star = null;
   emit("confirm", {
     data: data,
     controller: controller,

@@ -165,6 +165,7 @@ export class FilenameAdapter {
             name: "Pixiv",
           },
         };
+        if (autokeys.REFORPIXIV) log.dto.remote_endpoint = `${filename}`;
       } else {
         log.message = `Other Target OK with ${reso.match}`;
         log.dto = {
@@ -176,6 +177,8 @@ export class FilenameAdapter {
           },
         };
       }
+      if (log.dto && log.dto.remote_endpoint && autokeys.thumb_endpoint.jpg)
+        log.dto.thumb_endpoint = `${getBasename(log.dto.remote_endpoint)}.jpg`;
       logs.push(log);
       index++;
     }
