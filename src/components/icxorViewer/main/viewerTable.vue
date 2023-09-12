@@ -28,21 +28,17 @@
   </div>
 </template>
 <script setup>
-import { onMounted, watch, ref } from "vue";
+import { watch, ref } from "vue";
 
 const table = ref();
 // eslint-disable-next-line no-undef
 const props = defineProps({
   tableData: Array,
   loading: Boolean,
+  currentSelected: Object,
 });
 // eslint-disable-next-line no-undef
 const emits = defineEmits(["select-change", "popup-context"]);
-onMounted(() => {
-  props.tableData.forEach((ele) => {
-    table.value.toggleRowSelection(ele, !!ele.checked);
-  });
-});
 watch(
   () => props.tableData,
   (val) => {
@@ -52,12 +48,23 @@ watch(
   },
   {
     deep: true,
+    immediate: true,
   }
 );
 watch(
   () => props.tableData,
   () => {
     table.value.setScrollTop(0);
+  },
+  {
+    deep: false,
+  }
+);
+watch(
+  () => props.currentSelected,
+  (val) => {
+    if (!val) return;
+    table.value.setCurrentRow(val);
   },
   {
     deep: false,

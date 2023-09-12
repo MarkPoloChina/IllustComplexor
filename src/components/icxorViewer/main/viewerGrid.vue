@@ -10,7 +10,11 @@
         <div class="expo"></div>
         <el-image
           class="viewer-img"
-          :class="obj.checked ? 'with-border' : ''"
+          :class="`${obj.checked ? 'with-border' : ''} ${
+            props.currentSelected && props.currentSelected.id == obj.id
+              ? 'bigger'
+              : ''
+          }`"
           :src="UrlGenerator.getBlobUrl(obj, 'square_medium')"
           :preview-src-list="[UrlGenerator.getBlobUrl(obj, 'original')]"
           fit="cover"
@@ -41,6 +45,7 @@ const props = defineProps({
   tableData: Array,
   selections: Array,
   loading: Boolean,
+  currentSelected: Object,
 });
 watch(
   () => props.tableData,
@@ -88,6 +93,12 @@ const handleRightClick = (event, obj) => {
       }
       &.with-border {
         border: 3px solid $color-stdblue-1;
+      }
+      &.bigger {
+        top: 0px;
+        right: 0px;
+        bottom: 0px;
+        left: 0px;
       }
     }
   }

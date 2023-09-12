@@ -34,7 +34,7 @@
           :class="obj.checked ? 'with-border' : ''"
           :src="UrlGenerator.getBlobUrl(obj, 'square_medium')"
           fit="cover"
-          @click="handleSelect(obj, index, true)"
+          @click="handleSelect(obj, index)"
           @contextmenu.prevent="handleRightClick($event, obj)"
           lazy
           @error="obj.err = true"
@@ -61,7 +61,6 @@ const currentIndex = ref(0);
 const emit = defineEmits([
   "select-change",
   "selects-change",
-  "select-activate",
   "popup-context",
   "star-change",
 ]);
@@ -70,6 +69,7 @@ const table = ref();
 const props = defineProps({
   tableData: Array,
   loading: Boolean,
+  currentSelected: Object,
 });
 watch(
   () => props.tableData,
@@ -81,14 +81,24 @@ watch(
     deep: false,
   }
 );
+watch(
+  () => props.currentSelected,
+  (val) => {
+    if (props.currentSelected)
+      currentIndex.value = props.tableData.findIndex((v) => v.id == val.id);
+  },
+  {
+    deep: false,
+    immediate: true,
+  }
+);
 const handleRightClick = (event, obj) => {
   event.preventDefault();
   emit("popup-context", obj);
 };
-const handleSelect = (obj, index, isToActivate = false) => {
+const handleSelect = (obj, index) => {
   currentIndex.value = index;
-  if (isToActivate) emit("select-activate", obj);
-  else emit("select-change", obj);
+  emit("select-change", obj);
 };
 const handleIndexChange = (action) => {
   if (action == "up") {

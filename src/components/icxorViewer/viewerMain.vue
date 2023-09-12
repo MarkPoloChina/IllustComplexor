@@ -12,8 +12,8 @@
         :tableData="illustList"
         ref="viewer"
         :loading="isLoading"
-        @select-change="if (currentSelected) currentSelected = $event;"
-        @select-activate="currentSelected = $event"
+        :currentSelected="currentSelected"
+        @select-change="currentSelected = $event"
         @popup-context="handlePopupContext"
         @star-change="emit('update:star', $event)"
       />
@@ -438,7 +438,7 @@ const handlePopupContext = (row) => {
   ipcRenderer.removeAllListeners("context:click");
   ipcRenderer.once("context:click", (event, item) => {
     switch (item) {
-      case "详情":
+      case "标记":
         currentSelected.value = row;
         break;
       case "选定":
@@ -485,7 +485,7 @@ const handlePopupContext = (row) => {
     }
   });
   ipcRenderer.send("context:popup", [
-    { label: "详情" },
+    { label: "标记" },
     { type: "separator" },
     {
       label: "选定",
