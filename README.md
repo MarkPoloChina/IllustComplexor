@@ -2,6 +2,8 @@
  <img src="./src/assets/img/logo.png" width="200" alt="icxor Logo" />
 </p>
 
+Since v0.5, it has been refactored into [ICXOR](https://github.com/MarkPoloChina/ICXOR-unify).
+
 ## What it is ?
 
 > <mark>Under Development!!</mark> It is just a simple self-use tool software and cannot be used universally so far.
