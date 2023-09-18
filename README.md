@@ -2,7 +2,7 @@
  <img src="./src/assets/img/logo.png" width="200" alt="icxor Logo" />
 </p>
 
-Since v0.5, it has been refactored into [ICXOR](https://github.com/MarkPoloChina/ICXOR-unify).
+Since v0.5, it has been refactored into native application. See [ICXOR](https://github.com/MarkPoloChina/ICXOR).
 
 ## What it is ?
 
